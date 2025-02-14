@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
     CU_basic_show_failures(CU_get_failure_list());
+    int failed_tests = CU_get_number_of_failures();
     CU_cleanup_registry();
-    return CU_get_error();
+    return (failed_tests > 0) ? 1 : 0;
 }
