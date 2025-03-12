@@ -82,3 +82,4 @@ void sub_m_m(matrix *A, matrix *B, matrix *C){
         }
     }
 }
+
