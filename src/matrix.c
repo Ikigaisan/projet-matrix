@@ -72,3 +72,13 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
         }
     }
 }
+
+void sub_m_m(matrix *A, matrix *B, matrix *C) {
+    uint64_t m = A->m;
+    uint64_t n = A->n;
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            C->values[i][j] = A->values[i][j] - B->values[i][j];
+        }
+    }
+}
