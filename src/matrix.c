@@ -86,3 +86,12 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
     }
 }
 
+void free_matrix(matrix *A){
+    if(A != NULL){
+        for(uint64_t i=0; i < A->m; i++){
+            free(A->values[i]);
+        }
+        free(A->values);
+        free(A);
+    }
+}
