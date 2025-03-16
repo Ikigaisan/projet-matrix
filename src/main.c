@@ -179,6 +179,32 @@ int main(int argc, char **argv) {
         free(A);
         free(B);
         free(C);
+    }else if (strcmp(args->op, "dot_prod") == 0) {
+        // Lire les deux vecteurs
+        vector *x = read_vector(args->input_file_A);
+        if (args->verbose) {
+            printf("vector x : \n");
+            print_vector(x);
+        }
+        vector *y = read_vector(args->input_file_B);
+        if (args->verbose) {
+            printf("vector y : \n");
+            print_vector(y);
+        }
+
+        // Appeler la fonction dot_prod
+        double result;
+        dot_prod(x, y, &result);
+
+        if(args->output_stream == stdout) {
+            // Afficher le résultat du produit scalaire
+            printf("Produit scalaire : %f\n", result);
+        } else {
+            write_double(result, args->output_stream);
+        }        
+
+        free(x);
+        free(y);
     } else {
         fprintf(stderr, "Cette opération n'est pas implémentée...\n");
         exit(EXIT_FAILURE);
