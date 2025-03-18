@@ -158,6 +158,27 @@ int main(int argc, char **argv) {
         free(x);
         free(y);
         free(z);
+    }if (strcmp(args->op, "sub_v_v") == 0) {
+        vector *x = read_vector(args->input_file_A);
+        if (args->verbose) {
+            printf("vector x : \n");
+            print_vector(x);
+        }
+        vector *y = read_vector(args->input_file_B);
+        if (args->verbose) {
+            printf("vector y : \n");
+            print_vector(y);
+        }
+        vector *z = init_vector(x->m);
+        sub_v_v(x, y, z);
+        if (args->output_stream == stdout) {
+            print_vector(z);
+        } else {
+            write_vector(z, args->output_stream);
+        }
+        free(x);
+        free(y);
+        free(z);
     } else if (strcmp(args->op, "add_m_m") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
@@ -171,6 +192,27 @@ int main(int argc, char **argv) {
         }
         matrix *C = init_matrix(A->m, A->n);
         add_m_m(A, B, C);
+        if (args->output_stream == stdout) {
+            print_matrix(C);
+        } else {
+            write_matrix(C, args->output_stream);
+        }
+        free(A);
+        free(B);
+        free(C);
+    }else if (strcmp(args->op, "sub_m_m") == 0) {
+        matrix *A = read_matrix(args->input_file_A);
+        if (args->verbose) {
+            printf("matrix A : \n");
+            print_matrix(A);
+        }
+        matrix *B = read_matrix(args->input_file_B);
+        if (args->verbose) {
+            printf("matrix B : \n");
+            print_matrix(B);
+        }
+        matrix *C = init_matrix(A->m, A->n);
+        sub_m_m(A, B, C);
         if (args->output_stream == stdout) {
             print_matrix(C);
         } else {
