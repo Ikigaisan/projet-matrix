@@ -1,4 +1,6 @@
 #include "../headers/matrix.h"
+#include "../headers/vector.h"
+
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
@@ -82,5 +84,17 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
         for (uint64_t j = 0; j < n; j++) {
             C->values[i][j] = A->values[i][j] - B->values[i][j];
         }
+    }
+}
+
+void mult_m_v(matrix *A, vector *B, vector *C) {
+    uint64_t m = A->m;
+    uint64_t n = A->n;
+    for (int i = 0; i < m; i++) {
+        double res = 0;
+        for (int j = 0; j < n; j++) {
+            res += A->values[i][j] * B->values[j];
+        }
+        C->values[i] = res;
     }
 }

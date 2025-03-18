@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "vector.h"
+
 #ifndef _MATRIX_H_
 #define _MATRIX_H_
 
@@ -44,4 +46,6 @@ void print_matrix(matrix *);
  */
 void add_m_m(matrix *, matrix *, matrix *);
 
+
+void mult_m_v(matrix *, vector *, vector *);
 #endif /* _MATRIX_H_ */

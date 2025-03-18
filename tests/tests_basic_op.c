@@ -49,6 +49,33 @@ void test_add_m_m(void) {
     free(C);
 }
 
+void test_mult_m_v(void) {
+    uint64_t m = 300;
+    uint64_t n = 200;
+    matrix *A = init_matrix(m, n);
+    vector *B = init_vector(n);
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            A->values[i][j] = (double)rand() / 2.0;
+        }
+    }
+    for (uint64_t i = 0; i < n; i++) {
+        B->values[i] = (double)rand() / 2.0;
+    }
+    vector *C = init_vector(m);
+    mult_m_v(A, B, C);
+    for (uint64_t i = 0; i < m; i++) {
+        double res = 0;
+        for (uint64_t j = 0; j < n; j++) {
+            res += A->values[i][j] * B->values[j];
+        }
+        CU_ASSERT_DOUBLE_EQUAL(C->values[i], res, 1e-3);
+    }
+    free(A);
+    free(B);
+    free(C);
+}
+
 int main(int argc, char **argv) {
     srand(time(NULL));
     if (CUE_SUCCESS != CU_initialize_registry()) {
