@@ -42,4 +42,30 @@ void print_vector(vector *);
  */
 void add_v_v(vector *, vector *, vector *);
 
+/**
+ * Calcule la soustraction de deux vecteurs
+ *
+ * @param vector* x le premier vecteur
+ * @param vector* y le second vecteur
+ * @param vector* z un vecteur avec des valeurs quelconques dans lequel la soustraction
+ * de x avec y sera stockée
+ *
+ * @result z = x - y
+ */
+void sub_v_v(vector *, vector *, vector *);
+
+/**
+ * @brief Calule le produit scalaire entre deux vecteurs.
+ * 
+ * @param vector* x Pointeur vers le premier vecteur.
+ * @param vector* y Pointeur vers le deuxième vecteur.
+ * @param double* result Pointeur dans lequel stocker le résultat. 
+ * 
+ * @result result = x_i * y_i
+ * 
+ * @pre Les vecteurs x et y doivent être de la même taille.
+ * 
+ */
+void dot_prod(vector *, vector *, double *);
+
 #endif /* _VECTOR_H_ */
