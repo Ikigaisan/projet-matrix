@@ -49,27 +49,23 @@ void test_add_m_m(void) {
     free(C);
 }
 
+
 void test_norm(void) {
     uint64_t m = 5;
     vector *v = init_vector(m);
-    vector *w = init_vector(m);
     
-    double values1[] = {1.0, 2.0, 3.0, 4.0, 5.0};
-    double values2[] = {5.0, 4.0, 3.0, 2.0, 1.0};
-    
+    double values[] = {3.0, 4.0, 0.0, 0.0, 0.0};
     for (uint64_t i = 0; i < m; i++) {
-        v->values[i] = values1[i];
-        w->values[i] = values2[i];
+        v->values[i] = values[i];
     }
     
-    uint64_t expected_norm = (uint64_t)sqrt(16 + 4 + 0 + 4 + 16);
-    uint64_t computed_norm;
-    norm(v, w, &computed_norm);
+    double expected_norm = sqrt(3.0 * 3.0 + 4.0 * 4.0);
+    double computed_norm;
+    norm(v, &computed_norm);
     
-    CU_ASSERT_EQUAL(computed_norm, expected_norm);
+    CU_ASSERT_DOUBLE_EQUAL(computed_norm, expected_norm, 1e-3);
     
     free(v);
-    free(w);
 }
 
 int main(int argc, char **argv) {
