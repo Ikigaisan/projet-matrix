@@ -1,5 +1,5 @@
 #include "../headers/vector.h"
-
+#include <math.h>
 vector *init_vector(uint64_t m) {
     vector *v = (vector *)malloc(sizeof(vector));
     if (v == NULL) {
@@ -63,3 +63,18 @@ void dot_prod(vector *x, vector *y, double *result){
         *result += x->values[i] * y->values[i];
     }
 }
+
+
+void norm(vector *x, double *result){
+    if (!x || !x->values || !result) {
+        fprintf(stderr, "Erreur : pointeur NULL détecté dans norm()\n");
+        return;
+    }
+    double s = 0;
+    uint64_t m = x->m;
+    for (uint64_t i = 0; i < m; i++){
+        s += (x->values[i]) * (x->values[i]);
+    }
+    *result = sqrt(s); 
+}
+
