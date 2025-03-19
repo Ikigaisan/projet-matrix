@@ -47,13 +47,11 @@ void add_v_v(vector *x, vector *y, vector *z) {
 }
 
 
->>>>>>> src/vector.c
 void sub_v_v(vector *x, vector *y, vector *z) {
     uint64_t m = x->m;
     for (uint64_t i = 0; i < m; i++) {
         z->values[i] = x->values[i] - y->values[i];
     }
-<<<<<<< src/vector.c
 }
 
 
@@ -82,4 +80,3 @@ void norm(vector *x, double *result){
     *result = sqrt(s); 
 }
 
->>>>>>> src/vector.c

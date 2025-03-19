@@ -76,6 +76,7 @@ void test_mult_m_v(void) {
     free(B);
     free(C);
 
+}
 
 void test_norm(void) {
     uint64_t m = 5;
