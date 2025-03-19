@@ -60,5 +60,14 @@ void dot_prod(vector *x, vector *y, vector *z) {
     }
 }
 
+void norm(vector *x, vector *y){
+    uint64_t s = 0;
+    uint64_t m = x->m;
+    for (uint64_t i = 0; i < m; i++){
+        s += (x->values[i] - y->values[i]) * (x->values[i] - y->values[i]);
+    }
+    uint64_t n = (uint64_t)sqrt(s); 
+}
+
 
 
