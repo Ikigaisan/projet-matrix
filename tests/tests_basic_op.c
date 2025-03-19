@@ -1,10 +1,10 @@
 #include <CUnit/Basic.h>
 #include <CUnit/CUnit.h>
 #include <time.h>
+#include <math.h>
 
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
-
 #include "../headers/file.h"
 
 void test_add_v_v(void) {
@@ -49,6 +49,7 @@ void test_add_m_m(void) {
     free(C);
 }
 
+<<<<<<< tests/tests_basic_op.c
 void test_mult_m_v(void) {
     uint64_t m = 300;
     uint64_t n = 200;
@@ -74,6 +75,25 @@ void test_mult_m_v(void) {
     free(A);
     free(B);
     free(C);
+
+
+void test_norm(void) {
+    uint64_t m = 5;
+    vector *v = init_vector(m);
+    
+    double values[] = {3.0, 4.0, 0.0, 0.0, 0.0};
+    for (uint64_t i = 0; i < m; i++) {
+        v->values[i] = values[i];
+    }
+    
+    double expected_norm = sqrt(3.0 * 3.0 + 4.0 * 4.0);
+    double computed_norm;
+    norm(v, &computed_norm);
+    
+    CU_ASSERT_DOUBLE_EQUAL(computed_norm, expected_norm, 1e-3);
+    
+    free(v);
+>>>>>>> tests/tests_basic_op.c
 }
 
 int main(int argc, char **argv) {
@@ -87,7 +107,8 @@ int main(int argc, char **argv) {
         return CU_get_error();
     }
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
-        (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL)) {
+        (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
+        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)) {
         CU_cleanup_registry();
         return CU_get_error();
     }

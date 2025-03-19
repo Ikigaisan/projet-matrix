@@ -48,4 +48,24 @@ void add_m_m(matrix *, matrix *, matrix *);
 
 
 void mult_m_v(matrix *, vector *, vector *);
+
+/**
+ * Calcule la soustraction de deux matrices
+ *
+ * @param matrix* A la première matrice
+ * @param matrix* B la seconde matrice
+ * @param matrix* C une matrice avec des valeurs quelconques dans laquelle la
+ * soustraction de A avec B sera stockée
+ *
+ * @result C = A - B
+ */
+void sub_m_m(matrix *, matrix *, matrix *);
+
+/**
+ * Free une structure matrice
+ * 
+ * @param matrix* A, la matrice à free
+ */
+void free_matrix(matrix *);
+
 #endif /* _MATRIX_H_ */
