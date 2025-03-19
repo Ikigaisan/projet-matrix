@@ -102,4 +102,4 @@ void free_matrix(matrix *A){
     }
 }
 
-void lstsq(matrix *A, vector *b)
+void lstsq(matrix *A, vector *b){}
