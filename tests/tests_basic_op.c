@@ -68,6 +68,32 @@ void test_norm(void) {
     free(v);
 }
 
+void test_sub_m_m(void) {
+    uint64_t m = 300;
+    uint64_t n = 200;
+    matrix *A = init_matrix(m, n);
+    matrix *B = init_matrix(m, n);
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            A->values[i][j] = (double)rand() / 2.0;
+            B->values[i][j] = (double)rand() / 2.0;
+        }
+    }
+    matrix *C = init_matrix(m, n);
+    sub_m_m(A, B, C);
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            CU_ASSERT_DOUBLE_EQUAL(C->values[i][j],
+                                   A->values[i][j] - B->values[i][j], 1e-3);
+        }
+    }
+    free(A);
+    free(B);
+    free(C);
+}
+
+
+
 int main(int argc, char **argv) {
     srand(time(NULL));
     if (CUE_SUCCESS != CU_initialize_registry()) {
@@ -80,7 +106,7 @@ int main(int argc, char **argv) {
     }
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
         (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
-        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)) {
+        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)|| CU_add_test(test_basic_op, "sub_m_m", test_sub_m_m) == NULL) {
         CU_cleanup_registry();
         return CU_get_error();
     }
