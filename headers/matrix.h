@@ -57,4 +57,11 @@ void add_m_m(matrix *, matrix *, matrix *);
  */
 void sub_m_m(matrix *, matrix *, matrix *);
 
+/**
+ * Free une structure matrice
+ * 
+ * @param matrix* A, la matrice à free
+ */
+void free_matrix(matrix *);
+
 #endif /* _MATRIX_H_ */
