@@ -42,4 +42,6 @@ void print_vector(vector *);
  */
 void add_v_v(vector *, vector *, vector *);
 
+void norm(vector *, double *);
+
 #endif /* _VECTOR_H_ */
