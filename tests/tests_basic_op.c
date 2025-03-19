@@ -68,6 +68,24 @@ void test_norm(void) {
     free(v);
 }
 
+void test_sub_v_v(void) {
+    uint64_t m = 300;
+    vector *v = init_vector(m);
+    vector *w = init_vector(m);
+    for (uint64_t i = 0; i < m; i++) {
+        v->values[i] = (double)rand() / 2.0;
+        w->values[i] = (double)rand() / 2.0;
+    }
+    vector *z = init_vector(m);
+    sub_v_v(v, w, z);
+    for (uint64_t i = 0; i < m; i++) {
+        CU_ASSERT_DOUBLE_EQUAL(z->values[i], v->values[i] - w->values[i], 1e-3);
+    }
+    free(v);
+    free(w);
+    free(z);
+}
+
 int main(int argc, char **argv) {
     srand(time(NULL));
     if (CUE_SUCCESS != CU_initialize_registry()) {
@@ -80,7 +98,8 @@ int main(int argc, char **argv) {
     }
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
         (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
-        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)) {
+        (CU_add_test(test_basic_op, "norm", test_norm) == NULL) ||
+        (CU_add_test(test_basic_op, "sub_v_v",test_sub_v_v) == NULL)){
         CU_cleanup_registry();
         return CU_get_error();
     }
