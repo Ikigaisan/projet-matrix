@@ -42,6 +42,9 @@ void print_vector(vector *);
  */
 void add_v_v(vector *, vector *, vector *);
 
+
+
+
 /**
  * Calcule la soustraction de deux vecteurs
  *
@@ -67,5 +70,8 @@ void sub_v_v(vector *, vector *, vector *);
  * 
  */
 void dot_prod(vector *, vector *, double *);
+
+void norm(vector *, double *);
+
 
 #endif /* _VECTOR_H_ */

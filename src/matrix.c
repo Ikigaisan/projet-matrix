@@ -28,7 +28,9 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "Problème lors de l'allocation de l'espace mémoire pour une "
                 "matrice : %s\n",
                 strerror(errno));
+
             free(A->values);
+
             free(A);
             exit(EXIT_FAILURE);
         }
@@ -76,7 +78,9 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
     }
 }
 
+
 void sub_m_m(matrix *A, matrix *B, matrix *C) {
+
     uint64_t m = A->m;
     uint64_t n = A->n;
     for (uint64_t i = 0; i < m; i++) {
@@ -85,6 +89,7 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
         }
     }
 }
+
 
 void free_matrix(matrix *A){
     if(A != NULL){
@@ -95,3 +100,4 @@ void free_matrix(matrix *A){
         free(A);
     }
 }
+
