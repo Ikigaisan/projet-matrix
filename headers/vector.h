@@ -71,6 +71,15 @@ void sub_v_v(vector *, vector *, vector *);
  */
 void dot_prod(vector *, vector *, double *);
 
+
+/**
+ * Calcule la norme d'un vecteur
+ * 
+ * @param vector* le vecteur dont on calcule la norme
+ * @param double* result Pointeur dnas lequel stocker la valeur de la norme
+ * 
+ * 
+ */
 void norm(vector *, double *);
 
 

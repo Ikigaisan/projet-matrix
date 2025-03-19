@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../headers/vector.h"
 
 #include "vector.h"
 
@@ -67,5 +68,35 @@ void sub_m_m(matrix *, matrix *, matrix *);
  * @param matrix* A, la matrice à free
  */
 void free_matrix(matrix *);
+
+
+/** 
+ * Calcule la multiplication de 2 matrices 
+ * 
+ * @param matrix* A la première matrice  
+ * @param matrix* B la deuxième matrice
+ * @param matrix* C une matrice avec des valeurs quelconques dans laquelle la
+ * multiplication de A avec B sera stockée
+ * 
+ * @result C = A * B
+*/
+void mult_m_m(matrix *A, matrix *B, matrix *C);
+/**
+ * Calcule la transposée d'une matrice
+ * 
+ * @param matrix* A la matrice à transposer
+ */
+void transp(matrix*A);
+
+/**
+ * Calcule la multiplication entre deux matrices.
+ * 
+ * @param matrix* A la matrice à multiplier
+ * @param vector* B le vecteur à multiplier
+ * 
+ * @returns A*B
+ */
+void mult_m_v(matrix *A, vector *B, vector *C);
+
 
 #endif /* _MATRIX_H_ */

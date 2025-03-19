@@ -1,7 +1,6 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 
-
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
     if (A == NULL) {
@@ -21,7 +20,6 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 strerror(errno));
 
         free(A);
->>>>>>> src/matrix.c
         exit(EXIT_FAILURE);
     }
     for (uint64_t i = 0; i < m; i++) {
@@ -32,15 +30,8 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "Problème lors de l'allocation de l'espace mémoire pour une "
                 "matrice : %s\n",
                 strerror(errno));
-<<<<<<< src/matrix.c
             free(A->values);
             free(A);    
-=======
-
-            free(A->values);
-
-            free(A);
->>>>>>> src/matrix.c
             exit(EXIT_FAILURE);
         }
         for (uint64_t j = 0; j < n; j++) {
@@ -86,14 +77,7 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
         }
     }
 }
-<<<<<<< src/matrix.c
 void sub_m_m(matrix *A, matrix *B, matrix *C) {
-=======
-
-
-void sub_m_m(matrix *A, matrix *B, matrix *C) {
-
->>>>>>> src/matrix.c
     uint64_t m = A->m;
     uint64_t n = A->n;
     for (uint64_t i = 0; i < m; i++) {
@@ -103,7 +87,7 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
     }
 }
 
-<<<<<<< src/matrix.c
+
 void mult_m_v(matrix *A, vector *B, vector *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
@@ -115,7 +99,7 @@ void mult_m_v(matrix *A, vector *B, vector *C) {
         C->values[i] = res;
     }
 }
-=======
+
 
 void free_matrix(matrix *A){
     if(A != NULL){
@@ -127,4 +111,5 @@ void free_matrix(matrix *A){
     }
 }
 
->>>>>>> src/matrix.c
+void lstsq(matrix *A, vector *b){}
+
