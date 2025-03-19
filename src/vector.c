@@ -53,12 +53,17 @@ void sub_v_v(vector *x, vector *y, vector *z) {
     }
 }
 
-void dot_prod(vector *x, vector *y, vector *z) {
-    uint64_t m = x->m;
-    for (uint64_t i = 0; i < m; i++) {
-        z->values[i] = x->values[i] * y->values[i];
+void dot_prod(vector *x, vector *y, double *result){
+    *result = 0.0;
+    if(x->m != y->m){
+        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
+        return;
+    }
+    for(uint64_t i = 0; i<x->m; i++){
+        *result += x->values[i] * y->values[i];
     }
 }
+
 
 void norm(vector *x, double *result){
     if (!x || !x->values || !result) {
@@ -72,6 +77,4 @@ void norm(vector *x, double *result){
     }
     *result = sqrt(s); 
 }
-
-
 
