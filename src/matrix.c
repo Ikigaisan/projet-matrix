@@ -1,4 +1,5 @@
 #include "../headers/matrix.h"
+#include "../headers/vector.h"
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
@@ -101,3 +102,4 @@ void free_matrix(matrix *A){
     }
 }
 
+void lstsq(matrix *A, vector *b)
