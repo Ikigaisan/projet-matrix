@@ -1,4 +1,5 @@
 #include "../headers/vector.h"
+#include <math.h>
 
 vector *init_vector(uint64_t m) {
     vector *v = (vector *)malloc(sizeof(vector));
@@ -60,13 +61,13 @@ void dot_prod(vector *x, vector *y, vector *z) {
     }
 }
 
-void norm(vector *x, vector *y){
-    uint64_t s = 0;
+void norm(vector *x){
+    double s = 0.0;
     uint64_t m = x->m;
     for (uint64_t i = 0; i < m; i++){
-        s += (x->values[i] - y->values[i]) * (x->values[i] - y->values[i]);
+        s += x->values[i]* x->values[i];
     }
-    uint64_t n = (uint64_t)sqrt(s); 
+    double n = sqrt(s); 
 }
 
 
