@@ -1,10 +1,10 @@
 #include <CUnit/Basic.h>
 #include <CUnit/CUnit.h>
 #include <time.h>
+#include <math.h>
 
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
-
 #include "../headers/file.h"
 
 void test_add_v_v(void) {
@@ -49,6 +49,29 @@ void test_add_m_m(void) {
     free(C);
 }
 
+void test_norm(void) {
+    uint64_t m = 5;
+    vector *v = init_vector(m);
+    vector *w = init_vector(m);
+    
+    double values1[] = {1.0, 2.0, 3.0, 4.0, 5.0};
+    double values2[] = {5.0, 4.0, 3.0, 2.0, 1.0};
+    
+    for (uint64_t i = 0; i < m; i++) {
+        v->values[i] = values1[i];
+        w->values[i] = values2[i];
+    }
+    
+    uint64_t expected_norm = (uint64_t)sqrt(16 + 4 + 0 + 4 + 16);
+    uint64_t computed_norm;
+    norm(v, w, &computed_norm);
+    
+    CU_ASSERT_EQUAL(computed_norm, expected_norm);
+    
+    free(v);
+    free(w);
+}
+
 int main(int argc, char **argv) {
     srand(time(NULL));
     if (CUE_SUCCESS != CU_initialize_registry()) {
@@ -60,7 +83,8 @@ int main(int argc, char **argv) {
         return CU_get_error();
     }
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
-        (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL)) {
+        (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
+        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)) {
         CU_cleanup_registry();
         return CU_get_error();
     }
