@@ -64,4 +64,17 @@ void sub_m_m(matrix *, matrix *, matrix *);
  */
 void free_matrix(matrix *);
 
+
+/** 
+ * Calcule la multiplication de 2 matrices 
+ * 
+ * @param matrix* A la première matrice  
+ * @param matrix* B la deuxième matrice
+ * @param matrix* C une matrice avec des valeurs quelconques dans laquelle la
+ * multiplication de A avec B sera stockée
+ * 
+ * @result C = A * B
+*/
+void mult_m_m(matrix *A, matrix *B, matrix *C);
+
 #endif /* _MATRIX_H_ */
