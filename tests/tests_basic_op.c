@@ -140,33 +140,27 @@ void test_sub_m_m(void) {
 
 
 void test_dot_prod(void){
-    vector *x = init_vector(3);
-    vector *y = init_vector(3);
-    x->values[0] = 1;
-    x-> values[1] = 2;
-    x->values[2] = 3;
-    y->values[0] = 1;
-    y-> values[1] = 3;
-    y->values[2] = 4;
+    uint64_t m = 100;
+    vector *x = init_vector(m);
+    vector *y = init_vector(m);
 
-    print_vector(x);
-    print_vector(y);
+    for (uint64_t i = 0; i < m; i++) {
+        x->values[i] = (double)rand() / 2.0; 
+        y->values[i] = (double)rand() / 2.0; 
+    }
 
     double result = 0.0;
     dot_prod(x, y, &result);
-    CU_ASSERT_EQUAL(result, 19);
 
-
-    for(u_int64_t i = 0; i<3; i++){
-        x->values[i] = 0;
-        y->values[i] = 0;
+    double expected_result = 0.0;
+    for (uint64_t i = 0; i < m; i++) {
+        expected_result += x->values[i] * y->values[i];
     }
-    dot_prod(x, x, &result);
-    CU_ASSERT_EQUAL(result, 0);
+
+    CU_ASSERT_DOUBLE_EQUAL(result, expected_result, 1e-6);
 
     free_vector(x);
     free_vector(y);
-
 }
 
 
