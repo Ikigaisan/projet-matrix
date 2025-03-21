@@ -69,8 +69,25 @@ void print_matrix(matrix *A) {
 }
 
 void add_m_m(matrix *A, matrix *B, matrix *C) {
+    if (A->values == NULL) {
+        fprintf(stderr, "Erreur : Mémoire non allouée pour A->values\n");
+        exit(EXIT_FAILURE);
+    }
+    if (B->values == NULL) {
+        fprintf(stderr, "Erreur : Mémoire non allouée pour B->values\n");
+        exit(EXIT_FAILURE);
+    }
+    if (C->values == NULL) {
+        fprintf(stderr, "Erreur : Mémoire non allouée pour C->values\n");
+        exit(EXIT_FAILURE);
+    }
     uint64_t m = A->m;
     uint64_t n = A->n;
+    if(m != B->m || n != B-> n){
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) B(%llu x %llu)\n", m, n, B->m, B->n);
+        exit(EXIT_FAILURE);
+    }
+
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < n; j++) {
             C->values[i][j] = A->values[i][j] + B->values[i][j];
@@ -80,6 +97,12 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
 void sub_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
+
+    if(m != B->m || n != B-> n){
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) B(%llu x %llu)\n", m, n, B->m, B->n);
+        exit(EXIT_FAILURE);
+    }
+
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < n; j++) {
             C->values[i][j] = A->values[i][j] - B->values[i][j];
@@ -91,6 +114,14 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
 void mult_m_v(matrix *A, vector *B, vector *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
+    if(n != B->m){
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) et B(%llu)\n", m, n, B->m);
+        exit(EXIT_FAILURE);
+    }
+    if(m != C->m){
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) et C(%llu)\n", m, n, C->m);
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < m; i++) {
         double res = 0;
         for (int j = 0; j < n; j++) {
@@ -99,6 +130,59 @@ void mult_m_v(matrix *A, vector *B, vector *C) {
         C->values[i] = res;
     }
 }
+
+void mult_m_m(matrix *A, matrix *B, matrix *C){
+    uint64_t m = A->m;
+    uint64_t n = A->n;
+    uint64_t o = B->n;
+
+    if (A->n != B->m) {
+        fprintf(stderr, "Erreur: Dimensions incompatibles A(%llu x %llu) et B(%llu x %llu)\n",
+                A->m, A->n, B->m, B->n);
+        exit(EXIT_FAILURE);
+    }
+
+    // Initialisation de la matrice C à 0
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < o; j++) {
+            C->values[i][j] = 0;
+        }
+    }
+
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < o; j++) {
+            for (uint64_t k = 0; k < n; k++) {
+                C->values[i][j] += A->values[i][k] * B->values[k][j];  
+            }
+        }
+    }
+}
+
+void transp(matrix*A){
+    uint64_t m = A->m;
+    uint64_t n = A->n;
+
+    matrix *T = init_matrix(n, m);
+
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            T->values[j][i] = A->values[i][j];
+        }
+    }
+
+    for (uint64_t i = 0; i < m; i++) {
+        free(A->values[i]);
+    }
+    free(A->values);
+
+    A->m = n;
+    A->n = m;
+    A->values = T->values;
+
+    free(T);
+
+}
+
 
 
 void free_matrix(matrix *A){
