@@ -82,5 +82,10 @@ void dot_prod(vector *, vector *, double *);
  */
 void norm(vector *, double *);
 
+/**
+ * Free correctement le vecteur.
+ */
+void free_vector(vector *);
+
 
 #endif /* _VECTOR_H_ */

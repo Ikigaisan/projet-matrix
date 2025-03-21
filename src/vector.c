@@ -80,6 +80,7 @@ void dot_prod(vector *x, vector *y, double *result){
 }
 
 
+
 void norm(vector *x, double *result){
     if (!x || !x->values || !result) {
         fprintf(stderr, "Erreur : pointeur NULL détecté dans norm()\n");
@@ -92,4 +93,10 @@ void norm(vector *x, double *result){
     }
     *result = sqrt(s); 
 }
+
+void free_vector(vector *x) {
+    free(x->values);
+    free(x);
+}
+
 

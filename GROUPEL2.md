@@ -2,10 +2,10 @@
 
 
 ## Fonctions simples :
-- Soustraction entre deux vecteurs : Emma
-- Soustraction entre deux matrices : Emma
-- Produit scalaires entre deux vecteurs : Emma
-- Norme euclidienne entre 2 vecteurs : Marthe
+- Soustraction entre deux vecteurs : Emma TESTE
+- Soustraction entre deux matrices : Emma TESTE
+- Produit scalaires entre deux vecteurs : Emma TESTE
+- Norme euclidienne entre 2 vecteurs : Marthe TESTE
 - Multiplication entre deux matrices : Clara
 - Multiplication entre un vecteur et une matrice : Aymeric
 - Transposée d'une matrice : Oscar
