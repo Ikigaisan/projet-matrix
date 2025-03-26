@@ -31,7 +31,10 @@ int main() {
     CU_initialize_registry();
 
     CU_pSuite suite = CU_add_suite("File_Test_Suite", 0, 0);
-    CU_add_test(suite, "test_write_double", test_write_double);
+    if(CU_add_test(suite, "test_write_double", test_write_double) == NULL){
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
 
     CU_basic_run_tests();
     CU_cleanup_registry();
