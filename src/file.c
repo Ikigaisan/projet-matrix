@@ -57,7 +57,7 @@ matrix *read_matrix(FILE *file){
         exit(EXIT_FAILURE);
     }
 
-    u_int64_t rows, cols;
+    uint64_t rows, cols;
 
     if(fread(&rows, sizeof(uint64_t), 1, file) != 1 ||
     fread(&cols, sizeof(uint64_t), 1, file) != 1){
