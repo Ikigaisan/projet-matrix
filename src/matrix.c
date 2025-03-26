@@ -1,4 +1,5 @@
 #include "../headers/matrix.h"
+#include "../headers/vector.h"
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
@@ -17,6 +18,7 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "Problème lors de l'allocation de l'espace mémoire pour une "
                 "matrice : %s\n",
                 strerror(errno));
+                free(A);
         exit(EXIT_FAILURE);
     }
     for (uint64_t i = 0; i < m; i++) {
@@ -27,6 +29,7 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "Problème lors de l'allocation de l'espace mémoire pour une "
                 "matrice : %s\n",
                 strerror(errno));
+                free(A->values);
             exit(EXIT_FAILURE);
         }
         for (uint64_t j = 0; j < n; j++) {
@@ -34,6 +37,44 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
         }
     }
     return A;
+}
+
+vector *init_vector(uint64_t m) {
+    vector *v = (vector *)malloc(sizeof(vector));
+    if (v == NULL) {
+        fprintf(
+            stderr,
+            "Problème lors de l'allocation de l'espace mémoire pour un vecteur "
+            ": %s\n",
+            strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    v->m = m;
+    v->values = (double *)malloc(m * sizeof(double));
+    if (v->values == NULL) {
+        fprintf(
+            stderr,
+            "Problème lors de l'allocation de l'espace mémoire pour un vecteur "
+            ": %s\n",
+            strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    for (uint64_t i = 0; i < m; i++) {
+        v->values[i] = 0;
+    }
+    return v;
+}
+
+void print_vector(vector *v) {
+    if (v->m == 0) {
+        printf("[]\n");
+        return;
+    }
+    printf("[%f", v->values[0]);
+    for (uint64_t i = 1; i < v->m; i++) {
+        printf(" %f", v->values[i]);
+    }
+    printf("]\n");
 }
 
 void print_matrix(matrix *A) {
@@ -70,5 +111,18 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
         for (uint64_t j = 0; j < n; j++) {
             C->values[i][j] = A->values[i][j] + B->values[i][j];
         }
+    }
+}
+
+void back_sub(vector*b, matrix *U, vector*x){
+    uint64_t m = b->m;
+    for (uint64_t i =0; i < m; i++ ){
+        x -> values[i] =  b -> values[i];
+    }
+    for (uint64_t i = m-1; i >= 0; i--){
+        for (uint64_t j = m-1; j > i; j--){
+            x -> values[i] -= U->values[i][j] * x->values[j]; 
+        }
+        x-> values[i] /= U->values[i][i];
     }
 }

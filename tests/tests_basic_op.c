@@ -49,6 +49,48 @@ void test_add_m_m(void) {
     free(C);
 }
 
+void test_back_sub(void) {
+    uint64_t m = 3;
+    vector *b = init_vector(m);
+    vector *x = init_vector(m);
+    matrix *U = init_matrix(m, m);
+
+    // Initialisation de la matrice triangulaire supérieure U
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < m; j++) {
+            U->values[i][j] = (i <= j) ? (double)(rand() % 10 + 1) : 0.0;
+        }
+    }
+
+    // Initialisation du vecteur b
+    for (uint64_t i = 0; i < m; i++) {
+        b->values[i] = (double)(rand() % 10 + 1);
+    }
+
+    // Exécution de la substitution arrière
+    back_sub(b, U, x);
+
+    // Vérification des résultats avec une tolérance
+    vector *expected_x = init_vector(m);
+    for (int64_t i = m - 1; i >= 0; i--) {
+        expected_x->values[i] = b->values[i];
+        for (uint64_t j = i + 1; j < m; j++) {
+            expected_x->values[i] -= U->values[i][j] * expected_x->values[j];
+        }
+        expected_x->values[i] /= U->values[i][i];
+    }
+
+    for (uint64_t i = 0; i < m; i++) {
+        CU_ASSERT_DOUBLE_EQUAL(x->values[i], expected_x->values[i], 1e-3);
+    }
+
+    // Libération de la mémoire
+    free(b);
+    free(x);
+    free(U);
+    free(expected_x);
+}
+
 int main(int argc, char **argv) {
     srand(time(NULL));
     if (CUE_SUCCESS != CU_initialize_registry()) {
