@@ -39,44 +39,6 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
     return A;
 }
 
-vector *init_vector(uint64_t m) {
-    vector *v = (vector *)malloc(sizeof(vector));
-    if (v == NULL) {
-        fprintf(
-            stderr,
-            "Problème lors de l'allocation de l'espace mémoire pour un vecteur "
-            ": %s\n",
-            strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-    v->m = m;
-    v->values = (double *)malloc(m * sizeof(double));
-    if (v->values == NULL) {
-        fprintf(
-            stderr,
-            "Problème lors de l'allocation de l'espace mémoire pour un vecteur "
-            ": %s\n",
-            strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-    for (uint64_t i = 0; i < m; i++) {
-        v->values[i] = 0;
-    }
-    return v;
-}
-
-void print_vector(vector *v) {
-    if (v->m == 0) {
-        printf("[]\n");
-        return;
-    }
-    printf("[%f", v->values[0]);
-    for (uint64_t i = 1; i < v->m; i++) {
-        printf(" %f", v->values[i]);
-    }
-    printf("]\n");
-}
-
 void print_matrix(matrix *A) {
     if (A->m == 0) {
         printf("[[]]\n");
@@ -119,8 +81,11 @@ void back_sub(vector*b, matrix *U, vector*x){
     for (uint64_t i =0; i < m; i++ ){
         x -> values[i] =  b -> values[i];
     }
-    for (uint64_t i = m-1; i >= 0; i--){
-        for (uint64_t j = m-1; j > i; j--){
+    if (m<=1){
+        return;
+    }
+    for (int64_t i = m-1; i >= 0; i--){ //pas mettre uint64_t car le u impose que u tjrs positif
+        for (int64_t j = m-1; j > i; j--){
             x -> values[i] -= U->values[i][j] * x->values[j]; 
         }
         x-> values[i] /= U->values[i][i];

@@ -101,11 +101,13 @@ int main(int argc, char **argv) {
         CU_cleanup_registry();
         return CU_get_error();
     }
+
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
-        (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL)) {
-        CU_cleanup_registry();
-        return CU_get_error();
-    }
+    (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
+    (CU_add_test(test_basic_op, "back_sub", test_back_sub) == NULL)) {
+    CU_cleanup_registry();
+    return CU_get_error();}
+
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
     CU_basic_show_failures(CU_get_failure_list());
