@@ -1,6 +1,9 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 
+#include <float.h>
+#include <math.h>
+
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
     if (A == NULL) {
@@ -78,16 +81,51 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
 
 void back_sub(vector*b, matrix *U, vector*x){
     uint64_t m = b->m;
+    uint64_t infinité = 0;
     for (uint64_t i =0; i < m; i++ ){
         x -> values[i] =  b -> values[i];
     }
-    if (m<=1){
+    // Cas particulier d'une seule inconnue
+    if (m == 1) {
+        if (fabs(U->values[0][0]) < DBL_EPSILON) {
+            if (fabs(b->values[0]) < DBL_EPSILON) {
+                // Infinité de solutions : assigner une valeur arbitraire
+                x->values[0] = 1.0;
+                fprintf(stderr, "Infinité de solutions\n");
+            } else {
+                // Aucune solution : division par zéro
+                fprintf(stderr, "Aucune solution\n");
+                //exit(1);
+                return;
+            }
+        } else {
+            // Cas standard : on résout x[0] = b[0] / U[0][0]
+            x->values[0] = b->values[0] / U->values[0][0];
+        }
+        return;
+    }
+    if (m<1){
+        fprintf(stderr, "La matrice n'est pas valide.\n");
         return;
     }
     for (int64_t i = m-1; i >= 0; i--){ //pas mettre uint64_t car le u impose que u tjrs positif
         for (int64_t j = m-1; j > i; j--){
             x -> values[i] -= U->values[i][j] * x->values[j]; 
         }
+        if (fabs(U->values[i][i]) < DBL_EPSILON){ //çad =0
+            if (fabs(x-> values[i]) < DBL_EPSILON){
+                x-> values[i] = 1; //valeur aléatoire car infinité de solutions
+                infinité ++;
+            }
+            else {
+                fprintf(stderr, "Aucune solution\n");
+                return;
+                //exit(1);
+            }
+        }
         x-> values[i] /= U->values[i][i];
+    }
+    if (infinité>0){
+        fprintf(stderr, "Infinité de solutions\n");
     }
 }
