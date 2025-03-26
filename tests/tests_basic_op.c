@@ -180,7 +180,9 @@ void test_mult_m_m(void){
     }
 
     matrix *C = init_matrix(m,p);
+    printf("Avant l'appel à mult_m_m\n");
     mult_m_m(A, B, C);
+    printf("Après l'appel à mult_m_m\n");
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < p; j++) {
             double expected = 0;
