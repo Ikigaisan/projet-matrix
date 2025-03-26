@@ -177,26 +177,25 @@ void test_mult_m_m(void){
     for (uint64_t i = 0; i < n; i++) {
         for (uint64_t j = 0; j < p; j++) {
             B->values[i][j] = (double)rand() / 2.0;
+        }
     }
 
     matrix *C = init_matrix(m,p);
-    printf("Avant l'appel à mult_m_m\n");
     mult_m_m(A, B, C);
-    printf("Après l'appel à mult_m_m\n");
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < p; j++) {
             double expected = 0;
             for (uint64_t k = 0; k < n; k++) {
                 expected += A->values[i][k] * B->values[k][j];
             }
-            CU_ASSERT_DOUBLE_EQUAL(C->values[i][j], expected, 1e-3);
+            CU_ASSERT_DOUBLE_EQUAL(C->values[i][j], expected, 1e-6);
         }
     }
     free_matrix(A);
     free_matrix(B);
     free_matrix(C);
 }
-}
+
 
 void test_transp(void){
     uint64_t m = 100;
