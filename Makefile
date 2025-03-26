@@ -48,3 +48,5 @@ clean:
 	rm -f main
 	rm -f generator_matrix
 	rm -f generator_vector
+	rm -f test_file
+	rm -f test.bin
