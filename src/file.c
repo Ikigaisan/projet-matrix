@@ -45,7 +45,7 @@ void write_vector(vector *v, FILE *file){
         exit(EXIT_FAILURE);
     }
 
-    if(fwrite(v->values, sizeof(double), v->m, file) != 1){
+    if(fwrite(v->values, sizeof(double), v->m, file) != v->m){
         fprintf(stderr, "Erreur lors de l'écriture dans lefichier. \n");
         exit(EXIT_FAILURE);
     }
