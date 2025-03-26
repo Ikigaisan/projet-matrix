@@ -231,8 +231,13 @@ int main(int argc, char **argv) {
     }
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
         (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
-        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)|| CU_add_test(test_basic_op, "sub_m_m", test_sub_m_m) == NULL ||
-        (CU_add_test(test_basic_op, "sub_v_v",test_sub_v_v) == NULL)|| (CU_add_test(test_basic_op, "dot_prod",test_dot_prod) == NULL)){
+        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)|| 
+        (CU_add_test(test_basic_op, "sub_m_m", test_sub_m_m) == NULL) ||
+        (CU_add_test(test_basic_op, "sub_v_v",test_sub_v_v) == NULL) || 
+        (CU_add_test(test_basic_op, "dot_prod",test_dot_prod) == NULL) ||
+        (CU_add_test(test_basic_op, "mult_m_m", test_mult_m_m) == NULL) ||
+        (CU_add_test(test_basic_op, "mult_m_v", test_mult_m_v) == NULL) ||
+        (CU_add_test(test_basic_op, "transp", test_transp) == NULL)){
         CU_cleanup_registry();
         return CU_get_error();
     }
