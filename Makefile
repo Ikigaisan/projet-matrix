@@ -52,3 +52,5 @@ clean:
 	rm -f test.bin
 	rm -f vector.bin
 	rm -f test
+	rm -f double.bin
+	rm -f matrix.bin

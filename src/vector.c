@@ -19,7 +19,7 @@ vector *init_vector(uint64_t m) {
             "Problème lors de l'allocation de l'espace mémoire pour un vecteur "
             ": %s\n",
             strerror(errno));
-        free(v);
+        free_vector(v);
         exit(EXIT_FAILURE);
     }
     for (uint64_t i = 0; i < m; i++) {
