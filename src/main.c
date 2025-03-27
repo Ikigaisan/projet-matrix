@@ -279,7 +279,7 @@ int main(int argc, char **argv) {
         mult_m_m(A, B, Result);
         
         if(args->output_stream == stdout){
-            print("Resultat de la multiplication :\n");
+            printf("Resultat de la multiplication :\n");
             print_matrix(Result);
         }
         free_matrix(A);
