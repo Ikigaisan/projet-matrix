@@ -120,7 +120,6 @@ void back_sub(vector*b, matrix *U, vector*x){
             else {
                 fprintf(stderr, "Aucune solution\n");
                 return;
-                //exit(1);
             }
         }
         x-> values[i] /= U->values[i][i];
