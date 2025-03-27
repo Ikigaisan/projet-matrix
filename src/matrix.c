@@ -42,12 +42,10 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
 void free_matrix(matrix *A) {
     if (A == NULL) return;
 
-    // Libération des lignes
     for (uint64_t i = 0; i < A->m; i++) {
         free(A->values[i]);
     }
 
-    // Libération du tableau de pointeurs et de la structure
     free(A->values);
     free(A);
 }
