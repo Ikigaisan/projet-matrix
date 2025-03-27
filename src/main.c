@@ -252,7 +252,7 @@ int main(int argc, char **argv) {
     } else if(strcmp(args->op, "norm") == 0) {
         vector *a = read_vector(args->input_file_A);
         if(args->verbose) {
-            print("Vector a :\n");
+            printf("Vector a :\n");
             print_vector(a);
         }
 
@@ -275,7 +275,7 @@ int main(int argc, char **argv) {
             printf("Matrix B : \n");
             print_matrix(B);
         }
-        matrix *Result;
+        matrix *Result = init_matrix(A->m, B->n);
         mult_m_m(A, B, Result);
         
         if(args->output_stream == stdout){
