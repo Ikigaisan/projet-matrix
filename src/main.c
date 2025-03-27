@@ -112,8 +112,9 @@ int parse_args(args_t *args, int argc, char **argv) {
     if (strcmp(args->op, "add_v_v") == 0 || strcmp(args->op, "sub_v_v") == 0 ||
         strcmp(args->op, "dot_prod") == 0 || strcmp(args->op, "add_m_m") == 0 ||
         strcmp(args->op, "sub_m_m") == 0 || strcmp(args->op, "mult_m_v") == 0 ||
-        strcmp(args->op, "mult_m_m") == 0 ||
-        strcmp(args->op, "back_sub") == 0 || strcmp(args->op, "lstsq") == 0) {
+        strcmp(args->op, "mult_m_m") == 0 || strcmp(args->op, "norm") == 0 ||
+        strcmp(args->op, "back_sub") == 0 || strcmp(args->op, "lstsq") == 0 ||
+        strcmp(args->op, "QR") == 0) {
         if (optind == argc) {
             fprintf(stderr,
                     "Vous devez fournir un second fichier d'instance pour "
@@ -156,9 +157,9 @@ int main(int argc, char **argv) {
         } else {
             write_vector(z, args->output_stream);
         }
-        free(x);
-        free(y);
-        free(z);
+        free_vector(x);
+        free_vector(y);
+        free_vector(z);
     }if (strcmp(args->op, "sub_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
         if (args->verbose) {
@@ -177,9 +178,9 @@ int main(int argc, char **argv) {
         } else {
             write_vector(z, args->output_stream);
         }
-        free(x);
-        free(y);
-        free(z);
+        free_vector(x);
+        free_vector(y);
+        free_vector(z);
     } else if (strcmp(args->op, "add_m_m") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
@@ -198,9 +199,9 @@ int main(int argc, char **argv) {
         } else {
             write_matrix(C, args->output_stream);
         }
-        free(A);
-        free(B);
-        free(C);
+        free_matrix(A);
+        free_matrix(B);
+        free_matrix(C);
     }else if (strcmp(args->op, "sub_m_m") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
@@ -219,9 +220,9 @@ int main(int argc, char **argv) {
         } else {
             write_matrix(C, args->output_stream);
         }
-        free(A);
-        free(B);
-        free(C);
+        free_matrix(A);
+        free_matrix(B);
+        free_matrix(C);
     }else if (strcmp(args->op, "dot_prod") == 0) {
         // Lire les deux vecteurs
         vector *x = read_vector(args->input_file_A);
@@ -246,9 +247,46 @@ int main(int argc, char **argv) {
             write_double(result, args->output_stream);
         }        
 
-        free(x);
-        free(y);
-    } else {
+        free_vector(x);
+        free_vector(y);
+    } else if(strcmp(args->op, "norm") == 0) {
+        vector *a = read_vector(args->input_file_A);
+        if(args->verbose) {
+            print("Vector a :\n");
+            print_vector(a);
+        }
+
+        double result;
+        norm(a, &result);
+        if(args->output_stream == stdout) {
+            printf("Norme : %f\n", result);
+        }else {
+            write_double(result, args-> output_stream);
+        }
+    }else if(strcmp(args->op,"mult_m_") == 0) {
+        matrix *A = read_matrix(args->input_file_A);
+        if (args->verbose) {
+            printf("Matrix A : \n");
+            print_matrix(A);
+        }
+
+        matrix *B = read_matrix(args->input_file_B);
+        if (args->verbose) {
+            printf("Matrix B : \n");
+            print_matrix(B);
+        }
+        matrix *Result;
+        mult_m_m(A, B, Result);
+        
+        if(args->output_stream == stdout){
+            print("Resultat de la multiplication :\n");
+            print_matrix(Result);
+        }
+        free_matrix(A);
+        free_matrix(B);
+        free_matrix(Result);
+
+    }else {
         fprintf(stderr, "Cette opération n'est pas implémentée...\n");
         exit(EXIT_FAILURE);
     }
