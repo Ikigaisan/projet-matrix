@@ -8,7 +8,7 @@
 #include "../headers/file.h"
 
 void test_write_double(void) {
-    FILE *file = fopen("test.bin", "wb");
+    FILE *file = fopen("double.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
     
     double value = 3.14;
@@ -17,7 +17,7 @@ void test_write_double(void) {
     fclose(file);
     
     // Vérification du fichier
-    file = fopen("test.bin", "rb");
+    file = fopen("double.bin", "rb");
     CU_ASSERT_PTR_NOT_NULL(file);
     
     double read_value;
@@ -27,7 +27,7 @@ void test_write_double(void) {
     fclose(file);
 }
 
-void test_read_vector(void) {
+void test_write_read_vector(void) {
     FILE *file = fopen("vector.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
@@ -52,25 +52,31 @@ void test_read_vector(void) {
     free_vector(v_read);
 }
 
-void test_write_vector(){
-    FILE *file = fopen("vector.bin", "wb");
+void test_write_read_matrix(){
+    FILE *file = fopen("matrix.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
-    vector *a = init_vector((uint64_t) 100);
+    matrix *A = init_matrix(100, 100);
 
     for(uint64_t i = 0; i<100; i++){
-        a->values[i] = (double) rand()/2;
+        for(uint64_t j = 0; j < 100; j++){
+            A->values[i][j] = (double)rand()/2;
+        }
+        
     }
-    write_vector(a, file);
+    write_matrix(A, file);
     fclose(file);
 
-    file = fopen("vector.bin", "rb");
+    file = fopen("matrix.bin", "rb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
-    vector *v_read = read_vector(file);
+    matrix *M_read = read_matrix(file);
 
     for(uint64_t i =0 ; i<100; i++){
-        CU_ASSERT_DOUBLE_EQUAL(v_read->values[i], a->values[i], 1e-3);
+        for(uint64_t j = 0; j<100; j++){
+            CU_ASSERT_DOUBLE_EQUAL(M_read->values[i][j], A->values[i][j], 1e-3);
+        }
+        
     }
     fclose(file);
 
@@ -81,7 +87,7 @@ int main() {
 
     CU_pSuite suite = CU_add_suite("File_Test_Suite", 0, 0);
     if(CU_add_test(suite, "test_write_double", test_write_double) == NULL ||
-    CU_add_test(suite, "test_write_vector", test_write_vector) == NULL){
+    CU_add_test(suite, "test_write_vector", test_write_read_matrix) == NULL){
         CU_cleanup_registry();
         return CU_get_error();
     }

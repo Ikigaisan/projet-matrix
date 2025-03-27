@@ -50,3 +50,5 @@ clean:
 	rm -f generator_vector
 	rm -f test_file
 	rm -f test.bin
+	rm -f vector.bin
+	rm -f test
