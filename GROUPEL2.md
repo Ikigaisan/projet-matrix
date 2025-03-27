@@ -2,7 +2,7 @@
 
 
 ## Fonctions simples :
-- Soustraction entre deux vecteurs : Emma TESTE
+- Soustraction entre deux vecteurs : Emma TESTE + Dans main
 - Soustraction entre deux matrices : Emma TESTE
 - Produit scalaires entre deux vecteurs : Emma TESTE
 - Norme euclidienne entre 2 vecteurs : Marthe TESTE

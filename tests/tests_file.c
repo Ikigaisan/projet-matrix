@@ -79,6 +79,8 @@ void test_write_read_matrix(){
         }
         
     }
+    free_matrix(A);
+    free_matrix(M_read);
     fclose(file);
 
 }
