@@ -7,40 +7,51 @@
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
     if (A == NULL) {
-        fprintf(stderr,
-                "Problème lors de l'allocation de l'espace mémoire pour une "
-                "matrice : %s\n",
-                strerror(errno));
+        fprintf(stderr, "Erreur d'allocation pour la matrice : %s\n", strerror(errno));
         exit(EXIT_FAILURE);
     }
     A->m = m;
     A->n = n;
     A->values = (double **)malloc(m * sizeof(double *));
     if (A->values == NULL) {
-        fprintf(stderr,
-                "Problème lors de l'allocation de l'espace mémoire pour une "
-                "matrice : %s\n",
-                strerror(errno));
-                free(A);
+        fprintf(stderr, "Erreur d'allocation pour les lignes de la matrice : %s\n", strerror(errno));
+        free(A);
         exit(EXIT_FAILURE);
     }
+
     for (uint64_t i = 0; i < m; i++) {
         A->values[i] = (double *)malloc(n * sizeof(double));
         if (A->values[i] == NULL) {
-            fprintf(
-                stderr,
-                "Problème lors de l'allocation de l'espace mémoire pour une "
-                "matrice : %s\n",
-                strerror(errno));
-                free(A->values);
+            fprintf(stderr, "Erreur d'allocation pour une ligne de la matrice : %s\n", strerror(errno));
+
+            // Libérer les lignes déjà allouées
+            for (uint64_t k = 0; k < i; k++) {
+                free(A->values[k]);
+            }
+            free(A->values);
+            free(A);
             exit(EXIT_FAILURE);
         }
-        for (uint64_t j = 0; j < n; j++) {
-            A->values[i][j] = 0;
-        }
+
+        // Initialiser les valeurs à 0
+        memset(A->values[i], 0, n * sizeof(double));
     }
     return A;
 }
+
+void free_matrix(matrix *A) {
+    if (A == NULL) return;
+
+    // Libération des lignes
+    for (uint64_t i = 0; i < A->m; i++) {
+        free(A->values[i]);
+    }
+
+    // Libération du tableau de pointeurs et de la structure
+    free(A->values);
+    free(A);
+}
+
 
 void print_matrix(matrix *A) {
     if (A->m == 0) {

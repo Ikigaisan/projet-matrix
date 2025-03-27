@@ -54,5 +54,7 @@ void add_m_m(matrix *, matrix *, matrix *);
  * @param vector* x le vecteur solution (résultat)
  */
 void back_sub(vector *b, matrix *U, vector *x);
+void free_matrix(matrix *m);
+
 
 #endif // _MATRIX_H_

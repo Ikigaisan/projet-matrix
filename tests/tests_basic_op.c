@@ -22,9 +22,9 @@ void test_add_v_v(void) {
     for (uint64_t i = 0; i < m; i++) {
         CU_ASSERT_DOUBLE_EQUAL(z->values[i], v->values[i] + w->values[i], 1e-3);
     }
-    free(v);
-    free(w);
-    free(z);
+    free_vector(v);
+    free_vector(w);
+    free_vector(z);
 }
 
 void test_add_m_m(void) {
@@ -46,9 +46,9 @@ void test_add_m_m(void) {
                                    A->values[i][j] + B->values[i][j], 1e-3);
         }
     }
-    free(A);
-    free(B);
-    free(C);
+    free_matrix(A);
+    free_matrix(B);
+    free_matrix(C);
 }
 
 void test_back_sub_identity_matrix(void) {
@@ -71,9 +71,9 @@ void test_back_sub_identity_matrix(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[i], b->values[i], 1e-3);
     }
 
-    free(b);
-    free(x);
-    free(U);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
 }
 
 void test_back_sub_diagonal_matrix(void) {
@@ -96,9 +96,9 @@ void test_back_sub_diagonal_matrix(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[i], b->values[i] / U->values[i][i], 1e-3);
     }
 
-    free(b);
-    free(x);
-    free(U);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
 }
 
 void test_back_sub_upper_triangular(void) {
@@ -131,10 +131,10 @@ void test_back_sub_upper_triangular(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[i], expected_x->values[i], 1e-3);
     }
 
-    free(b);
-    free(x);
-    free(U);
-    free(expected_x);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
+    free_vector(expected_x);
 }
 
 void test_back_sub_zero_diagonal(void) {
@@ -185,9 +185,9 @@ void test_back_sub_zero_diagonal(void) {
     }
 
     // Libération de la mémoire
-    free(b);
-    free(x);
-    free(U);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
 }
 
 void test_back_sub_zero_diagonal_inf(void) {
@@ -243,9 +243,9 @@ void test_back_sub_zero_diagonal_inf(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[1], 1.0, 1e-3);  // x[1] doit être égal à 1 si on a une infinité de solutions
     }
 
-    free(b);
-    free(x);
-    free(U);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
 }
 
 
@@ -262,9 +262,9 @@ void test_back_sub_single_element(void) {
 
     CU_ASSERT_DOUBLE_EQUAL(x->values[0], 2.0, 1e-3);
 
-    free(b);
-    free(x);
-    free(U);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
 }
 
 void test_back_sub_4x4_upper_triangular(void) {
@@ -297,10 +297,10 @@ void test_back_sub_4x4_upper_triangular(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[i], expected_x->values[i], 1e-3);
     }
 
-    free(b);
-    free(x);
-    free(U);
-    free(expected_x);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
+    free_vector(expected_x);
 }
 
 void test_back_sub_90x90_upper_triangular(void) {
@@ -335,10 +335,10 @@ void test_back_sub_90x90_upper_triangular(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[i], expected_x->values[i], 1e-3);
     }
 
-    free(b);
-    free(x);
-    free(U);
-    free(expected_x);
+    free_vector(b);
+    free_vector(x);
+    free_matrix(U);
+    free_vector(expected_x);
 }
 
 

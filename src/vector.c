@@ -8,6 +8,7 @@ vector *init_vector(uint64_t m) {
             "Problème lors de l'allocation de l'espace mémoire pour un vecteur "
             ": %s\n",
             strerror(errno));
+            free(v);
         exit(EXIT_FAILURE);
     }
     v->m = m;
@@ -26,6 +27,13 @@ vector *init_vector(uint64_t m) {
     return v;
 }
 
+void free_vector(vector *v) {
+    if (v != NULL) {
+        free(v->values);  // Libère le tableau de valeurs
+        free(v);          // Libère la structure elle-même
+    }
+}
+
 void print_vector(vector *v) {
     if (v->m == 0) {
         printf("[]\n");
@@ -40,6 +48,17 @@ void print_vector(vector *v) {
 
 void add_v_v(vector *x, vector *y, vector *z) {
     uint64_t m = x->m;
+
+    if (x == NULL || y == NULL || z == NULL) {
+        fprintf(stderr, "Erreur : l'un des vecteurs est NULL\n");
+        return;
+    }
+
+    if (x->m != y->m || x->m != z->m) {
+        fprintf(stderr, "Erreur : les tailles des vecteurs ne correspondent pas\n");
+        return;
+    }
+
     for (uint64_t i = 0; i < m; i++) {
         z->values[i] = x->values[i] + y->values[i];
     }
