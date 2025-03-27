@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../headers/vector.h"
+#include <inttypes.h>
 
+#include "../headers/vector.h"
 #include "vector.h"
 
 #ifndef _MATRIX_H_

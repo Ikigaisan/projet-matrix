@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include "../headers/file.h"
 #include "../headers/matrix.h"
 #include "../headers/vector.h"

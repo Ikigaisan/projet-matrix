@@ -1,6 +1,7 @@
 #include "../headers/file.h"
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
+#include <inttypes.h>
 
 
 void write_double(double value,FILE *file) {

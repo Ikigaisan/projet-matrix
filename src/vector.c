@@ -1,5 +1,6 @@
 #include "../headers/vector.h"
 #include <math.h>
+#include <inttypes.h>
 vector *init_vector(uint64_t m) {
     vector *v = (vector *)malloc(sizeof(vector));
     if (v == NULL) {

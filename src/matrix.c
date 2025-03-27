@@ -1,5 +1,6 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
+#include <inttypes.h>
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
@@ -84,7 +85,8 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
     if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) B(%llu x %llu)\n", m, n, B->m, B->n);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") B(%" PRIu64 " x %" PRIu64 ")\n", m, n, B->m, B->n);
+;
         exit(EXIT_FAILURE);
     }
 
@@ -99,7 +101,7 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t n = A->n;
 
     if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) B(%llu x %llu)\n", m, n, B->m, B->n);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") B(%" PRIu64 " x %" PRIu64 ")\n", m, n, B->m, B->n);
         exit(EXIT_FAILURE);
     }
 
@@ -115,11 +117,11 @@ void mult_m_v(matrix *A, vector *B, vector *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
     if(n != B->m){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) et B(%llu)\n", m, n, B->m);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 ")\n", m, n, B->m);
         exit(EXIT_FAILURE);
     }
     if(m != C->m){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) et C(%llu)\n", m, n, C->m);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < m; i++) {
@@ -137,7 +139,7 @@ void mult_m_m(matrix *A, matrix *B, matrix *C){
     uint64_t o = B->n;
 
     if (A->n != B->m) {
-        fprintf(stderr, "Erreur: Dimensions incompatibles A(%llu x %llu) et B(%llu x %llu)\n",
+        fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 " x %" PRIu64 ")\n",
                 A->m, A->n, B->m, B->n);
         exit(EXIT_FAILURE);
     }
