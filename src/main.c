@@ -114,7 +114,7 @@ int parse_args(args_t *args, int argc, char **argv) {
         strcmp(args->op, "sub_m_m") == 0 || strcmp(args->op, "mult_m_v") == 0 ||
         strcmp(args->op, "mult_m_m") == 0 || strcmp(args->op, "norm") == 0 ||
         strcmp(args->op, "back_sub") == 0 || strcmp(args->op, "lstsq") == 0 ||
-        strcmp(args->op, "QR") == 0) {
+        strcmp(args->op, "QR") == 0 || strcmp(args->op, "transp")==0) {
         if (optind == argc) {
             fprintf(stderr,
                     "Vous devez fournir un second fichier d'instance pour "
@@ -153,9 +153,14 @@ int main(int argc, char **argv) {
         vector *z = init_vector(x->m);
         add_v_v(x, y, z);
         if (args->output_stream == stdout) {
+            printf("Résultat de l'addition entre les deux vecteurs' : \n");
             print_vector(z);
         } else {
             write_vector(z, args->output_stream);
+            if(args->verbose){
+                printf("Résultat de l'addition entre les deux vecteurs' : \n");
+                print_vector(z);
+            }
         }
         free_vector(x);
         free_vector(y);
@@ -174,9 +179,14 @@ int main(int argc, char **argv) {
         vector *z = init_vector(x->m);
         sub_v_v(x, y, z);
         if (args->output_stream == stdout) {
+            printf("Résultat de la soustraction entre les deux vecteurs : \n");
             print_vector(z);
         } else {
             write_vector(z, args->output_stream);
+            if(args->verbose){
+                printf("Résultat de la soustraction entre les deux vecteurs : \n");
+                print_vector(z);
+            }
         }
         free_vector(x);
         free_vector(y);
@@ -195,9 +205,14 @@ int main(int argc, char **argv) {
         matrix *C = init_matrix(A->m, A->n);
         add_m_m(A, B, C);
         if (args->output_stream == stdout) {
+            printf("Résultat de l'addition entre les deux matrices : \n");
             print_matrix(C);
         } else {
             write_matrix(C, args->output_stream);
+            if(args->verbose){
+                printf("Résultat de l'addition entre les deux matrices': \n");
+                print_matrix(C);
+            }
         }
         free_matrix(A);
         free_matrix(B);
@@ -216,15 +231,19 @@ int main(int argc, char **argv) {
         matrix *C = init_matrix(A->m, A->n);
         sub_m_m(A, B, C);
         if (args->output_stream == stdout) {
+            printf("Résultat de la soustraction entre les deux matrices : \n");
             print_matrix(C);
         } else {
             write_matrix(C, args->output_stream);
+            if(args->verbose){
+                printf("Résultat de la soustraction entre les deux matrices : \n");
+                print_matrix(C);
+            }
         }
         free_matrix(A);
         free_matrix(B);
         free_matrix(C);
     }else if (strcmp(args->op, "dot_prod") == 0) {
-        // Lire les deux vecteurs
         vector *x = read_vector(args->input_file_A);
         if (args->verbose) {
             printf("vector x : \n");
@@ -236,15 +255,16 @@ int main(int argc, char **argv) {
             print_vector(y);
         }
 
-        // Appeler la fonction dot_prod
         double result;
         dot_prod(x, y, &result);
 
-        if(args->output_stream == stdout) {
-            // Afficher le résultat du produit scalaire
+        if(args->output_stream == stdout) {   
             printf("Produit scalaire : %f\n", result);
         } else {
             write_double(result, args->output_stream);
+            if(args->verbose){
+                printf("Résultat du produit scalaire : %f\n", result);
+            }
         }        
 
         free_vector(x);
@@ -262,8 +282,11 @@ int main(int argc, char **argv) {
             printf("Norme : %f\n", result);
         }else {
             write_double(result, args-> output_stream);
+            if(args->verbose){
+                printf("Résultat de la norme : %f\n", result);
+            }
         }
-    }else if(strcmp(args->op,"mult_m_") == 0) {
+    }else if(strcmp(args->op,"mult_m_m") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
             printf("Matrix A : \n");
@@ -281,11 +304,64 @@ int main(int argc, char **argv) {
         if(args->output_stream == stdout){
             printf("Resultat de la multiplication :\n");
             print_matrix(Result);
+        }else{
+            write_matrix(Result, args->output_stream);
+            if(args->verbose){
+                printf("Résultat de la multiplication: \n");
+                print_matrix(Result);
+            }
         }
         free_matrix(A);
         free_matrix(B);
         free_matrix(Result);
 
+    }else if (strcmp(args->op, "mult_m_v")== 0)
+    {
+        matrix *A = read_matrix(args->input_file_A);
+        if(args->verbose){
+            printf("Matrix A :\n");
+            print_matrix(A);
+        }
+
+        vector *b = read_vector(args->input_file_B);
+        if(args->verbose){
+            printf("Vector b:\n");
+            print_vector(b);
+        }
+
+        vector *result = init_vector(A->m);
+        mult_m_v(A, b, result);
+        if(args->output_stream == stdout){
+            printf("Résultat de la multiplication entre la matrice et le vecteur : \n");
+            print_vector(result);
+        }else{
+            write_vector(result, args->output_stream);
+            if(args->verbose){
+                printf("Résultat de la multiplication entre la matrice et le vecteur : \n");
+                print_vector(result);
+            }
+        }
+        free_matrix(A);
+        free_vector(b);
+        free_vector(result);
+    }else if(strcmp(args->op, "transp")== 0){
+        matrix *A = read_matrix(args->input_file_A);
+        if(args->verbose){
+            printf("Matrix A :\n");
+            print_matrix(A);
+        }
+        transp(A);
+        if(args->output_stream == stdout){
+            printf("Résultat de la transposée :\n");
+            print_matrix(A);
+        }else{
+            write_matrix(A, args->output_stream);
+            if(args->verbose){
+                printf("Résultat de la transposée : \n");
+                print_matrix(A);
+            }
+        }
+        free_matrix(A);
     }else {
         fprintf(stderr, "Cette opération n'est pas implémentée...\n");
         exit(EXIT_FAILURE);
