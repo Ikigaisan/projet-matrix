@@ -14,14 +14,14 @@ else
 endif
 
 main: main.o matrix.o vector.o
-	$(CC) -o $@ $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ)
+	$(CC) -o $@ $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ) -lm
 
 generator_matrix: matrix.o vector.o
-	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_matrix.c $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ)
+	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_matrix.c $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ) -lm
 	./$@
 
 generator_vector: matrix.o vector.o
-	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_vector.c $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ)
+	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_vector.c $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ) -lm
 	./$@
 
 main.o: $(SRC)/main.c headers/vector.h headers/matrix.h headers/file.h
@@ -34,9 +34,9 @@ matrix.o: $(SRC)/matrix.c
 	$(CC) $(CFLAGS) -o $(OBJECTS)/$@ -c $<
 
 test: tests/tests_basic_op.c vector.o matrix.o
-	$(CC) $(CFLAGS) -o test tests/tests_basic_op.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT)
+	$(CC) $(CFLAGS) -o test tests/tests_basic_op.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT) -lm
 	./test
-	$(CC) $(CFLAGS) -o test_file tests/tests_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT)
+	$(CC) $(CFLAGS) -o test_file tests/tests_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT) -lm
 	./test_file
 
 .PHONY: clean
