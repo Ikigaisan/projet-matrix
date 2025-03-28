@@ -52,6 +52,7 @@ make clean
 │   ├── matrix.h
 │   ├── vector.h
 ├── help (contient les codes pour générer des vecteurs et matrices)
+|   ├── approximation.py
 │   ├── generator_matrix.c
 │   ├── generator_vector.c
 ├── src (contient les fichiers sources)
@@ -66,3 +67,58 @@ make clean
 ├── Makefile
 └── README.md
 ```
+## Descritpion de l'arborescence du projet
+
+HEADERS
+
+```file.h``` :
+
+Ce fichier header contient les implémentations des fonctions présentes dans le fichier source ```file.c```. Les fonctions void présentes permettent de lire un double, un vecteur, une matrice et un QR ; ```write_double```, ```write_vector```, ```write_matrix``` et ```write_QR``` ainsi que les fonctions permettant de les lire ; ```read_vector```, ```read_matrix``` et ```read_QR```. 
+
+```matrix.h``` :
+
+Ce fichier header contient les implémentations des fonctions présentes dans le fichier source ```matrix.c```.
+Les deux premières fonctions permettent d'initialiser et d'imprimer une matrice; ```init_matrix``` et ```print_matrix```. Nous avons ensuite ajouté les fonctions demandées afin de pouvoir réaliser l'addition et la soustraction de deux matrices, la multiplication de deux matrices et d'une matrice et d'un vecteur ainsi que la transposée d'une matrice; ```add_m_m```, ```sub_m_m```, ```mult_m_m```, ```mult_m_v```  et  ```transp```. 
+
+```vector.h``` :
+
+Ce fichier header contient les implémentations des fonctions présentes dans le fichier source ```vector.c```.
+Les deux premières fonctions permettent d'initialiser et d'imprimer un vecteur; ```init_vector``` et ```print_vector```. Nous avons ensuite ajouté les fonctions demandées afin de pouvoir réaliser l'addition, la soustraction de deux vecteurs, le produit scalaire de deux vecteurs ainsi que la norme d'un vecteur; ```add_v_v```, ```sub_v_v```, ```dot_prod``` et  ```norm```. 
+
+
+HELP 
+
+```approximation.py``` : 
+
+Le fichier python approximation nous a été fourni afin de tester notre fonction LSTSQ. 
+
+```generator_matrix.c``` et ```generator_vector.c``` : 
+
+Ces deux codes nous sont fournis pour générer des fichiers contenant des vecteurs et des matrices et ainsi nous permettre d'utiliser les commandes make generator_vector ou make generator_matrix pour obtenir le fichier binaire contenant la matrice.
+
+
+SRC 
+
+```file.c``` : 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
