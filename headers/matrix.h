@@ -17,6 +17,11 @@ typedef struct {
     double **values; // Les valeurs contenues dans la matrice
 } matrix;
 
+typedef struct {
+    matrix *Q;
+    matrix *R;
+} QR_Decomposition;
+
 /**
  * Initialise une matrice de taille m x n avec des 0.
  *
