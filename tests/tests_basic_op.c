@@ -17,7 +17,21 @@
 
 
 void test_add_v_v(void){
-
+    uint64_t m = 300;
+    vector *v = init_vector(m);
+    vector *w = init_vector(m);
+    for (uint64_t i = 0; i < m; i++) {
+        v->values[i] = (double)rand() / 2.0;
+        w->values[i] = (double)rand() / 2.0;
+    }
+    vector *z = init_vector(m);
+    add_v_v(v, w, z);
+    for (uint64_t i = 0; i < m; i++) {
+        CU_ASSERT_DOUBLE_EQUAL(z->values[i], v->values[i] + w->values[i], 1e-3);
+    }
+    free_vector(v);
+    free_vector(w);
+    free_vector(z);
 }
 void test_add_m_m(void){
 
