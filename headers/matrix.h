@@ -104,7 +104,19 @@ void mult_m_v(matrix *A, vector *B, vector *C);
 
 void back_sub(vector*b, matrix *U, vector *x);
 
-void qr (matrix *A);
+QR_Decomposition *qr (matrix *A);
+
+
+/**
+ * Calcule la régression polynomiale.
+ * 
+ * @param matrix* A Matrixe m x n
+ * @param vector* b Vecteur m
+ * 
+ * @returns 
+ */
+
+vector *lstsq(matrix *, vector *);
 
 
 #endif /* _MATRIX_H_ */
