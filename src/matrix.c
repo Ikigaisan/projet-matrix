@@ -196,7 +196,21 @@ void free_matrix(matrix *A){
     }
 }
 
-void lstsq(matrix *A, vector *b){}
+vector *lstsq(matrix *A, vector *b){
+    if(A->m < A->n || b->m != A->m){
+        fprintf(stderr, "Erreur : dimensions invalides : A(%" PRIu64 " x %" PRIu64 "), b(%" PRIu64 ")",A->m, A->n, b->m);
+        exit(EXIT_FAILURE);
+    }
+
+    QR_Decomposition *QR = qr(A);
+    matrix *Q_t = QR->Q;
+    transp(Q_t);
+    vector *b_tilde = init_vector(Q_t->m);
+    mult_m_v(Q_t, b, b_tilde);
+    vector *x = init_vector(b_tilde->m);
+    back_sub( b_tilde,QR->R, x);
+    return x;
+}
 
 
 void vector_subtract(vector *dest, vector *src, double scalar) {
@@ -223,7 +237,7 @@ vector* Q_i (matrix *A, uint64_t i) {
     return colone;
 }
 
-void qr(matrix *A) {
+QR_Decomposition *qr(matrix *A) {
     matrix *Q = A;
     matrix *R = init_matrix(A->m, A->n);
     if (!R) return;
@@ -269,7 +283,10 @@ void qr(matrix *A) {
         free(q_i);
     }
 
-    free(R);
+    QR_Decomposition *qr;
+    qr->R = R;
+    qr->Q = Q;
+    return qr;
 }
 
 

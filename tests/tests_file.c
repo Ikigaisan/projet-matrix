@@ -127,19 +127,7 @@ void test_write_read_QR() {
     free_matrix(qr->R);
 }
 
-int main() {
-    CU_initialize_registry();
 
-    CU_pSuite suite = CU_add_suite("File_Test_Suite", 0, 0);
-    if (CU_add_test(suite, "test_write_read_QR", test_write_read_QR) == NULL) {
-        CU_cleanup_registry();
-        return CU_get_error();
-    }
-
-    CU_basic_run_tests();
-    CU_cleanup_registry();
-    return 0;
-}
 
 
 int main() {
