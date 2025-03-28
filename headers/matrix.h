@@ -1,3 +1,6 @@
+#ifndef _MATRIX_H_
+#define _MATRIX_H_
+
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -8,8 +11,7 @@
 #include "../headers/vector.h"
 #include "vector.h"
 
-#ifndef _MATRIX_H_
-#define _MATRIX_H_
+#include "vector.h"  // On inclut vector.h au lieu de redéfinir vector
 
 typedef struct {
     uint64_t m;      // Nombre de lignes de la matrice
@@ -52,6 +54,12 @@ void print_matrix(matrix *);
  * @result C = A + B
  */
 void add_m_m(matrix *, matrix *, matrix *);
+
+
+
+
+
+
 
 
 /**
@@ -102,10 +110,18 @@ void transp(matrix*A);
  */
 void mult_m_v(matrix *A, vector *B, vector *C);
 
-void back_sub(vector*b, matrix *U, vector *x);
 
 QR_Decomposition *qr (matrix *A);
 
+
+/**
+ * Résolution par substitution arrière.
+ *
+ * @param vector* b le vecteur de résultats
+ * @param matrix* U la matrice triangulaire supérieure
+ * @param vector* x le vecteur solution (résultat)
+ */
+void back_sub(vector *b, matrix *U, vector *x);
 
 /**
  * Calcule la régression polynomiale.
@@ -119,4 +135,7 @@ QR_Decomposition *qr (matrix *A);
 vector *lstsq(matrix *, vector *);
 
 
+
+
 #endif /* _MATRIX_H_ */
+

@@ -1,10 +1,13 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
+#include <float.h>
+#include <math.h>
 #include <inttypes.h>
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
     if (A == NULL) {
+
         fprintf(stderr,
                 "Problème lors de l'allocation de l'espace mémoire pour une "
                 "matrice : %s\n",
@@ -23,23 +26,38 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
         free_matrix(A);
         exit(EXIT_FAILURE);
     }
+
     for (uint64_t i = 0; i < m; i++) {
         A->values[i] = (double *)malloc(n * sizeof(double));
         if (A->values[i] == NULL) {
-            fprintf(
-                stderr,
-                "Problème lors de l'allocation de l'espace mémoire pour une "
-                "matrice : %s\n",
-                strerror(errno));
-            free_matrix(A);    
+            fprintf(stderr, "Erreur d'allocation pour une ligne de la matrice : %s\n", strerror(errno));
+
+            // Libérer les lignes déjà allouées
+            for (uint64_t k = 0; k < i; k++) {
+                free(A->values[k]);
+            }
+            free(A->values);
+            free(A);
             exit(EXIT_FAILURE);
         }
-        for (uint64_t j = 0; j < n; j++) {
-            A->values[i][j] = 0;
-        }
+
+        // Initialiser les valeurs à 0
+        memset(A->values[i], 0, n * sizeof(double));
     }
     return A;
 }
+
+void free_matrix(matrix *A) {
+    if (A == NULL) return;
+
+    for (uint64_t i = 0; i < A->m; i++) {
+        free(A->values[i]);
+    }
+
+    free(A->values);
+    free(A);
+}
+
 
 void print_matrix(matrix *A) {
     if (A->m == 0) {
@@ -95,6 +113,7 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
         }
     }
 }
+
 void sub_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
@@ -196,6 +215,58 @@ void free_matrix(matrix *A){
     }
 }
 
+
+void back_sub(vector*b, matrix *U, vector*x){
+    uint64_t m = b->m;
+    uint64_t infinité = 0;
+    for (uint64_t i =0; i < m; i++ ){
+        x -> values[i] =  b -> values[i];
+    }
+    // Cas particulier d'une seule inconnue
+    if (m == 1) {
+        if (fabs(U->values[0][0]) < DBL_EPSILON) {
+            if (fabs(b->values[0]) < DBL_EPSILON) {
+                // Infinité de solutions : assigner une valeur arbitraire
+                x->values[0] = 1.0;
+                fprintf(stderr, "Infinité de solutions\n");
+            } else {
+                // Aucune solution : division par zéro
+                fprintf(stderr, "Aucune solution\n");
+                //exit(1);
+                return;
+            }
+        } else {
+            // Cas standard : on résout x[0] = b[0] / U[0][0]
+            x->values[0] = b->values[0] / U->values[0][0];
+        }
+        return;
+    }
+    if (m<1){
+        fprintf(stderr, "La matrice n'est pas valide.\n");
+        return;
+    }
+    for (int64_t i = m-1; i >= 0; i--){ //pas mettre uint64_t car le u impose que u tjrs positif
+        for (int64_t j = m-1; j > i; j--){
+            x -> values[i] -= U->values[i][j] * x->values[j]; 
+        }
+        if (fabs(U->values[i][i]) < DBL_EPSILON){ //çad =0
+            if (fabs(x-> values[i]) < DBL_EPSILON){
+                x-> values[i] = 1; //valeur aléatoire car infinité de solutions
+                infinité ++;
+            }
+            else {
+                fprintf(stderr, "Aucune solution\n");
+                return;
+            }
+        }
+        x-> values[i] /= U->values[i][i];
+    }
+    if (infinité>0){
+        fprintf(stderr, "Infinité de solutions\n");
+    }
+}
+
+
 vector *lstsq(matrix *A, vector *b){
     if(A->m < A->n || b->m != A->m){
         fprintf(stderr, "Erreur : dimensions invalides : A(%" PRIu64 " x %" PRIu64 "), b(%" PRIu64 ")",A->m, A->n, b->m);
@@ -288,7 +359,3 @@ QR_Decomposition *qr(matrix *A) {
     qr->Q = Q;
     return qr;
 }
-
-
-
-
