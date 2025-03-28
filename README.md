@@ -61,9 +61,9 @@ make clean
 |   ├── matrix.c
 |   ├── vector.c
 ├── tests (contient les codes des tests)
-|   ├── tests_matrix.c
-|   ├── tests_matrix.h
-│   ├── tests.c
+|   ├── tests_basic_op.c
+|   ├── tests_file.c
+│   ├── tests_adv_op.c
 ├── Makefile
 └── README.md
 ```
@@ -90,7 +90,7 @@ HELP
 
 ```approximation.py``` : 
 
-Le fichier python approximation nous a été fourni afin de tester notre fonction LSTSQ. 
+Le fichier python approximation nous a été fourni afin de tester notre fonction lstsq. 
 
 ```generator_matrix.c``` et ```generator_vector.c``` : 
 
@@ -99,8 +99,55 @@ Ces deux codes nous sont fournis pour générer des fichiers contenant des vecte
 
 SRC 
 
+
 ```file.c``` : 
 
+Le fichier source ```file.c``` contient tous les codes des fonctions implémentées dans ```file.h```. 
+
+
+
+```main.c``` :
+
+On va pouvoir run le fichier source ```main.c``` avec différents arguments afin d'effectuer des opérations entre les matrices et le vecteurs présentes dans les fichiers.
+
+
+
+```matrix.c``` :
+
+Le fichier source ```matrix.c``` contient tous les codes des fonctions implémentées dans ```matrix.h```. 
+
+
+
+```vector.c``` :
+
+Le fichier source ```vector.c``` contient tous les codes des fonctions implémentées dans ```vector.h```. 
+
+
+TESTS
+
+
+```tests_basic_op.c``` :
+
+Ce fichier test contient l'ensemble des tests des fonctions basiques: ```add_m_m```, ```add_v_v```, ```sub_m_m```, ```sub_v_v```,  ```mult_m_m```, ```mult_m_v```,  ```transp``` , ```dot_prod``` et  ```norm```. 
+
+
+```tests_file.c``` :
+
+Ce fichier test contient l'ensemble des tests des fichiers: ```write_double```, ```write_vector```, ```write_matrix```,  ```write_QR```, ```read_vector```, ```read_matrix``` et ```read_QR```. 
+
+
+
+```tests_adv_op.c``` :
+
+Ce fichier test contient les tests des 3 fonctions complexes: ```test_lstsq```, ```test_qr``` et ```test_back_sub```. 
+
+Tous ces fichiers tests peuvent être lancés avec la commande make test. 
+
+
+
+MAKEFILE 
+
+Le fichier Makefile est lancé en même temps que les tests lors de l'exéctution de la commande make test. 
 
 
 
