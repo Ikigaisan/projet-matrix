@@ -82,47 +82,65 @@ void test_write_read_matrix(void) {
     fclose(file);
 }
 
-void test_write_read_QR(void) {
+
+
+void test_write_read_QR() {
+    // Créer un fichier pour stocker les matrices Q et R
     FILE *file = fopen("QR.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
+    // Créer des matrices Q et R de taille 100x100
     matrix *Q = init_matrix(100, 100);
     matrix *R = init_matrix(100, 100);
 
-    // Remplir Q et R avec des valeurs aléatoires
-    for(uint64_t i = 0; i < 100; i++) {
-        for(uint64_t j = 0; j < 100; j++) {
-            Q->values[i][j] = (double)rand() / 2;
-            R->values[i][j] = (double)rand() / 2;
+    // Remplir les matrices Q et R avec des valeurs aléatoires
+    for (uint64_t i = 0; i < 100; i++) {
+        for (uint64_t j = 0; j < 100; j++) {
+            Q->values[i][j] = (double)rand() / 2; // Remplir avec des valeurs aléatoires
+            R->values[i][j] = (double)rand() / 2; // Remplir avec des valeurs aléatoires
         }
     }
 
-    // Écrire Q et R dans le fichier
     write_QR(Q, R, file);
     fclose(file);
 
-    // Lire les matrices Q et R depuis le fichier
+    // Réouvrir le fichier pour lire les matrices
     file = fopen("QR.bin", "rb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
-    matrix *Q_read = init_matrix(100, 100);
-    matrix *R_read = init_matrix(100, 100);
-    read_QR(file, Q_read, R_read);
+    // Lire les matrices Q et R depuis le fichier
+    QR_Decomposition *qr = read_QR(file);
 
-    // Vérifier les valeurs lues
-    for(uint64_t i = 0; i < 100; i++) {
-        for(uint64_t j = 0; j < 100; j++) {
-            CU_ASSERT_DOUBLE_EQUAL(Q_read->values[i][j], Q->values[i][j], 1e-3);
-            CU_ASSERT_DOUBLE_EQUAL(R_read->values[i][j], R->values[i][j], 1e-3);
+    
+
+    for(uint64_t i = 0; i<100; i++){
+        for(uint64_t j = 0; j< 100; j++){
+            CU_ASSERT_DOUBLE_EQUAL(qr->Q->values[i][j], Q->values[i][j], 1e-3);
         }
     }
 
-    free_matrix(Q);
-    free_matrix(R);
-    free_matrix(Q_read);
-    free_matrix(R_read);
+    // Fermer le fichier
     fclose(file);
+
+    // Libérer la mémoire allouée pour les matrices Q et R
+    free_matrix(qr->Q);
+    free_matrix(qr->R);
 }
+
+int main() {
+    CU_initialize_registry();
+
+    CU_pSuite suite = CU_add_suite("File_Test_Suite", 0, 0);
+    if (CU_add_test(suite, "test_write_read_QR", test_write_read_QR) == NULL) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    CU_basic_run_tests();
+    CU_cleanup_registry();
+    return 0;
+}
+
 
 int main() {
     CU_initialize_registry();

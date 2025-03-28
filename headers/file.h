@@ -10,7 +10,10 @@
 
 #ifndef _FILE_H_
 #define _FILE_H_
-
+typedef struct {
+    matrix Q;
+    matrix R;
+} QR_Decomposition;
 /**
  * Lit le contenu d'un fichier contenant un double
  *
@@ -89,7 +92,7 @@ void write_matrix(matrix *, FILE *);
  * résultat est correct, mais vous ne devez pas l'implémenter (sauf si vous le
  * désirez :))
  */
-void read_QR(FILE *, matrix *, matrix *);
+QR_Decomposition *read_QR(FILE *file);
 /**
  * Ecrit la décomposition QR d'une matrice dans un fichier
  *

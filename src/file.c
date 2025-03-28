@@ -137,24 +137,21 @@ void write_matrix(matrix *A, FILE* file){
     }
 }
 
-void read_QR(FILE *file, matrix *Q, matrix *R) {
+QR_Decomposition *read_QR(FILE *file) {
+    QR_Decomposition *qr;
+
+    // Vérifier que le fichier est valide
     if (!file) {
-        fprintf(stderr, "Erreur: le fichier est NULL.\n");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Erreur : fichier invalide.\n");
+        exit(EXIT_FAILURE);  // Ou gérer l'erreur d'une autre manière
     }
 
-    if (!Q || !R) {
-        fprintf(stderr, "Erreur: pointeur NULL passé pour Q ou R.\n");
-        exit(EXIT_FAILURE);
-    }
+    // Lire la matrice Q et R depuis le fichier
+    qr->Q = *read_matrix(file);  // Lire la matrice Q
+    qr->R = *read_matrix(file);  // Lire la matrice R
 
-    *Q = *read_matrix(file);
-    *R = *read_matrix(file);
-
-    if (Q == NULL || R == NULL) {
-        fprintf(stderr, "Erreur lors de la lecture des matrices Q et R.\n");
-        exit(EXIT_FAILURE);
-    }
+    // Retourner la structure contenant les deux matrices
+    return qr;
 }
 
 
