@@ -3,6 +3,7 @@
 #include <time.h>
 #include <math.h>
 #include <inttypes.h>
+
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 #include "../headers/file.h"
@@ -114,7 +115,7 @@ void test_write_read_QR() {
     // Lire les matrices Q et R depuis le fichier
     printf("Debut de read QR\n");
     fflush(stdout);
-    QR_Decomposition *qr = read_QR(file);
+    QR_Decomposition *read_qr = read_QR(file);
     printf("fin de read QR\n");
     fflush(stdout);
 
@@ -122,7 +123,7 @@ void test_write_read_QR() {
 
     for(uint64_t i = 0; i<100; i++){
         for(uint64_t j = 0; j< 100; j++){
-            CU_ASSERT_DOUBLE_EQUAL(qr->Q->values[i][j], Q->values[i][j], 1e-3);
+            CU_ASSERT_DOUBLE_EQUAL(read_qr->Q->values[i][j], Q->values[i][j], 1e-3);
         }
     }
 
@@ -130,8 +131,11 @@ void test_write_read_QR() {
     fclose(file);
 
     // Libérer la mémoire allouée pour les matrices Q et R
-    free_matrix(qr->Q);
-    free_matrix(qr->R);
+    free_matrix(read_qr->Q);
+    free_matrix(read_qr->R);
+    free_matrix(Q);
+    free_matrix(R);
+
 }
 
 

@@ -2,7 +2,7 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 #include <inttypes.h>
-
+#include <stdio.h>
 
 void write_double(double value,FILE *file) {
     if(file == NULL){
@@ -70,6 +70,8 @@ matrix *read_matrix(FILE *file) {
         exit(EXIT_FAILURE);
     }
 
+    printf("Début de read_matrix\n");
+    fflush(stdout);
     uint64_t rows, cols;
 
     // Lire les dimensions de la matrice
@@ -82,12 +84,16 @@ matrix *read_matrix(FILE *file) {
 
     rows = be64toh(rows);
     cols = be64toh(cols);
+    printf("Dimensions lues: %" PRIu64 " x %" PRIu64 "\n", rows, cols);
+    fflush(stdout);
 
     // Afficher les dimensions lues
     printf("Dimensions de la matrice lues : rows = %" PRIu64 ", cols = %" PRIu64 "\n", rows, cols);
     fflush(stdout);
 
     matrix *result = init_matrix(rows, cols);
+    printf("Allocation matrix réussie, lecture des valeurs...\n");
+    fflush(stdout);
 
     if (!result) {
         fprintf(stderr, "Erreur d'allocation de la matrice.\n");
@@ -104,7 +110,8 @@ matrix *read_matrix(FILE *file) {
             exit(EXIT_FAILURE);
         }
     }
-
+    printf("Fin de read_matrix\n");
+    fflush(stdout);
     return result;
 }
 
@@ -150,6 +157,7 @@ void write_matrix(matrix *A, FILE* file){
 }
 
 QR_Decomposition *read_QR(FILE *file) {
+
     printf("Allocation de la mémoire pour la décomposition QR \n");
     fflush(stdout);
     QR_Decomposition *qr = (QR_Decomposition *) malloc(sizeof(QR_Decomposition));
@@ -157,27 +165,9 @@ QR_Decomposition *read_QR(FILE *file) {
         fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
         exit(EXIT_FAILURE);  // Utiliser exit ou retourner NULL pour signaler l'erreur
     }
+    qr->Q = NULL;
+    qr->R = NULL;
 
-    // Vérifier que le fichier est valide
-    if (!file) {
-        fprintf(stderr, "Erreur : fichier invalide.\n");
-        free(qr);  // Libérer la mémoire allouée avant de quitter
-        exit(EXIT_FAILURE);
-    }
-    printf("Allocation de la mémoire pour Q \n");
-    fflush(stdout);
-    qr->Q = (matrix *) malloc(sizeof(matrix));
-    printf("Allocation de la mémoire pour R \n");
-    fflush(stdout);
-    qr->R = (matrix *) malloc(sizeof(matrix));
-
-    if (!qr->Q || !qr->R) {
-        fprintf(stderr, "Erreur d'allocation mémoire pour les matrices Q et R.\n");
-        if(qr->Q) free(qr->Q);
-        if(qr->R) free(qr->R);
-        free(qr);
-        exit(EXIT_FAILURE);
-    }
     // Lire la matrice Q et R depuis le fichier
     printf("Premier read matrix \n");
     fflush(stdout);
