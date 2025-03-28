@@ -10,7 +10,7 @@
 #include "../headers/vector.h"
 #include "../headers/file.h"
 
-#define EPSILON 1e-6  // Tolérance pour les comparaisons de flottants
+
 
 
 
