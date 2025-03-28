@@ -2,7 +2,6 @@
 #include "../headers/vector.h"
 #include <inttypes.h>
 
-
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
     if (A == NULL) {
@@ -21,7 +20,7 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "matrice : %s\n",
                 strerror(errno));
 
-        free(A);
+        free_matrix(A);
         exit(EXIT_FAILURE);
     }
     for (uint64_t i = 0; i < m; i++) {
@@ -32,8 +31,7 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "Problème lors de l'allocation de l'espace mémoire pour une "
                 "matrice : %s\n",
                 strerror(errno));
-            free(A->values);
-            free(A);    
+            free_matrix(A);    
             exit(EXIT_FAILURE);
         }
         for (uint64_t j = 0; j < n; j++) {
@@ -86,7 +84,8 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
     if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") B(%" PRIu64 " x %" PRIu64 ")\n", m, n, B->m, B->n);
+;
         exit(EXIT_FAILURE);
     }
 
@@ -101,8 +100,7 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t n = A->n;
 
     if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
-
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") B(%" PRIu64 " x %" PRIu64 ")\n", m, n, B->m, B->n);
         exit(EXIT_FAILURE);
     }
 
@@ -118,13 +116,11 @@ void mult_m_v(matrix *A, vector *B, vector *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
     if(n != B->m){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
-
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 ")\n", m, n, B->m);
         exit(EXIT_FAILURE);
     }
     if(m != C->m){
         fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
-
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < m; i++) {
@@ -142,7 +138,8 @@ void mult_m_m(matrix *A, matrix *B, matrix *C){
     uint64_t o = B->n;
 
     if (A->n != B->m) {
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
+        fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 " x %" PRIu64 ")\n",
+                A->m, A->n, B->m, B->n);
         exit(EXIT_FAILURE);
     }
 

@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../headers/vector.h"
+#include <inttypes.h>
 
+#include "../headers/vector.h"
 #include "vector.h"
 
 #ifndef _MATRIX_H_
@@ -15,6 +16,11 @@ typedef struct {
     uint64_t n;      // Nombre de colonnes de la matrice
     double **values; // Les valeurs contenues dans la matrice
 } matrix;
+
+typedef struct {
+    matrix *Q;
+    matrix *R;
+} QR_Decomposition;
 
 /**
  * Initialise une matrice de taille m x n avec des 0.
