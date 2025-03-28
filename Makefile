@@ -38,6 +38,7 @@ test: tests/tests_basic_op.c vector.o matrix.o
 	./test
 	$(CC) $(CFLAGS) -o test_file tests/tests_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT) -lm
 	./test_file
+	make clean
 
 .PHONY: clean
 
