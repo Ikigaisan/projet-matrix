@@ -180,7 +180,7 @@ void transp(matrix*A){
     A->n = m;
     A->values = T->values;
 
-    free_matrix(T);
+    free(T);
 
 }
 

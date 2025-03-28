@@ -54,3 +54,4 @@ clean:
 	rm -f test
 	rm -f double.bin
 	rm -f matrix.bin
+	rm -f QR.bin
