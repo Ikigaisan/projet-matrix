@@ -89,19 +89,17 @@ void test_write_read_matrix(void) {
 
 
 void test_write_read_QR() {
-    // Créer un fichier pour stocker les matrices Q et R
     FILE *file = fopen("QR.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
-    // Créer des matrices Q et R de taille 100x100
     matrix *Q = init_matrix(100, 100);
     matrix *R = init_matrix(100, 100);
 
-    // Remplir les matrices Q et R avec des valeurs aléatoires
+
     for (uint64_t i = 0; i < 100; i++) {
         for (uint64_t j = 0; j < 100; j++) {
-            Q->values[i][j] = (double)rand() / 2; // Remplir avec des valeurs aléatoires
-            R->values[i][j] = (double)rand() / 2; // Remplir avec des valeurs aléatoires
+            Q->values[i][j] = (double)rand() / 2;
+            R->values[i][j] = (double)rand() / 2;
         }
     }
     printf("Debut de write QR\n");
@@ -111,11 +109,9 @@ void test_write_read_QR() {
     fflush(stdout);
     fclose(file);
 
-    // Réouvrir le fichier pour lire les matrices
     file = fopen("QR.bin", "rb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
-    // Lire les matrices Q et R depuis le fichier
     printf("Debut de read QR\n");
     fflush(stdout);
     QR_Decomposition *read_qr = read_QR(file);
@@ -131,10 +127,8 @@ void test_write_read_QR() {
         }
     }
 
-    // Fermer le fichier
     fclose(file);
 
-    // Libérer la mémoire allouée pour les matrices Q et R
     free_matrix(read_qr->Q);
     free_matrix(read_qr->R);
     free_matrix(Q);
