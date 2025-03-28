@@ -163,6 +163,62 @@ void test_dot_prod(void){
     free_vector(y);
 }
 
+void test_mult_m_m(void){
+    uint64_t m = 100;
+    uint64_t n = 50;
+    uint64_t p = 70;
+    matrix *A = init_matrix(m, n);
+    matrix *B = init_matrix(n, p);
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            A->values[i][j] = (double)rand() / 2.0;
+        }
+    }
+    for (uint64_t i = 0; i < n; i++) {
+        for (uint64_t j = 0; j < p; j++) {
+            B->values[i][j] = (double)rand() / 2.0;
+        }
+    }
+
+    matrix *C = init_matrix(m,p);
+    mult_m_m(A, B, C);
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < p; j++) {
+            double expected = 0;
+            for (uint64_t k = 0; k < n; k++) {
+                expected += A->values[i][k] * B->values[k][j];
+            }
+            CU_ASSERT_DOUBLE_EQUAL(C->values[i][j], expected, 1e-6);
+        }
+    }
+    free_matrix(A);
+    free_matrix(B);
+    free_matrix(C);
+}
+
+
+void test_transp(void){
+    uint64_t m = 100;
+    uint64_t n = 50;
+    matrix *A = init_matrix(m, n);
+    matrix *B = init_matrix(n, m);
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            A->values[i][j] = (double)rand() / 2.0;
+            B->values[j][i] = A->values[i][j];
+        }
+    }
+    transp(A);
+    for( uint64_t i = 0; i < n; i++){
+        for(uint64_t j = 0; j < m; j++){
+            CU_ASSERT_DOUBLE_EQUAL(A->values[i][j], B->values[i][j], 1e-3);
+        }
+    }
+
+    free_matrix(A);
+    free_matrix(B);
+}
+
 
 int main(int argc, char **argv) {
     srand(time(NULL));
@@ -176,8 +232,13 @@ int main(int argc, char **argv) {
     }
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
         (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
-        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)|| CU_add_test(test_basic_op, "sub_m_m", test_sub_m_m) == NULL ||
-        (CU_add_test(test_basic_op, "sub_v_v",test_sub_v_v) == NULL)|| (CU_add_test(test_basic_op, "dot_prod",test_dot_prod) == NULL)){
+        (CU_add_test(test_basic_op, "norm", test_norm) == NULL)|| 
+        (CU_add_test(test_basic_op, "sub_m_m", test_sub_m_m) == NULL) ||
+        (CU_add_test(test_basic_op, "sub_v_v",test_sub_v_v) == NULL) || 
+        (CU_add_test(test_basic_op, "dot_prod",test_dot_prod) == NULL) ||
+        (CU_add_test(test_basic_op, "mult_m_m", test_mult_m_m) == NULL) ||
+        (CU_add_test(test_basic_op, "mult_m_v", test_mult_m_v) == NULL) ||
+        (CU_add_test(test_basic_op, "transp", test_transp) == NULL)){
         CU_cleanup_registry();
         return CU_get_error();
     }

@@ -48,8 +48,6 @@ void print_matrix(matrix *);
 void add_m_m(matrix *, matrix *, matrix *);
 
 
-void mult_m_v(matrix *, vector *, vector *);
-
 /**
  * Calcule la soustraction de deux matrices
  *
