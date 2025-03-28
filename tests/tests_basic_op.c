@@ -2,6 +2,7 @@
 #include <CUnit/CUnit.h>
 #include <time.h>
 #include <math.h>
+#include <inttypes.h>
 
 #include "../headers/matrix.h"
 #include "../headers/vector.h"

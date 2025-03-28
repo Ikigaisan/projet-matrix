@@ -20,7 +20,7 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "matrice : %s\n",
                 strerror(errno));
 
-        free(A);
+        free_matrix(A);
         exit(EXIT_FAILURE);
     }
     for (uint64_t i = 0; i < m; i++) {
@@ -31,8 +31,7 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
                 "Problème lors de l'allocation de l'espace mémoire pour une "
                 "matrice : %s\n",
                 strerror(errno));
-            free(A->values);
-            free(A);    
+            free_matrix(A);    
             exit(EXIT_FAILURE);
         }
         for (uint64_t j = 0; j < n; j++) {
@@ -181,7 +180,7 @@ void transp(matrix*A){
     A->n = m;
     A->values = T->values;
 
-    free_matrix(T);
+    free(T);
 
 }
 
