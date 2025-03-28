@@ -198,3 +198,80 @@ void free_matrix(matrix *A){
 
 void lstsq(matrix *A, vector *b){}
 
+
+void vector_subtract(vector *dest, vector *src, double scalar) {
+    for (uint64_t i = 0; i < dest->m; i++) {
+        dest->values[i] -= scalar * src->values[i];
+    }
+}
+void vector_divide(vector *v, double scalar) {
+    for (uint64_t i = 0; i < v->m; i++) {
+        v->values[i] /= scalar;
+    }
+}
+
+
+
+
+vector* Q_i (matrix *A, uint64_t i) {
+    vector *colone = init_vector(A->m);
+    if (!colone) return NULL;
+
+    for(uint64_t j = 0; j < A->m; j++){
+        colone->values[j] = A->values[j][i];
+    }
+    return colone;
+}
+
+void qr(matrix *A) {
+    matrix *Q = A;
+    matrix *R = init_matrix(A->m, A->n);
+    if (!R) return;
+
+    for (uint64_t i = 0; i < A->n; i++) {
+        vector *q_i = Q_i(Q, i);
+        if (!q_i) return;
+
+        double norm_val = 0;
+        norm(q_i, &norm_val);
+        R->values[i][i] = norm_val;
+
+        if (norm_val == 0) {
+            do {
+                for (uint64_t j = 0; j < A->m; j++) {
+                    q_i->values[j] = (double)rand() / RAND_MAX;
+                }
+
+                for (uint64_t j = 0; j < i; j++) {
+                    double dot;
+                    vector *q_j = Q_i(Q, j);
+                    if (!q_j) return;
+
+                    dot_prod(q_i, q_j, &dot);
+                    vector_subtract(q_i, q_j, dot);
+                    free(q_j);
+                }
+
+                norm(q_i, &norm_val);
+            } while (norm_val == 0);
+        }
+
+        vector_divide(q_i, norm_val);
+        for (uint64_t j = i + 1; j < A->n; j++) {
+            vector *q_j = Q_i(Q, j);
+            if (!q_j) return;
+
+            dot_prod(q_i, q_j, &R->values[i][j]);
+            vector_subtract(q_j, q_i, R->values[i][j]);
+            free(q_j);
+        }
+
+        free(q_i);
+    }
+
+    free(R);
+}
+
+
+
+
