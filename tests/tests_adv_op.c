@@ -8,216 +8,35 @@
 #include "../headers/vector.h"
 #include "../headers/file.h"
 
-void test_add_v_v(void) {
-    uint64_t m = 300;
-    vector *v = init_vector(m);
-    vector *w = init_vector(m);
-    for (uint64_t i = 0; i < m; i++) {
-        v->values[i] = (double)rand() / 2.0;
-        w->values[i] = (double)rand() / 2.0;
-    }
-    vector *z = init_vector(m);
-    add_v_v(v, w, z);
-    for (uint64_t i = 0; i < m; i++) {
-        CU_ASSERT_DOUBLE_EQUAL(z->values[i], v->values[i] + w->values[i], 1e-3);
-    }
-    free_vector(v);
-    free_vector(w);
-    free_vector(z);
-}
+void test_lstsq() {
+    // Création d'une matrice 2x2
+    matrix *A = init_matrix(2, 2);
+    A->values[0][0] = 1; A->values[0][1] = 1;
+    A->values[1][0] = 1; A->values[1][1] = -1;
 
-void test_add_m_m(void) {
-    uint64_t m = 100;
-    uint64_t n = 50;
-    matrix *A = init_matrix(m, n);
-    matrix *B = init_matrix(m, n);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            A->values[i][j] = (double)rand() / 2.0;
-            B->values[i][j] = (double)rand() / 2.0;
-        }
-    }
-    matrix *C = init_matrix(m, n);
-    add_m_m(A, B, C);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            CU_ASSERT_DOUBLE_EQUAL(C->values[i][j],
-                                   A->values[i][j] + B->values[i][j], 1e-3);
-        }
-    }
+    // Création d'un vecteur b
+    vector *b = init_vector(2);
+    b->values[0] = 3;
+    b->values[1] = 1;
+
+    // Calcul de x attendu : résolution de Ax = b
+    // [ 1  1 ] [ x1 ]   [ 3 ]
+    // [ 1 -1 ] [ x2 ] = [ 1 ]
+    // x1 = 2, x2 = 1
+    vector *expected_x = init_vector(2);
+    expected_x->values[0] = 2.0;
+    expected_x->values[1] = 1.0;
+
+    // Exécution de lstsq
+    vector *x = lstsq(A, b);
+    CU_ASSERT_DOUBLE_EQUAL(x->values[0], expected_x->values[0], 1e-3);
+    CU_ASSERT_DOUBLE_EQUAL(x->values[1], expected_x->values[1], 1e-3);
+
+    // Libération de la mémoire
     free_matrix(A);
-    free_matrix(B);
-    free_matrix(C);
-}
-
-
-void test_mult_m_v(void) {
-    uint64_t m = 100;
-    uint64_t n = 50;
-    matrix *A = init_matrix(m, n);
-    vector *B = init_vector(n);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            A->values[i][j] = (double)rand() / 2.0;
-        }
-    }
-    for (uint64_t i = 0; i < n; i++) {
-        B->values[i] = (double)rand() / 2.0;
-    }
-    vector *C = init_vector(m);
-    mult_m_v(A, B, C);
-    for (uint64_t i = 0; i < m; i++) {
-        double res = 0;
-        for (uint64_t j = 0; j < n; j++) {
-            res += A->values[i][j] * B->values[j];
-        }
-        CU_ASSERT_DOUBLE_EQUAL(C->values[i], res, 1e-3);
-    }
-    free_matrix(A);
-    free_vector(B);
-    free_vector(C);
-
-}
-
-void test_norm(void) {
-    uint64_t m = 5;
-    vector *v = init_vector(m);
-    
-    double values[] = {3.0, 4.0, 0.0, 0.0, 0.0};
-    for (uint64_t i = 0; i < m; i++) {
-        v->values[i] = values[i];
-    }
-    
-    double expected_norm = sqrt(3.0 * 3.0 + 4.0 * 4.0);
-    double computed_norm;
-    norm(v, &computed_norm);
-    
-    CU_ASSERT_DOUBLE_EQUAL(computed_norm, expected_norm, 1e-3);
-    
-    free_vector(v);
-}
-
-void test_sub_v_v(void) {
-    uint64_t m = 200;
-    vector *v = init_vector(m);
-    vector *w = init_vector(m);
-    for (uint64_t i = 0; i < m; i++) {
-        v->values[i] = (double)rand() / 2.0;
-        w->values[i] = (double)rand() / 2.0;
-    }
-    vector *z = init_vector(m);
-    sub_v_v(v, w, z);
-    for (uint64_t i = 0; i < m; i++) {
-        CU_ASSERT_DOUBLE_EQUAL(z->values[i], v->values[i] - w->values[i], 1e-3);
-    }
-    free_vector(v);
-    free_vector(w);
-    free_vector(z);
-}
-
-void test_sub_m_m(void) {
-    uint64_t m = 100;
-    uint64_t n = 50;
-    matrix *A = init_matrix(m, n);
-    matrix *B = init_matrix(m, n);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            A->values[i][j] = (double)rand() / 2.0;
-            B->values[i][j] = (double)rand() / 2.0;
-        }
-    }
-    matrix *C = init_matrix(m, n);
-    sub_m_m(A, B, C);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            CU_ASSERT_DOUBLE_EQUAL(C->values[i][j],
-                                   A->values[i][j] - B->values[i][j], 1e-3);
-        }
-    }
-    free_matrix(A);
-    free_matrix(B);
-    free_matrix(C);
-}
-
-
-void test_dot_prod(void){
-    uint64_t m = 100;
-    vector *x = init_vector(m);
-    vector *y = init_vector(m);
-
-    for (uint64_t i = 0; i < m; i++) {
-        x->values[i] = (double)rand() / 2.0; 
-        y->values[i] = (double)rand() / 2.0; 
-    }
-
-    double result = 0.0;
-    dot_prod(x, y, &result);
-
-    double expected_result = 0.0;
-    for (uint64_t i = 0; i < m; i++) {
-        expected_result += x->values[i] * y->values[i];
-    }
-
-    CU_ASSERT_DOUBLE_EQUAL(result, expected_result, 1e-6);
-
+    free_vector(b);
     free_vector(x);
-    free_vector(y);
-}
-
-void test_mult_m_m(void){
-    uint64_t m = 100;
-    uint64_t n = 50;
-    uint64_t p = 70;
-    matrix *A = init_matrix(m, n);
-    matrix *B = init_matrix(n, p);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            A->values[i][j] = (double)rand() / 2.0;
-        }
-    }
-    for (uint64_t i = 0; i < n; i++) {
-        for (uint64_t j = 0; j < p; j++) {
-            B->values[i][j] = (double)rand() / 2.0;
-        }
-    }
-
-    matrix *C = init_matrix(m,p);
-    mult_m_m(A, B, C);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < p; j++) {
-            double expected = 0;
-            for (uint64_t k = 0; k < n; k++) {
-                expected += A->values[i][k] * B->values[k][j];
-            }
-            CU_ASSERT_DOUBLE_EQUAL(C->values[i][j], expected, 1e-6);
-        }
-    }
-    free_matrix(A);
-    free_matrix(B);
-    free_matrix(C);
-}
-
-
-void test_transp(void){
-    uint64_t m = 100;
-    uint64_t n = 50;
-    matrix *A = init_matrix(m, n);
-    matrix *B = init_matrix(n, m);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            A->values[i][j] = (double)rand() / 2.0;
-            B->values[j][i] = A->values[i][j];
-        }
-    }
-    transp(A);
-    for( uint64_t i = 0; i < n; i++){
-        for(uint64_t j = 0; j < m; j++){
-            CU_ASSERT_DOUBLE_EQUAL(A->values[i][j], B->values[i][j], 1e-3);
-        }
-    }
-
-    free_matrix(A);
-    free_matrix(B);
+    free_vector(expected_x);
 }
 
 
@@ -226,12 +45,12 @@ int main(int argc, char **argv) {
     if (CUE_SUCCESS != CU_initialize_registry()) {
         return CU_get_error();
     }
-    CU_pSuite test_basic_op = CU_add_suite("test_basic_op", NULL, NULL);
+    CU_pSuite test_basic_op = CU_add_suite("Test_Adv_Op_Suite", NULL, NULL);
     if (test_basic_op == NULL) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    if ((CU_add_test(test_basic_op, "test_lstsq", test_lstsq) == NULL){
+    if (CU_add_test(test_basic_op, "test_lstsq", test_lstsq) == NULL){
         CU_cleanup_registry();
         return CU_get_error();
     }

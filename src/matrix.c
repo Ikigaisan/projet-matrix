@@ -208,7 +208,7 @@ vector *lstsq(matrix *A, vector *b){
     vector *b_tilde = init_vector(Q_t->m);
     mult_m_v(Q_t, b, b_tilde);
     vector *x = init_vector(b_tilde->m);
-    back_sub(QR->R, b_tilde, x);
+    back_sub( b_tilde,QR->R, x);
     return x;
 }
 
