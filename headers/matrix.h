@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-
-#include "../headers/vector.h"
 #include "vector.h"
 
 #include "vector.h"  // On inclut vector.h au lieu de redéfinir vector

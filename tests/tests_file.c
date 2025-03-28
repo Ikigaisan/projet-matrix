@@ -3,6 +3,9 @@
 #include <time.h>
 #include <math.h>
 #include <inttypes.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
@@ -82,6 +85,9 @@ void test_write_read_matrix(void) {
     free_matrix(M_read);
     fclose(file);
 }
+
+
+
 
 
 

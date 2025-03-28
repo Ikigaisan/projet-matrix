@@ -103,4 +103,5 @@ QR_Decomposition *read_QR(FILE *file);
  */
 void write_QR(matrix *, matrix *, FILE *);
 
+
 #endif /* _FILE_H_ */
