@@ -143,6 +143,8 @@ Ce fichier test contient les tests des 3 fonctions complexes: ```test_lstsq```, 
 
 Tous ces fichiers tests peuvent être lancés avec la commande make test. 
 
+ATTENTION : Il y a malheureusement un segmentation fault error qui s'est glissé dans les tests et nous travaillons encore à le résoudre. Sans cela nous n'avons donc pas pu tester les fonctions du fichier ```tests_adv_op.c```.
+
 
 
 MAKEFILE 

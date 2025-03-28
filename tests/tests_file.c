@@ -88,9 +88,6 @@ void test_write_read_matrix(void) {
 
 
 
-
-
-
 void test_write_read_QR() {
     // Créer un fichier pour stocker les matrices Q et R
     FILE *file = fopen("QR.bin", "wb");
