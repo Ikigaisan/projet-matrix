@@ -237,7 +237,7 @@ vector* Q_i (matrix *A, uint64_t i) {
     return colone;
 }
 
-void qr(matrix *A) {
+QR_Decomposition *qr(matrix *A) {
     matrix *Q = A;
     matrix *R = init_matrix(A->m, A->n);
     if (!R) return;
@@ -283,7 +283,10 @@ void qr(matrix *A) {
         free(q_i);
     }
 
-    free(R);
+    QR_Decomposition *qr;
+    qr->R = R;
+    qr->Q = Q;
+    return qr;
 }
 
 
