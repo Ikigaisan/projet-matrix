@@ -102,5 +102,9 @@ void transp(matrix*A);
  */
 void mult_m_v(matrix *A, vector *B, vector *C);
 
+void back_sub(vector*b, matrix *U, vector *x);
+
+void qr (matrix *A);
+
 
 #endif /* _MATRIX_H_ */

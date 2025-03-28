@@ -196,5 +196,12 @@ void free_matrix(matrix *A){
     }
 }
 
-void lstsq(matrix *A, vector *b){}
+void lstsq(matrix *A, vector *b){
+    if(A->m < A->n || b->m != A->m){
+        fprintf(stderr, "Erreur : dimensions invalides : A(%" PRIu64 " x %" PRIu64 "), b(%" PRIu64 ")",A->m, A->n, b->m);
+        exit(EXIT_FAILURE);
+    }
+
+    
+}
 
