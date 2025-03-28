@@ -147,8 +147,8 @@ QR_Decomposition *read_QR(FILE *file) {
     }
 
     // Lire la matrice Q et R depuis le fichier
-    qr->Q = *read_matrix(file);  // Lire la matrice Q
-    qr->R = *read_matrix(file);  // Lire la matrice R
+    qr->Q = read_matrix(file);  // Lire la matrice Q
+    qr->R = read_matrix(file);  // Lire la matrice R
 
     // Retourner la structure contenant les deux matrices
     return qr;
