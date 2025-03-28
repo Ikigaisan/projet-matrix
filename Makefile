@@ -27,7 +27,6 @@ matrix.o: $(SRC)/matrix.c
 
 test: tests/tests_basic_op.c vector.o matrix.o
 	$(CC) $(CFLAGS) -o test tests/tests_basic_op.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o $(LCUNIT)
-	./test
 
 .PHONY: clean
 

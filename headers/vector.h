@@ -42,6 +42,4 @@ void print_vector(vector *);
  */
 void add_v_v(vector *, vector *, vector *);
 
-void free_vector(vector *v);
-
 #endif /* _VECTOR_H_ */
