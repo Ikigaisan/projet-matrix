@@ -11,8 +11,8 @@
 #ifndef _FILE_H_
 #define _FILE_H_
 typedef struct {
-    matrix Q;
-    matrix R;
+    matrix *Q;
+    matrix *R;
 } QR_Decomposition;
 /**
  * Lit le contenu d'un fichier contenant un double
