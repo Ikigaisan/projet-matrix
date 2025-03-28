@@ -85,8 +85,22 @@ void test_mult_m_v(void) {
     free_vector(C);
 
 }
-void test_norm(void){
-
+void test_norm(void) {
+    uint64_t m = 5;
+    vector *v = init_vector(m);
+    
+    double values[] = {3.0, 4.0, 0.0, 0.0, 0.0};
+    for (uint64_t i = 0; i < m; i++) {
+        v->values[i] = values[i];
+    }
+    
+    double expected_norm = sqrt(3.0 * 3.0 + 4.0 * 4.0);
+    double computed_norm;
+    norm(v, &computed_norm);
+    
+    CU_ASSERT_DOUBLE_EQUAL(computed_norm, expected_norm, 1e-3);
+    
+    free_vector(v);
 }
 
 void test_sub_v_v(void) {
