@@ -1,5 +1,7 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
+#include <inttypes.h>
+
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *)malloc(sizeof(matrix));
@@ -84,7 +86,7 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
     if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) B(%llu x %llu)\n", m, n, B->m, B->n);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
         exit(EXIT_FAILURE);
     }
 
@@ -99,7 +101,8 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t n = A->n;
 
     if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) B(%llu x %llu)\n", m, n, B->m, B->n);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
+
         exit(EXIT_FAILURE);
     }
 
@@ -115,11 +118,13 @@ void mult_m_v(matrix *A, vector *B, vector *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
     if(n != B->m){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) et B(%llu)\n", m, n, B->m);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
+
         exit(EXIT_FAILURE);
     }
     if(m != C->m){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%llu x %llu) et C(%llu)\n", m, n, C->m);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
+
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < m; i++) {
@@ -137,8 +142,7 @@ void mult_m_m(matrix *A, matrix *B, matrix *C){
     uint64_t o = B->n;
 
     if (A->n != B->m) {
-        fprintf(stderr, "Erreur: Dimensions incompatibles A(%llu x %llu) et B(%llu x %llu)\n",
-                A->m, A->n, B->m, B->n);
+        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
         exit(EXIT_FAILURE);
     }
 
@@ -197,53 +201,78 @@ void free_matrix(matrix *A){
 
 void lstsq(matrix *A, vector *b){}
 
-vector* Q_i (matrix *A, uint64_t i ){
 
+void vector_subtract(vector *dest, vector *src, double scalar) {
+    for (uint64_t i = 0; i < dest->m; i++) {
+        dest->values[i] -= scalar * src->values[i];
+    }
+}
+void vector_divide(vector *v, double scalar) {
+    for (uint64_t i = 0; i < v->m; i++) {
+        v->values[i] /= scalar;
+    }
+}
+
+
+
+
+vector* Q_i (matrix *A, uint64_t i) {
     vector *colone = init_vector(A->m);
+    if (!colone) return NULL;
+
     for(uint64_t j = 0; j < A->m; j++){
         colone->values[j] = A->values[j][i];
     }
     return colone;
 }
 
-
-
-
-void qr (matrix *A){
-
+void qr(matrix *A) {
     matrix *Q = A;
     matrix *R = init_matrix(A->m, A->n);
+    if (!R) return;
 
-    for(uint64_t i = 1; i < A->n; i++){
-        double *result;
-        norm(Q_i(Q, i),result);
-        R->values[i][i] = *result;
-        if(R->values[i][i] == 0){
-            while(*result == 0){
-        
-            
-                vector *new_Q = init_vector(A->m);
-                for(uint64_t j = 0; j < A->m; j++){
-                    new_Q->values[j] = (double)rand() / 2.0;
+    for (uint64_t i = 0; i < A->n; i++) {
+        vector *q_i = Q_i(Q, i);
+        if (!q_i) return;
+
+        double norm_val = 0;
+        norm(q_i, &norm_val);
+        R->values[i][i] = norm_val;
+
+        if (norm_val == 0) {
+            do {
+                for (uint64_t j = 0; j < A->m; j++) {
+                    q_i->values[j] = (double)rand() / RAND_MAX;
                 }
-                new_Q= Q_i(Q,i);
 
-                for(uint64_t j=1; j<i-1; j++){
-                    new_Q -= dot_prod(Q_i(Q, i), Q_i(Q, j), R[i][j]) * Q_i(Q, j);
+                for (uint64_t j = 0; j < i; j++) {
+                    double dot;
+                    vector *q_j = Q_i(Q, j);
+                    if (!q_j) return;
+
+                    dot_prod(q_i, q_j, &dot);
+                    vector_subtract(q_i, q_j, dot);
+                    free(q_j);
                 }
-                norm(Q_i(Q, i),result);
-            }
 
-            Q_i(Q, i) /= *result;
-        
+                norm(q_i, &norm_val);
+            } while (norm_val == 0);
         }
 
-        Q_i(Q, i) = Q_i(Q, i) / R->values[i][i];
-        for(uint64_t j = i+1; j < A->n; j++){
-            dot_prod(Q_i(Q, i), Q_i(Q, j), R->values[i][j]);
-            Q_i(Q, j) = Q_i(Q, j) - R->values[i][j] * Q_i(Q, i);
+        vector_divide(q_i, norm_val);
+        for (uint64_t j = i + 1; j < A->n; j++) {
+            vector *q_j = Q_i(Q, j);
+            if (!q_j) return;
+
+            dot_prod(q_i, q_j, &R->values[i][j]);
+            vector_subtract(q_j, q_i, R->values[i][j]);
+            free(q_j);
         }
+
+        free(q_i);
     }
+
+    free(R);
 }
 
 

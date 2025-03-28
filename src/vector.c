@@ -1,5 +1,7 @@
 #include "../headers/vector.h"
 #include <math.h>
+#include <inttypes.h>
+
 vector *init_vector(uint64_t m) {
     vector *v = (vector *)malloc(sizeof(vector));
     if (v == NULL) {
@@ -42,10 +44,10 @@ void print_vector(vector *v) {
 void add_v_v(vector *x, vector *y, vector *z) {
     uint64_t m = x->m;
     if(m != y->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%llu) y(%llu)\n", m, y->m);
+        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%" PRIu64 ") z(%" PRIu64 ")\n", m, z->m);
     }
     if(m != z->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%llu) z(%llu)\n", m, z->m);
+        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%" PRIu64 ") z(%" PRIu64 ")\n", m, z->m);
     }
     for (uint64_t i = 0; i < m; i++) {
         z->values[i] = x->values[i] + y->values[i];
@@ -56,10 +58,12 @@ void add_v_v(vector *x, vector *y, vector *z) {
 void sub_v_v(vector *x, vector *y, vector *z) {
     uint64_t m = x->m;
     if(m != y->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%llu) y(%llu)\n", m, y->m);
+        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%" PRIu64 ") z(%" PRIu64 ")\n", m, z->m);
+
     }
     if(m != z->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%llu) z(%llu)\n", m, z->m);
+        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille ! x(%" PRIu64 ") z(%" PRIu64 ")\n", m, z->m);
+
     }
 
     for (uint64_t i = 0; i < m; i++) {
