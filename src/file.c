@@ -74,7 +74,6 @@ matrix *read_matrix(FILE *file) {
     fflush(stdout);
     uint64_t rows, cols;
 
-    // Lire les dimensions de la matrice
     if(fread(&rows, sizeof(uint64_t), 1, file) != 1 ||
     fread(&cols, sizeof(uint64_t), 1, file) != 1){
         fprintf(stderr, "Erreur lors de la lecture des dimensions de la matrice.\n");
@@ -87,7 +86,6 @@ matrix *read_matrix(FILE *file) {
     printf("Dimensions lues: %" PRIu64 " x %" PRIu64 "\n", rows, cols);
     fflush(stdout);
 
-    // Afficher les dimensions lues
     printf("Dimensions de la matrice lues : rows = %" PRIu64 ", cols = %" PRIu64 "\n", rows, cols);
     fflush(stdout);
 
@@ -101,8 +99,21 @@ matrix *read_matrix(FILE *file) {
         exit(EXIT_FAILURE);
     }
 
-    // Lire les valeurs de la matrice
     for(uint64_t i = 0; i < rows; i++){
+        uint64_t line_nbr;
+        if(fread(&line_nbr, sizeof(uint64_t),1, file) !=1){
+            fprintf(stderr, "Erreur lors de la lecture de la ligne\n");
+            free_matrix(result);
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
+        line_nbr = be64toh(line_nbr);
+        if(line_nbr != i){
+            fprintf(stderr, "Mauvaise ligne\n");
+            free_matrix(result);
+            fclose(file);
+            exit(EXIT_FAILURE);
+        }
         if(fread(result->values[i], sizeof(double), cols, file) != cols){
             fprintf(stderr, "Erreur lors de la lecture d'une ligne.\n");
             free_matrix(result);
@@ -163,32 +174,30 @@ QR_Decomposition *read_QR(FILE *file) {
     QR_Decomposition *qr = (QR_Decomposition *) malloc(sizeof(QR_Decomposition));
     if (!qr) {
         fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
-        exit(EXIT_FAILURE);  // Utiliser exit ou retourner NULL pour signaler l'erreur
+        exit(EXIT_FAILURE);
     }
-    qr->Q = NULL;
-    qr->R = NULL;
-
-    // Lire la matrice Q et R depuis le fichier
+    qr->Q = (matrix*) mallox(sizeof(matrix));
+    qr->R = (matrix*) mallox(sizeof(matrix));
+    
     printf("Premier read matrix \n");
     fflush(stdout);
-    qr->Q = read_matrix(file);  // Lire la matrice Q
+    qr->Q = read_matrix(file);
     if (!qr->Q) {
         fprintf(stderr, "Erreur lors de la lecture de la matrice Q.\n");
-        free(qr);  // Libérer la mémoire allouée pour QR_Decomposition
+        free(qr);
         exit(EXIT_FAILURE);
     }
 
     printf("Deuxième read matrix \n");
     fflush(stdout);
-    qr->R = read_matrix(file);  // Lire la matrice R
+    qr->R= read_matrix(file);
     if (!qr->R) {
         fprintf(stderr, "Erreur lors de la lecture de la matrice R.\n");
-        free_matrix(qr->Q);  // Libérer la mémoire de Q si R échoue
+        free_matrix(qr->Q);
         free(qr);
         exit(EXIT_FAILURE);
     }
 
-    // Retourner la structure contenant les matrices Q et R
     return qr;
 }
 

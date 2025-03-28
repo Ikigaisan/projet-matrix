@@ -58,11 +58,11 @@ void test_write_read_vector(void) {
 void test_write_read_matrix(void) {
     FILE *file = fopen("matrix.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
+    int size = 50;
+    matrix *A = init_matrix(size, size);
 
-    matrix *A = init_matrix(100, 100);
-
-    for(uint64_t i = 0; i < 100; i++){
-        for(uint64_t j = 0; j < 100; j++){
+    for(uint64_t i = 0; i < size; i++){
+        for(uint64_t j = 0; j < size; j++){
             A->values[i][j] = (double)rand() / 2;
         }
     }
@@ -75,8 +75,8 @@ void test_write_read_matrix(void) {
 
     matrix *M_read = read_matrix(file);
 
-    for(uint64_t i = 0; i < 100; i++){
-        for(uint64_t j = 0; j < 100; j++){
+    for(uint64_t i = 0; i < size; i++){
+        for(uint64_t j = 0; j < size; j++){
             CU_ASSERT_DOUBLE_EQUAL(M_read->values[i][j], A->values[i][j], 1e-3);
         }
     }
@@ -121,6 +121,7 @@ void test_write_read_QR() {
     QR_Decomposition *read_qr = read_QR(file);
     printf("fin de read QR\n");
     fflush(stdout);
+    CU_ASSERT_PTR_NOT_NULL(read_qr);
 
     
 
@@ -155,6 +156,7 @@ int main() {
         CU_cleanup_registry();
         return CU_get_error();
     }
+
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

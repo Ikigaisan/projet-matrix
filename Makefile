@@ -42,6 +42,10 @@ test: tests/tests_basic_op.c vector.o matrix.o
 	./test_adv
 	make clean
 
+debug : tests/tests_basic_op.c vector.o matrix.o
+	$(CC) $(CFLAGS) -g -O0 -o test_file tests/tests_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT) -lm
+	lldb ./test_file
+
 .PHONY: clean
 
 clean:

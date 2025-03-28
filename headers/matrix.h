@@ -9,7 +9,6 @@
 #include <inttypes.h>
 #include "vector.h"
 
-#include "vector.h"  // On inclut vector.h au lieu de redéfinir vector
 
 typedef struct {
     uint64_t m;      // Nombre de lignes de la matrice
