@@ -1,11 +1,13 @@
+#ifndef _MATRIX_H_
+#define _MATRIX_H_
+
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef _MATRIX_H_
-#define _MATRIX_H_
+#include "vector.h"  // On inclut vector.h au lieu de redéfinir vector
 
 typedef struct {
     uint64_t m;      // Nombre de lignes de la matrice
@@ -44,4 +46,15 @@ void print_matrix(matrix *);
  */
 void add_m_m(matrix *, matrix *, matrix *);
 
-#endif /* _MATRIX_H_ */
+/**
+ * Résolution par substitution arrière.
+ *
+ * @param vector* b le vecteur de résultats
+ * @param matrix* U la matrice triangulaire supérieure
+ * @param vector* x le vecteur solution (résultat)
+ */
+void back_sub(vector *b, matrix *U, vector *x);
+void free_matrix(matrix *m);
+
+
+#endif // _MATRIX_H_
