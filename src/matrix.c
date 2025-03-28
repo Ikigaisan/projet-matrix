@@ -47,15 +47,15 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
     return A;
 }
 
-void free_matrix(matrix *A) {
-    if (A == NULL) return;
 
-    for (uint64_t i = 0; i < A->m; i++) {
-        free(A->values[i]);
+void free_matrix(matrix *A){
+    if(A != NULL){
+        for(uint64_t i=0; i < A->m; i++){
+            free(A->values[i]);
+        }
+        free(A->values);
+        free(A);
     }
-
-    free(A->values);
-    free(A);
 }
 
 
@@ -205,15 +205,6 @@ void transp(matrix*A){
 
 
 
-void free_matrix(matrix *A){
-    if(A != NULL){
-        for(uint64_t i=0; i < A->m; i++){
-            free(A->values[i]);
-        }
-        free(A->values);
-        free(A);
-    }
-}
 
 
 void back_sub(vector*b, matrix *U, vector*x){
@@ -311,11 +302,11 @@ vector* Q_i (matrix *A, uint64_t i) {
 QR_Decomposition *qr(matrix *A) {
     matrix *Q = A;
     matrix *R = init_matrix(A->m, A->n);
-    if (!R) return;
+    if (!R) return NULL;
 
     for (uint64_t i = 0; i < A->n; i++) {
         vector *q_i = Q_i(Q, i);
-        if (!q_i) return;
+        if (!q_i) return NULL;
 
         double norm_val = 0;
         norm(q_i, &norm_val);
@@ -330,7 +321,7 @@ QR_Decomposition *qr(matrix *A) {
                 for (uint64_t j = 0; j < i; j++) {
                     double dot;
                     vector *q_j = Q_i(Q, j);
-                    if (!q_j) return;
+                    if (!q_j) return NULL;
 
                     dot_prod(q_i, q_j, &dot);
                     vector_subtract(q_i, q_j, dot);
@@ -344,7 +335,7 @@ QR_Decomposition *qr(matrix *A) {
         vector_divide(q_i, norm_val);
         for (uint64_t j = i + 1; j < A->n; j++) {
             vector *q_j = Q_i(Q, j);
-            if (!q_j) return;
+            if (!q_j) return NULL;
 
             dot_prod(q_i, q_j, &R->values[i][j]);
             vector_subtract(q_j, q_i, R->values[i][j]);
@@ -354,7 +345,11 @@ QR_Decomposition *qr(matrix *A) {
         free(q_i);
     }
 
-    QR_Decomposition *qr;
+    QR_Decomposition *qr = malloc(sizeof(QR_Decomposition));
+    if (!qr) {
+        fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
+        return NULL;
+    }
     qr->R = R;
     qr->Q = Q;
     return qr;

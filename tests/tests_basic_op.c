@@ -14,8 +14,6 @@
 
 
 
-
-
 void test_add_v_v(void){
     uint64_t m = 300;
     vector *v = init_vector(m);
@@ -204,9 +202,6 @@ void test_mult_m_m(void){
     free_matrix(C);
 }
 
-void test_mult_m_v(void){
-
-}
 
 
 void test_transp(void){
@@ -233,7 +228,6 @@ void test_transp(void){
 
 
 int main(int argc, char **argv) {
-    srand(time(NULL));
     if (CUE_SUCCESS != CU_initialize_registry()) {
         return CU_get_error();
     }

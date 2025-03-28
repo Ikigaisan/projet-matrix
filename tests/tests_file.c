@@ -100,8 +100,11 @@ void test_write_read_QR() {
             R->values[i][j] = (double)rand() / 2; // Remplir avec des valeurs aléatoires
         }
     }
-
+    printf("Debut de write QR\n");
+    fflush(stdout);
     write_QR(Q, R, file);
+    printf("fin de write QR\n");
+    fflush(stdout);
     fclose(file);
 
     // Réouvrir le fichier pour lire les matrices
@@ -109,7 +112,11 @@ void test_write_read_QR() {
     CU_ASSERT_PTR_NOT_NULL(file);
 
     // Lire les matrices Q et R depuis le fichier
+    printf("Debut de read QR\n");
+    fflush(stdout);
     QR_Decomposition *qr = read_QR(file);
+    printf("fin de read QR\n");
+    fflush(stdout);
 
     
 

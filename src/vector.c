@@ -103,9 +103,6 @@ void norm(vector *x, double *result){
     *result = sqrt(s); 
 }
 
-void free_vector(vector *x) {
-    free(x->values);
-    free(x);
-}
+
 
 
