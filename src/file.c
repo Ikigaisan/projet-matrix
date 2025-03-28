@@ -137,23 +137,24 @@ void write_matrix(matrix *A, FILE* file){
     }
 }
 
-void read_QR(FILE *file, matrix *Q, matrix *R){
-    if (!file || !Q || !R) {
-        fprintf(stderr, "Erreur : un des pointeurs est null.\n");
+void read_QR(FILE *file, matrix *Q, matrix *R) {
+    if (!file) {
+        fprintf(stderr, "Erreur: le fichier est NULL.\n");
         exit(EXIT_FAILURE);
     }
 
-    free_matrix(Q);
-    free_matrix(R);
+    if (!Q || !R) {
+        fprintf(stderr, "Erreur: pointeur NULL passé pour Q ou R.\n");
+        exit(EXIT_FAILURE);
+    }
 
-    matrix *temp_Q = read_matrix(file);
-    matrix *temp_R = read_matrix(file);
+    *Q = *read_matrix(file);
+    *R = *read_matrix(file);
 
-    *Q = *temp_Q;
-    *R = *temp_R;
-
-    free(temp_Q);
-    free(temp_R);
+    if (Q == NULL || R == NULL) {
+        fprintf(stderr, "Erreur lors de la lecture des matrices Q et R.\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 
