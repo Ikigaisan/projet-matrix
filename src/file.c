@@ -176,8 +176,8 @@ QR_Decomposition *read_QR(FILE *file) {
         fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
         exit(EXIT_FAILURE);
     }
-    qr->Q = (matrix*) mallox(sizeof(matrix));
-    qr->R = (matrix*) mallox(sizeof(matrix));
+    qr->Q = (matrix*) malloc(sizeof(matrix));
+    qr->R = (matrix*) malloc(sizeof(matrix));
     
     printf("Premier read matrix \n");
     fflush(stdout);
