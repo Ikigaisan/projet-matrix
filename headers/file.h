@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "matrix.h"
 #include "vector.h"
@@ -88,7 +89,7 @@ void write_matrix(matrix *, FILE *);
  * résultat est correct, mais vous ne devez pas l'implémenter (sauf si vous le
  * désirez :))
  */
-void read_QR(FILE *, matrix *, matrix *);
+QR_Decomposition *read_QR(FILE *file);
 /**
  * Ecrit la décomposition QR d'une matrice dans un fichier
  *
@@ -101,5 +102,6 @@ void read_QR(FILE *, matrix *, matrix *);
  * le format de l'énoncé
  */
 void write_QR(matrix *, matrix *, FILE *);
+
 
 #endif /* _FILE_H_ */
