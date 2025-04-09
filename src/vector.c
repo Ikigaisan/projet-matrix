@@ -1,6 +1,8 @@
 #include "../headers/vector.h"
 #include <math.h>
 #include <inttypes.h>
+
+
 vector *init_vector(uint64_t m) {
     vector *v = (vector *)malloc(sizeof(vector));
     if (v == NULL) {
@@ -26,6 +28,13 @@ vector *init_vector(uint64_t m) {
         v->values[i] = 0;
     }
     return v;
+}
+
+void free_vector(vector *v) {
+    if (v != NULL) {
+        free(v->values);
+        free(v);
+    }
 }
 
 void print_vector(vector *v) {
