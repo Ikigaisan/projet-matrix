@@ -9,6 +9,7 @@
 #include "../headers/file.h"
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
+#include <pthread.h>
 
 typedef struct {
     bool verbose;
