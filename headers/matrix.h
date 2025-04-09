@@ -1,6 +1,3 @@
-#ifndef _MATRIX_H_
-#define _MATRIX_H_
-
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -9,6 +6,8 @@
 #include <inttypes.h>
 #include "vector.h"
 
+#ifndef _MATRIX_H_
+#define _MATRIX_H_
 
 typedef struct {
     uint64_t m;      // Nombre de lignes de la matrice

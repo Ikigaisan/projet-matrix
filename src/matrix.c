@@ -26,23 +26,19 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
         free_matrix(A);
         exit(EXIT_FAILURE);
     }
-
     for (uint64_t i = 0; i < m; i++) {
         A->values[i] = (double *)malloc(n * sizeof(double));
         if (A->values[i] == NULL) {
-            fprintf(stderr, "Erreur d'allocation pour une ligne de la matrice : %s\n", strerror(errno));
-
-            // Libérer les lignes déjà allouées
-            for (uint64_t k = 0; k < i; k++) {
-                free(A->values[k]);
-            }
-            free(A->values);
-            free(A);
+            fprintf(
+                stderr,
+                "Problème lors de l'allocation de l'espace mémoire pour une "
+                "matrice : %s\n",
+                strerror(errno));
             exit(EXIT_FAILURE);
         }
-
-        // Initialiser les valeurs à 0
-        memset(A->values[i], 0, n * sizeof(double));
+        for (uint64_t j = 0; j < n; j++) {
+            A->values[i][j] = 0;
+        }
     }
     return A;
 }

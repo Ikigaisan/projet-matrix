@@ -27,9 +27,9 @@ void test_add_v_v(void){
     for (uint64_t i = 0; i < m; i++) {
         CU_ASSERT_DOUBLE_EQUAL(z->values[i], v->values[i] + w->values[i], 1e-3);
     }
-    free_vector(v);
-    free_vector(w);
-    free_vector(z);
+    free(v);
+    free(w);
+    free(z);
 }
 void test_add_m_m(void) {
     uint64_t m = 100;
@@ -50,9 +50,9 @@ void test_add_m_m(void) {
                                    A->values[i][j] + B->values[i][j], 1e-3);
         }
     }
-    free_matrix(A);
-    free_matrix(B);
-    free_matrix(C);
+    free(A);
+    free(B);
+    free(C);
 }
 
 
@@ -236,7 +236,6 @@ int main(int argc, char **argv) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-
     if ((CU_add_test(test_basic_op, "add_v_v", test_add_v_v) == NULL) ||
     (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
         (CU_add_test(test_basic_op, "add_m_m", test_add_m_m) == NULL) ||
