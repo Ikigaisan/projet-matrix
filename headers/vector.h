@@ -12,13 +12,7 @@ typedef struct {
     double *values; // Les valeurs contenues dans le vecteur
 } vector;
 
-typedef struct {
-    int start_idx;
-    int end_idx;
-    vector *x;
-    vector *y;
-    vector *z;
-} thread_data_t;
+
 
 /**
  * Initialise un vecteur de taille m avec des zéros.

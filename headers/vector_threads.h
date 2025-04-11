@@ -23,7 +23,7 @@ typedef struct {
  *  - Les indices de début et de fin start_idx et end_idx
  *  - Les pointeurs vers les vecteurs x y et z
  * 
- * @result z = x + y
+ * @result z[start:end] = x[start:end] + y[start:end]
  */
 void add_v_v_thread(void *arg);
 
