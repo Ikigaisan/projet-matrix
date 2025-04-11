@@ -9,8 +9,8 @@
 #define _VECTOR_H_T
 
 typedef struct {
-    int start_idx;
-    int end_idx;
+    size_t start_idx;
+    size_t end_idx;
     vector *x;
     vector *y;
     vector *z;
