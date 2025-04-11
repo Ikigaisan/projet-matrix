@@ -12,6 +12,8 @@ typedef struct {
     double *values; // Les valeurs contenues dans le vecteur
 } vector;
 
+
+
 /**
  * Initialise un vecteur de taille m avec des zéros.
  *
