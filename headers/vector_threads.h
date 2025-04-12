@@ -25,7 +25,7 @@ typedef struct {
  * 
  * @result z[start:end] = x[start:end] + y[start:end]
  */
-void *add_v_v_thread(void *arg);
+void add_v_v_thread(void *arg);
 
 
 #endif /* _VECTOR_H_T */

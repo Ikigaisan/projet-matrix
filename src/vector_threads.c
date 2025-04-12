@@ -5,7 +5,7 @@
 
 
 
-void *add_v_v_thread(void *arg) {
+void add_v_v_thread(void *arg) {
     thread_data_v_v *data = (thread_data_v_v *)arg; //On "déballe" le args
 
     for(int i=data->start_idx; i < data->end_idx; i++){
