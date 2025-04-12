@@ -11,16 +11,17 @@ ifeq ($(UNAME_S),Darwin)
     FILE_OBJ=$(OBJECTS)/file_MAC.o
 else
     FILE_OBJ=$(OBJECTS)/file.o
+    
 endif
 
-main: main.o matrix.o vector.o
+main: main.o matrix.o vector.o file.o
 	$(CC) -o $@ $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ) -lm
 
-generator_matrix: matrix.o vector.o
+generator_matrix: matrix.o vector.o file.o
 	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_matrix.c $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ) -lm
 	./$@
 
-generator_vector: matrix.o vector.o
+generator_vector: matrix.o vector.o file.o
 	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_vector.c $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ) -lm
 	./$@
 
@@ -33,7 +34,10 @@ vector.o: $(SRC)/vector.c
 matrix.o: $(SRC)/matrix.c
 	$(CC) $(CFLAGS) -o $(OBJECTS)/$@ -c $<
 
-test: tests/tests_basic_op.c vector.o matrix.o
+file.o: $(SRC)/file.c
+		$(CC) $(CFLAGS) -o $(OBJECTS)/$@ -c $<
+
+test: tests/tests_basic_op.c vector.o matrix.o file.o
 	$(CC) $(CFLAGS) -o test tests/tests_basic_op.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT) -lm
 	./test
 	$(CC) $(CFLAGS) -o test_file tests/tests_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT) -lm
@@ -42,9 +46,10 @@ test: tests/tests_basic_op.c vector.o matrix.o
 	./test_adv
 	make clean
 
-debug : tests/tests_basic_op.c vector.o matrix.o
-	$(CC) $(CFLAGS) -g -O0 -o test_file tests/tests_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) $(LCUNIT) -lm
-	lldb ./test_file
+debug : tests/temp.c vector.o matrix.o file.o
+	$(CC) $(CFLAGS) -g -O0 -o temp tests/temp.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) -lm
+	./temp
+
 
 .PHONY: clean
 
@@ -52,6 +57,7 @@ clean:
 	rm -f objects/main.o
 	rm -f objects/vector.o
 	rm -f objects/matrix.o
+	rm -f objects/file.o
 	rm -f main
 	rm -f generator_matrix
 	rm -f generator_vector

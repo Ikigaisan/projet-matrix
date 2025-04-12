@@ -88,20 +88,28 @@ void test_write_read_matrix(void) {
 
 
 void test_write_read_QR() {
+    
     FILE *file = fopen("QR.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
-    uint64_t size = 3;
+    uint64_t m = 3;
+    uint64_t n = 2;
 
-    matrix *Q = init_matrix(size, size);
-    matrix *R = init_matrix(size, size);
+    matrix *Q = init_matrix(m, n);
+    matrix *R = init_matrix(n, n);
 
 
-    for (uint64_t i = 0; i < size; i++) {
-        for (uint64_t j = 0; j < size; j++) {
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
             Q->values[i][j] = (double)rand() / 2;
+        }
+    }
+
+    for (uint64_t i = 0; i < n; i++) {
+        for (uint64_t j = 0; j < n; j++) {
             R->values[i][j] = (double)rand() / 2;
         }
     }
+
     printf("Matrice Q :\n");
     print_matrix(Q);
     printf("Matrice R :\n");
@@ -122,9 +130,14 @@ void test_write_read_QR() {
 
     
 
-    for(uint64_t i = 0; i<size; i++){
-        for(uint64_t j = 0; j< size; j++){
+    for(uint64_t i = 0; i<m; i++){
+        for(uint64_t j = 0; j<n; j++){
             CU_ASSERT_DOUBLE_EQUAL(read_qr->Q->values[i][j], Q->values[i][j], 1e-3);
+        }
+    }
+
+    for(uint64_t i = 0; i<n; i++){
+        for(uint64_t j = 0; j<n; j++){
             CU_ASSERT_DOUBLE_EQUAL(read_qr->R->values[i][j], R->values[i][j], 1e-3);
         }
     }

@@ -199,8 +199,8 @@ QR_Decomposition *read_QR(FILE *file) {
     }
 
     // Lecture de la matrice R
-    qr->R = init_matrix(m, n);
-    for (uint64_t i = 0; i < m; i++) {
+    qr->R = init_matrix(n, n);
+    for (uint64_t i = 0; i < n; i++) {
         if (fread(qr->R->values[i], sizeof(double), n, file) != n) {
             fprintf(stderr, "Erreur lors de la lecture des valeurs de la matrice R.\n");
             free_matrix(qr->Q);
@@ -217,6 +217,7 @@ QR_Decomposition *read_QR(FILE *file) {
 
 
 void write_QR(matrix *Q, matrix *R, FILE *file){
+
     if (!file || !Q || !R) {
         fprintf(stderr, "Erreur : Pointeur null passé en paramètre.\n");
         exit(EXIT_FAILURE);
