@@ -15,7 +15,7 @@ TESTS = tests
 
 
 main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o
-	$(CC) -o $@ $^ -pthread  # Utilisez -pthread pour lier avec pthread
+	$(CC) -o $@ $^ -pthread -lm # Utilisez -pthread pour lier avec pthread
 
 generator_matrix: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o
 	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_matrix.c $^ -lm
