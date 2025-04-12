@@ -87,43 +87,50 @@ void test_write_read_matrix(void) {
 }
 
 
-
 void test_write_read_QR() {
+    
     FILE *file = fopen("QR.bin", "wb");
     CU_ASSERT_PTR_NOT_NULL(file);
+    uint64_t m = 3;
+    uint64_t n = 2;
 
-    matrix *Q = init_matrix(100, 100);
-    matrix *R = init_matrix(100, 100);
+    matrix *Q = init_matrix(m, n);
+    matrix *R = init_matrix(n, n);
 
 
-    for (uint64_t i = 0; i < 100; i++) {
-        for (uint64_t j = 0; j < 100; j++) {
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
             Q->values[i][j] = (double)rand() / 2;
+        }
+    }
+
+    for (uint64_t i = 0; i < n; i++) {
+        for (uint64_t j = 0; j < n; j++) {
             R->values[i][j] = (double)rand() / 2;
         }
     }
-    printf("Debut de write QR\n");
-    fflush(stdout);
+
     write_QR(Q, R, file);
-    printf("fin de write QR\n");
-    fflush(stdout);
+    
     fclose(file);
 
     file = fopen("QR.bin", "rb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
-    printf("Debut de read QR\n");
-    fflush(stdout);
     QR_Decomposition *read_qr = read_QR(file);
-    printf("fin de read QR\n");
-    fflush(stdout);
     CU_ASSERT_PTR_NOT_NULL(read_qr);
 
     
 
-    for(uint64_t i = 0; i<100; i++){
-        for(uint64_t j = 0; j< 100; j++){
+    for(uint64_t i = 0; i<m; i++){
+        for(uint64_t j = 0; j<n; j++){
             CU_ASSERT_DOUBLE_EQUAL(read_qr->Q->values[i][j], Q->values[i][j], 1e-3);
+        }
+    }
+
+    for(uint64_t i = 0; i<n; i++){
+        for(uint64_t j = 0; j<n; j++){
+            CU_ASSERT_DOUBLE_EQUAL(read_qr->R->values[i][j], R->values[i][j], 1e-3);
         }
     }
 
