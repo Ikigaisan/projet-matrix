@@ -46,8 +46,8 @@ test: tests/tests_basic_op.c vector.o matrix.o file.o
 	./test_adv
 	make clean
 
-debug : tests/temp.c vector.o matrix.o file.o
-	$(CC) $(CFLAGS) -g -O0 -o temp tests/temp.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) -lm
+debug : tests/test_file.c vector.o matrix.o file.o
+	$(CC) $(CFLAGS) -g -O0 -o temp tests/test_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ) -lm
 	./temp
 
 
