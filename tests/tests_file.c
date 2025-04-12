@@ -110,22 +110,14 @@ void test_write_read_QR() {
         }
     }
 
-    printf("Matrice Q :\n");
-    print_matrix(Q);
-    printf("Matrice R :\n");
-    print_matrix(R);
-    printf("Debut de write QR\n");
     write_QR(Q, R, file);
-    printf("fin de write QR\n");
     
     fclose(file);
 
     file = fopen("QR.bin", "rb");
     CU_ASSERT_PTR_NOT_NULL(file);
 
-    printf("Debut de read QR\n");
     QR_Decomposition *read_qr = read_QR(file);
-    printf("fin de read QR\n");
     CU_ASSERT_PTR_NOT_NULL(read_qr);
 
     

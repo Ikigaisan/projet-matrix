@@ -10,13 +10,8 @@ HEADERS = headers
 HELP = help
 TESTS = tests
 
-# Détection de l'OS
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
-    FILE_OBJ = $(OBJECTS)/file_MAC.o
-else
-    FILE_OBJ = $(OBJECTS)/file.o
-endif
+FILE_OBJ = $(OBJECTS)/file.o
+
 
 # Cibles principales
 main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(FILE_OBJ)
@@ -43,8 +38,7 @@ $(OBJECTS)/matrix.o: $(SRC)/matrix.c | $(OBJECTS)
 $(OBJECTS)/file.o: $(SRC)/file.c | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-$(OBJECTS)/file_MAC.o: $(SRC)/file.c | $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ -c $<
+
 
 
 $(OBJECTS):
@@ -56,13 +50,11 @@ test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ)
 	./test
 	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
 	./test_file
-	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
-	./test_adv
 	make clean
 
-debug: $(TESTS)/tests_file.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(FILE_OBJ)
-	$(CC) $(CFLAGS) -g -O0 -o temp $^ -lm
-	./temp
+test_adv: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o
+	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
+	./test_adv
 
 
 clean:
