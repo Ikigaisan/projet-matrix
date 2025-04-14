@@ -367,24 +367,59 @@ int main(int argc, char **argv) {
         free_matrix(A);
         free_vector(b);
         free_vector(result);
-    }else if(strcmp(args->op, "transp")== 0){
-        matrix *A = read_matrix(args->input_file_A);
-        if(args->verbose){
+    }else if (strcmp(args->op, "transp") == 0) {
+        matrix* A = read_matrix(args->input_file_A);
+        if (args->verbose) {
             printf("Matrix A :\n");
             print_matrix(A);
         }
-        transp(A);
-        if(args->output_stream == stdout){
+    
+        matrix* T = init_matrix(A->n, A->m); // Matrice transposée 
+    
+        pthread_t threads[args->nb_threads];
+        thread_data_transp thread_data[args->nb_threads];
+        uint64_t chunk_size = A->m / args->nb_threads; // Division par ligne pour la transposition
+    
+        // Création des threads qui utilisent la fonction transp_thread
+        for (uint64_t i = 0; i < args->nb_threads; i++) {
+            thread_data[i].A = A;
+            thread_data[i].T = T;
+            thread_data[i].start_row = i * chunk_size;
+            thread_data[i].end_row = (i == args->nb_threads - 1) ? A->m : (i + 1) * chunk_size;
+    
+            pthread_create(&threads[i], NULL, transp_thread, &thread_data[i]);
+        }
+    
+        for (uint64_t i = 0; i < args->nb_threads; i++) {
+            pthread_join(threads[i], NULL);
+        }
+    
+        // Libérer A pour éviter les fuites de mémoire suite au changement de dimensions 
+        
+        for (uint64_t i = 0; i < A->m; i++) {
+            free(A->values[i]);
+        }
+        free(A->values);
+
+        // Mise à jour de la matrice A avec la transposée
+        A->m = T->m;
+        A->n = T->n;
+        A->values = T->values;
+    
+        free(T);
+    
+        if (args->output_stream == stdout) {
             printf("Résultat de la transposée :\n");
             print_matrix(A);
-        }else{
+        } else {
             write_matrix(A, args->output_stream);
-            if(args->verbose){
+            if (args->verbose) {
                 printf("Résultat de la transposée : \n");
                 print_matrix(A);
             }
         }
         free_matrix(A);
+    }
     }else {
         fprintf(stderr, "Cette opération n'est pas implémentée...\n");
         exit(EXIT_FAILURE);
