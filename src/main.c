@@ -11,6 +11,7 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 #include "../headers/vector_threads.h"
+#include "../headers/matrix_threads.h"
 #include <pthread.h>
 
 typedef struct {
