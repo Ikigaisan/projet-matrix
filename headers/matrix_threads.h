@@ -24,6 +24,15 @@ typedef struct {
     uint64_t end_row;
 } thread_data_m_m;
 
+typedef struct {
+    matrix* A;
+    vector* B;
+    vector* C;
+    uint64_t start_row;
+    uint64_t end_row;
+} thread_data_m_v;
+
+
 /**
  * @brief Fonction exécutée par chaque thread pour transposer une partie de la matrice.
  *
@@ -50,6 +59,31 @@ typedef struct {
  */
 void *add_m_m_thread(void *arg);
 
+
+ /**
+ * @brief Utilise les threads pour multiplier deux matrices
+ * 
+ * @param arg* pointeur vers une structure thread_data_m_m qui contient :
+ *  - Les indices de début et de fin des lignes des matrices; start_row et end_row
+ *  - Les pointeurs vers les matrices A, B et C
+ * 
+ * @result Calcule les lignes [start_row:end_row[ de la matrice résultat C,
+ *         en effectuant le produit matriciel standard : C = A × B
+ */
+void *mult_m_m_thread(void *arg);
+
+
+/**
+ * @brief Utilise les threads pour multiplier une matrice et un vecteur
+ * 
+ * @param arg* pointeur vers une structure thread_data_m_v qui contient :
+ *  - Les indices de début et de fin des lignes des matrices; start_row et end_row
+ *  - Les pointeurs vers la matrice A et les vecteurs B et C
+ * 
+ * @result Calcule les valeurs [start_row:end_row[ du vecteur résultat C,
+ *         en effectuant le produit matricie/vecteur standard : C = A × B
+ */
+void *mult_m_v_thread(void *arg);
 
 
 
