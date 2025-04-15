@@ -98,79 +98,44 @@ make clean
 
 ### headers/
 
-```file.h``` :
+- ```file.h``` : Fonctions pour lire ou écrire des double, vecteurs, matrices et QR.
 
-Ce fichier header contient les implémentations des fonctions présentes dans le fichier source ```file.c```. Les fonctions void présentes permettent de lire un double, un vecteur, une matrice et un QR ; ```write_double```, ```write_vector```, ```write_matrix``` et ```write_QR``` ainsi que les fonctions permettant de les lire ; ```read_vector```, ```read_matrix``` et ```read_QR```. 
+- ```matrix.h``` : Fonctions pour créer, afficher et manipuler des matrices.
 
-```matrix.h``` :
 
-Ce fichier header contient les implémentations des fonctions présentes dans le fichier source ```matrix.c```.
-Les deux premières fonctions permettent d'initialiser et d'imprimer une matrice; ```init_matrix``` et ```print_matrix```. Nous avons ensuite ajouté les fonctions demandées afin de pouvoir réaliser l'addition et la soustraction de deux matrices, la multiplication de deux matrices et d'une matrice et d'un vecteur ainsi que la transposée d'une matrice; ```add_m_m```, ```sub_m_m```, ```mult_m_m```, ```mult_m_v```  et  ```transp```. 
+- ```vector.h``` : Fonctions pour créer, afficher et manipuler des vecteurs.
 
-```vector.h``` :
-
-Ce fichier header contient les implémentations des fonctions présentes dans le fichier source ```vector.c```.
-Les deux premières fonctions permettent d'initialiser et d'imprimer un vecteur; ```init_vector``` et ```print_vector```. Nous avons ensuite ajouté les fonctions demandées afin de pouvoir réaliser l'addition, la soustraction de deux vecteurs, le produit scalaire de deux vecteurs ainsi que la norme d'un vecteur; ```add_v_v```, ```sub_v_v```, ```dot_prod``` et  ```norm```. 
 
 
 ### help/
 
-```approximation.py``` : 
+- ```approximation.py``` : Script pour tester lstsq.
 
-Le fichier python approximation nous a été fourni afin de tester notre fonction lstsq. 
-
-```generator_matrix.c``` et ```generator_vector.c``` : 
-
-Ces deux codes nous sont fournis pour générer des fichiers contenant des vecteurs et des matrices et ainsi nous permettre d'utiliser les commandes make generator_vector ou make generator_matrix pour obtenir le fichier binaire contenant la matrice.
+- ```generator_matrix.c``` / ```generator_vector.c``` : Générateurs de matrices et de vecteurs aléatoires sous le nom de 
+    - `matrix_A.bin`
+    - `matrix_B.bin`
+    - `vector_A.bin`
+    - `vector_B.bin`
 
 
 ### src/ 
 
 
-```file.c``` : 
+- ```file.c``` : Implémentation des I/O (input/output) en format binaire.
 
-Le fichier source ```file.c``` contient tous les codes des fonctions implémentées dans ```file.h```. 
+- ```main.c``` : Fichier principal prenant en charge les arguments et excécute les opérations demandées.
 
-
-
-```main.c``` :
-
-On va pouvoir run le fichier source ```main.c``` avec différents arguments afin d'effectuer des opérations entre les matrices et le vecteurs présentes dans les fichiers.
-
-
-
-```matrix.c``` :
-
-Le fichier source ```matrix.c``` contient tous les codes des fonctions implémentées dans ```matrix.h```. 
-
-
-
-```vector.c``` :
-
-Le fichier source ```vector.c``` contient tous les codes des fonctions implémentées dans ```vector.h```. 
+- ```matrix.c``` / ```vector.c``` : Implémentation des opérations sur les matrices et vecteurs.
 
 
 ### tests/
 
 
-```tests_basic_op.c``` :
+- ```tests_basic_op.c``` : Test des opérations de base (`add`, `sub`, `mult`, etc.).
 
-Ce fichier test contient l'ensemble des tests des fonctions basiques: ```add_m_m```, ```add_v_v```, ```sub_m_m```, ```sub_v_v```,  ```mult_m_m```, ```mult_m_v```,  ```transp``` , ```dot_prod``` et  ```norm```. 
+- ```tests_file.c``` : Test de la lecture et écriture des fichiers binaires.
 
-
-```tests_file.c``` :
-
-Ce fichier test contient l'ensemble des tests des fichiers: ```write_double```, ```write_vector```, ```write_matrix```,  ```write_QR```, ```read_vector```, ```read_matrix``` et ```read_QR```. 
-
-
-
-```tests_adv_op.c``` :
-
-Ce fichier test contient les tests des 3 fonctions complexes: ```test_lstsq```, ```test_qr``` et ```test_back_sub```. 
-
-Tous ces fichiers tests peuvent être lancés avec la commande make test. 
-
-ATTENTION : Il y a malheureusement un segmentation fault error qui s'est glissé dans les tests et nous travaillons encore à le résoudre. Sans cela nous n'avons donc pas pu tester les fonctions du fichier ```tests_adv_op.c```.
+- ```tests_adv_op.c``` : Test de `lstsq`, `qr`, `back_sub`.
 
 
 
