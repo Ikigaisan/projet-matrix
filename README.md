@@ -39,7 +39,7 @@ La commande ```./main -h``` permet d'avoir des explications sur les différents 
 ### Format des fichiers
 Les fichiers d'entrée et de sortie sont au format binaire.
 
-#### Double
+#### Doubles
 Un fichier ne contenant que la valeur `double`directement en format binaire.
 
 #### Vecteurs
