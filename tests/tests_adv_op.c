@@ -19,12 +19,17 @@ void test_qr_decomposition() {
     A->values[1][0] = 1; A->values[1][1] = 2; A->values[1][2] = 3;
     A->values[2][0] = 1; A->values[2][1] = 3; A->values[2][2] = 6;
 
-    // Matrices Q et R
-    matrix *Q = init_matrix(m, n);
-    matrix *R = init_matrix(n, n);
+    // Cloner A car qr() modifie A
+    matrix *A_clone = init_matrix(m, n);
+    for (uint64_t i = 0; i < m; i++)
+        for (uint64_t j = 0; j < n; j++)
+            A_clone->values[i][j] = A->values[i][j];
 
     // Exécuter la décomposition QR
-    qr_decomposition(A, Q, R);
+    QR_Decomposition *decomp = qr(A_clone);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(decomp);
+    matrix *Q = decomp->Q;
+    matrix *R = decomp->R;
 
     // Vérifier si A ≈ Q * R
     matrix *QR = init_matrix(m, n);
@@ -34,21 +39,20 @@ void test_qr_decomposition() {
             for (uint64_t k = 0; k < n; k++) {
                 QR->values[i][j] += Q->values[i][k] * R->values[k][j];
             }
-            // Vérification avec une tolérance
-            CU_ASSERT(fabs(A->values[i][j] - QR->values[i][j]) < EPSILON);
+            CU_ASSERT_DOUBLE_EQUAL(QR->values[i][j], A->values[i][j], 1e-6);
         }
     }
 
     // Libération de la mémoire
-    for (uint64_t i = 0; i < m; i++) {
-        free(A->values[i]);
-        free(Q->values[i]);
-        free(R->values[i]);
-        free(QR->values[i]);
-    }
-    free(A->values); free(Q->values); free(R->values); free(QR->values);
-    free(A); free(Q); free(R); free(QR);
+    free_matrix(A);
+    free_matrix(A_clone);
+    free_matrix(QR);
+    free_matrix(R);
+    // Q est en fait A_clone modifié → libérer seulement une fois
+    free_matrix(Q); 
+    free(decomp);
 }
+
 void test_lstsq() {
     // Création d'une matrice 2x2
     matrix *A = init_matrix(2, 2);
