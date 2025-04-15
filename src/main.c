@@ -395,7 +395,7 @@ int main(int argc, char **argv) {
         }
     
         // Libérer A pour éviter les fuites de mémoire suite au changement de dimensions 
-        
+
         for (uint64_t i = 0; i < A->m; i++) {
             free(A->values[i]);
         }
@@ -419,7 +419,7 @@ int main(int argc, char **argv) {
             }
         }
         free_matrix(A);
-    }
+    
     }else {
         fprintf(stderr, "Cette opération n'est pas implémentée...\n");
         exit(EXIT_FAILURE);
