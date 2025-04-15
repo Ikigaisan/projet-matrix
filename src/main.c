@@ -156,7 +156,11 @@ int main(int argc, char **argv) {
         }
         vector *z = init_vector(x->m); // Vecteur qui contiendra x + y
 
-        pthread_t threads[args->nb_threads];
+        if(x->m != y->m){
+            fprintf(stderr, "Erreur : les vecteurs x et y doivent avoir la même taille.\n");
+            exit(EXIT_FAILURE);
+        }else{
+            pthread_t threads[args->nb_threads];
         thread_data_v_v thread_data[args->nb_threads];
         size_t chunk_size = x->m / args->nb_threads;
 
@@ -173,6 +177,8 @@ int main(int argc, char **argv) {
 
         for(uint64_t i = 0; i < args->nb_threads; i++){
             pthread_join(threads[i], NULL);
+        }
+
         }
 
         
@@ -202,28 +208,34 @@ int main(int argc, char **argv) {
         }
         vector *z = init_vector(x->m);
 
-        pthread_t threads[args->nb_threads]; // tableau de threads en mode threadpool mais de nb_threads --> création de nb_threads
-        thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
-        size_t chunk_size = x->m / args->nb_threads; // défini la répartition dans les différents threads
-        
-        // sub_v_v(x, y, z); on le supprime parce que mtn on passe en multithreads et plus en monothread ? 
-        // Création des threads qui utilisent la fonction sub_v_v_thread
-
-        for(uint64_t i = 0; i < args->nb_threads; i++) {
-            thread_data[i].x = x;
-            thread_data[i].y = y;
-            thread_data[i].z = z;
-            thread_data[i].start_idx = i*chunk_size;
-            thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
-
-            pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
-
+        if(x->m != y->m){
+            fprintf(stderr, "Erreur : les vecteurs x et y doivent avoir la même taille.\n");
+            exit(EXIT_FAILURE);
+        }else{
+            pthread_t threads[args->nb_threads]; // tableau de threads en mode threadpool mais de nb_threads --> création de nb_threads
+            thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
+            size_t chunk_size = x->m / args->nb_threads; // défini la répartition dans les différents threads
+            
+            // sub_v_v(x, y, z); on le supprime parce que mtn on passe en multithreads et plus en monothread ? 
+            // Création des threads qui utilisent la fonction sub_v_v_thread
+    
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                thread_data[i].x = x;
+                thread_data[i].y = y;
+                thread_data[i].z = z;
+                thread_data[i].start_idx = i*chunk_size;
+                thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
+    
+                pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
+    
+            }
+    
+            for(uint64_t i = 0; i < args->nb_threads; i++){
+                pthread_join(threads[i], NULL);
+            }
         }
 
-        for(uint64_t i = 0; i < args->nb_threads; i++){
-            pthread_join(threads[i], NULL);
-        }
-        
+    
         if (args->output_stream == stdout) {
             printf("Résultat de la soustraction entre les deux vecteurs : \n");
             print_vector(z);
@@ -251,18 +263,30 @@ int main(int argc, char **argv) {
         matrix *C = init_matrix(A->m, A->n);
         // add_m_m(A, B, C); idem 
 
-        pthread_t threads[args->nb_threads];
-        thread_data_m_m thread_data[args->nb_threads]; 
-        size_t chunk_size = A->m / args->nb_threads;
+        if (A->m != B->m || A->n != B->n) {
+            fprintf(stderr, "Erreur : les matrices A et B doivent avoir la même taille.\n");
+            exit(EXIT_FAILURE);
+        }else{
+            pthread_t threads[args->nb_threads];
+            thread_data_m_m thread_data[args->nb_threads]; 
+            size_t chunk_size = A->m / args->nb_threads;
 
-        for(uint64_t i = 0; i < args->nb_threads; i++){
-            thread_data[i].A = A;
-            thread_data[i].B = B;
-            thread_data[i].C = C;
-            thread_data[i].start_row = i*start_row;
-            thread_data[i].end_row = (i == )
+            for(uint64_t i = 0; i < args->nb_threads; i++){
+                thread_data[i].A = A;
+                thread_data[i].B = B;
+                thread_data[i].C = C;
+                thread_data[i].start_row = i * chunk_size;
+                thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
+                pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+
+            }
+
+            for(uint64_t i = 0; i < args->nb_threads; i++){
+                pthread_join(threads[i], NULL);
+            }
         }
+        
 
     
         if (args->output_stream == stdout) {
