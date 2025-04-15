@@ -11,6 +11,7 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 #include "../headers/vector_threads.h"
+#include "../headers/matrix_threads.h"
 #include <pthread.h>
 
 typedef struct {
@@ -249,6 +250,20 @@ int main(int argc, char **argv) {
         }
         matrix *C = init_matrix(A->m, A->n);
         // add_m_m(A, B, C); idem 
+
+        pthread_t threads[args->nb_threads];
+        thread_data_m_m thread_data[args->nb_threads]; 
+        size_t chunk_size = A->m / args->nb_threads;
+
+        for(uint64_t i = 0; i < args->nb_threads; i++){
+            thread_data[i].A = A;
+            thread_data[i].B = B;
+            thread_data[i].C = C;
+            thread_data[i].start_row = i*start_row;
+            thread_data[i].end_row = (i == )
+
+        }
+
     
         if (args->output_stream == stdout) {
             printf("Résultat de l'addition entre les deux matrices : \n");
