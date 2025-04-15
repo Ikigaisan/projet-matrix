@@ -1,48 +1,75 @@
-# LEPL1503 - Projet 2025
+# LEPL1503 - Projet 2025 : Projet matrix
 
 Ce projet consiste à réaliser des opérations sur les matrices et vecteurs.
 Cette partie contient une version adaptée aux matrices creuses. 
 Certaines opérations ne sont donc pas implémentées, et seule une version séquentielle est disponible.
 
-## Lancer le programme
+## Table des matières
+- [Lancer le programme](#lancer-le-programme)
+- [Arborescence du projet](#arborescence-du-projet)
+- [Détails des fichiers](#descritpion-des-dossiers-et-fichiers)
+- [Tests](#tests)
+- [Nettoyage](#nettoyage)
 
-Pour compiler le projet, entrez la commande
+## Lancer le programme
+### Compilation
 
 ```sh
 make
 ```
 
-L'exécutable est alors généré à la racine du projet. Pour l'utiliser, entrez la commande
+L'exécutable est alors généré à la racine du projet.
+
+### Utilisation
 
 ```sh
 ./main [-v] [-f output_stream] name_op input_file_A [input_file_B]
 ```
 
 Les arguments entre crochets sont optionnels.
-Les opérations disponibles sont : ```add_m_m```, ```sub_m_m```, ```mult_m_v```, ```transp``` et ```back_sub```.
+Les opérations disponibles sont : 
+- ```add_m_m```
+-  ```sub_m_m```
+-  ```mult_m_v```
+-  ```transp```
+- ```back_sub```.
 
 La commande ```./main -h``` permet d'avoir des explications sur les différents paramètres.
 
-Les fichiers d'entrée et de sortie sont au format binaire. Pour un vecteur, le fichier prend le même format que celui indiqué dans l'énoncé du projet.
-Pour une matrice, il est différent afin d'être adapté aux matrices creuses. Celui-ci contient :
+### Format des fichiers
+Les fichiers d'entrée et de sortie sont au format binaire.
 
-- Le nombre de lignes (`m`), de colonnes (`n`) et de valeurs non nulles (`nnz`) dans la matrice. Ces trois valeurs sont des `uint64_t` stockées en big-endian.
-- Les nnz valeurs non nulles de la matrice. Ce sont des double.
-- Les nnz colonnes de ces valeurs. Ce sont des `uint64_t`.
-- Les m+1 index de débuts de lignes, comme voulu par le format CSR. Ce sont des `uint64_t`. Par exemple, si la matrice contient 3 lignes et a 2 valeurs non nulles, une à la ligne 0 et une à la ligne 2, on pourra lire [0 1 1 2].
+#### Double
+Un fichier ne contenant que la valeur `double`directement en format binaire.
 
+#### Vecteurs
+1. **Taille `m` du fichier** (uint64_t, big endian)
+2. **Valeurs contenues dans le vecteur** dans l'ordre
+
+#### Matrices
+1. **Nombre de lignes `m`** (`uint64_t`, big endian)
+2. **Nombre de colonnes `n`** (`uint64_t`, big endian)
+3. **Ligne des matrices** :
+    - Chaque ligne commence par l'indice de ligne (`uint64_t`, big endian)
+    - Ensuite les `n` **valeurs** (`double`) contenues dans la ligne `m`
+
+#### Décomposition QR
+1. **Nombre de ligne `m` de la matrice `Q`**(`uint64_t`, big endian)
+2. **Nombre de colonnes `n`de la matrice `Q`** (`uint64_t`, big endian)
+3. **Valeurs de la matrice `Q`**(`double`)
+4. **Valeurs de la matrice `R`**(au format `nxn`,`double`)
+
+## Tests
 Pour lancer les tests, tapez la commande
 
 ```sh
 make test
 ```
 
-Enfin, pour nettoyer le projet en senlevant les fichiers objets et les exécutables, utilisez la commande
-
+## Nettoyage
 ```sh
 make clean
 ```
-
 ## Arborescence du projet
 
 ```
@@ -67,9 +94,9 @@ make clean
 ├── Makefile
 └── README.md
 ```
-## Descritpion de l'arborescence du projet
+## Descritpion des dossiers et fichiers
 
-HEADERS
+### headers/
 
 ```file.h``` :
 
@@ -86,7 +113,7 @@ Ce fichier header contient les implémentations des fonctions présentes dans le
 Les deux premières fonctions permettent d'initialiser et d'imprimer un vecteur; ```init_vector``` et ```print_vector```. Nous avons ensuite ajouté les fonctions demandées afin de pouvoir réaliser l'addition, la soustraction de deux vecteurs, le produit scalaire de deux vecteurs ainsi que la norme d'un vecteur; ```add_v_v```, ```sub_v_v```, ```dot_prod``` et  ```norm```. 
 
 
-HELP 
+### help/
 
 ```approximation.py``` : 
 
@@ -97,7 +124,7 @@ Le fichier python approximation nous a été fourni afin de tester notre fonctio
 Ces deux codes nous sont fournis pour générer des fichiers contenant des vecteurs et des matrices et ainsi nous permettre d'utiliser les commandes make generator_vector ou make generator_matrix pour obtenir le fichier binaire contenant la matrice.
 
 
-SRC 
+### src/ 
 
 
 ```file.c``` : 
@@ -123,7 +150,7 @@ Le fichier source ```matrix.c``` contient tous les codes des fonctions implémen
 Le fichier source ```vector.c``` contient tous les codes des fonctions implémentées dans ```vector.h```. 
 
 
-TESTS
+### tests/
 
 
 ```tests_basic_op.c``` :
@@ -144,30 +171,6 @@ Ce fichier test contient les tests des 3 fonctions complexes: ```test_lstsq```, 
 Tous ces fichiers tests peuvent être lancés avec la commande make test. 
 
 ATTENTION : Il y a malheureusement un segmentation fault error qui s'est glissé dans les tests et nous travaillons encore à le résoudre. Sans cela nous n'avons donc pas pu tester les fonctions du fichier ```tests_adv_op.c```.
-
-
-
-MAKEFILE 
-
-Le fichier Makefile est lancé en même temps que les tests lors de l'exéctution de la commande make test. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
