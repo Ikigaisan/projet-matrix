@@ -13,7 +13,6 @@ TESTS = tests
 
 
 
-# Utilisez -pthread pour lier avec pthread
 main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o
 	$(CC) -o $@ $^ -pthread -lm 
 
