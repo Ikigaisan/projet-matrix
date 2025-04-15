@@ -51,11 +51,11 @@ void usage(char *prog_name) {
 
 int parse_args(args_t *args, int argc, char **argv) {
     // Valeurs par défaut
-    args->verbose = false;
+    args->verbose = false; 
     args->nb_threads = 1;
     args->output_stream = stdout;
-    args->deg = 1;
-    args->op = NULL;
+    args->deg = 1; 
+    args->op = NULL; 
     args->input_file_A = NULL;
     args->input_file_B = NULL;
 
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
             thread_data[i].start_idx = i * chunk_size;
             thread_data[i].end_idx = (i == args->nb_threads -1)? x->m : (i+1)*chunk_size;
 
-            pthread_create(&threads[i],NULL,add_v_v_thread, &thread_data);
+            pthread_create(&threads[i],NULL,add_v_v_thread, &thread_data[i]);
         }
 
         for(uint64_t i = 0; i < args->nb_threads; i++){
@@ -200,7 +200,29 @@ int main(int argc, char **argv) {
             print_vector(y);
         }
         vector *z = init_vector(x->m);
-        sub_v_v(x, y, z);
+
+        pthread_t threads[args->nb_threads]; // tableau de threads en mode threadpool mais de nb_threads --> création de nb_threads
+        thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
+        size_t chunk_size = x->m / args->nb_threads; // défini la répartition dans les différents threads
+        
+        // sub_v_v(x, y, z); on le supprime parce que mtn on passe en multithreads et plus en monothread ? 
+        // Création des threads qui utilisent la fonction sub_v_v_thread
+
+        for(uint64_t i = 0; i < args->nb_threads; i++) {
+            thread_data[i].x = x;
+            thread_data[i].y = y;
+            thread_data[i].z = z;
+            thread_data[i].start_idx = i*chunk_size;
+            thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
+
+            pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
+
+        }
+
+        for(uint64_t i = 0; i < args->nb_threads; i++){
+            pthread_join(threads[i], NULL);
+        }
+        
         if (args->output_stream == stdout) {
             printf("Résultat de la soustraction entre les deux vecteurs : \n");
             print_vector(z);
