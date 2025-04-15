@@ -248,7 +248,8 @@ int main(int argc, char **argv) {
             print_matrix(B);
         }
         matrix *C = init_matrix(A->m, A->n);
-        add_m_m(A, B, C);
+        // add_m_m(A, B, C); idem 
+    
         if (args->output_stream == stdout) {
             printf("Résultat de l'addition entre les deux matrices : \n");
             print_matrix(C);
