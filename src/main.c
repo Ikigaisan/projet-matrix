@@ -189,7 +189,7 @@ int main(int argc, char **argv) {
         free_vector(x);
         free_vector(y);
         free_vector(z);
-    }if (strcmp(args->op, "sub_v_v") == 0) {
+    }else if (strcmp(args->op, "sub_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
         if (args->verbose) {
             printf("vector x : \n");

@@ -12,5 +12,5 @@ void* add_v_v_thread(void *arg) {
         data->z->values[i] = data->x->values[i] + data->y->values[i];
     }
 
-    return NULL;  // Il faut retourner un void* (NULL ici si vous n'avez pas de retour particulier)
+    return NULL;
 }
