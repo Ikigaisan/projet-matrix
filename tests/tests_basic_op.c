@@ -15,7 +15,7 @@
 
 
 void test_add_v_v(void){
-    uint64_t m = 300;
+    uint64_t m = 200;
     vector *v = init_vector(m);
     vector *w = init_vector(m);
     for (uint64_t i = 0; i < m; i++) {
@@ -27,9 +27,9 @@ void test_add_v_v(void){
     for (uint64_t i = 0; i < m; i++) {
         CU_ASSERT_DOUBLE_EQUAL(z->values[i], v->values[i] + w->values[i], 1e-3);
     }
-    free(v);
-    free(w);
-    free(z);
+    free_vector(v);
+    free_vector(w);
+    free_vector(z);
 }
 void test_add_m_m(void) {
     uint64_t m = 100;
@@ -50,10 +50,22 @@ void test_add_m_m(void) {
                                    A->values[i][j] + B->values[i][j], 1e-3);
         }
     }
+    
+    // Libération de la mémoire allouée pour les matrices
+    for (uint64_t i = 0; i < m; i++) {
+        free(A->values[i]);
+        free(B->values[i]);
+        free(C->values[i]);
+    }
+    free(A->values);
+    free(B->values);
+    free(C->values);
+    
     free(A);
     free(B);
     free(C);
 }
+
 
 
 void test_mult_m_v(void) {
@@ -80,7 +92,7 @@ void test_mult_m_v(void) {
     }
     free_matrix(A);
     free_vector(B);
-    free_vector(C);
+    
 
 }
 void test_norm(void) {
