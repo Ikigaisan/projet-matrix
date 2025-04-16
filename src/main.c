@@ -118,7 +118,7 @@ int parse_args(args_t *args, int argc, char **argv) {
         strcmp(args->op, "sub_m_m") == 0 || strcmp(args->op, "mult_m_v") == 0 ||
         strcmp(args->op, "mult_m_m") == 0 || strcmp(args->op, "norm") == 0 ||
         strcmp(args->op, "back_sub") == 0 || strcmp(args->op, "lstsq") == 0 ||
-        strcmp(args->op, "QR") == 0 || strcmp(args->op, "transp")==0) {
+        strcmp(args->op, "QR") == 0) {
         if (optind == argc) {
             fprintf(stderr,
                     "Vous devez fournir un second fichier d'instance pour "
