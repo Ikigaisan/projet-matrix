@@ -21,7 +21,6 @@ void* transp_thread(void* arg) {
 void* add_m_m_thread(void* arg){
     
     thread_data_m_m* data = (thread_data_m_m*)arg;
-    uint64_t m = data->A->m;
     uint64_t n = data->A->n;
 
     for(uint64_t i = data->start_row; i < data->end_row; i++) {
@@ -36,7 +35,6 @@ void* add_m_m_thread(void* arg){
 void* sub_m_m_thread(void* arg){
     
     thread_data_m_m* data = (thread_data_m_m*)arg;
-    uint64_t m = data->A->m;
     uint64_t n = data->A->n;
 
     for(uint64_t i = data->start_row; i < data->end_row; i++) {
@@ -51,7 +49,6 @@ void* sub_m_m_thread(void* arg){
 void* mult_m_m_thread(void* arg){
 
     thread_data_m_m* data = (thread_data_m_m*) arg;
-    uint64_t m = data->A->m;
     uint64_t n = data->A->n;
     uint64_t o = data->B->n;
 
@@ -68,8 +65,7 @@ void* mult_m_m_thread(void* arg){
 
 void* mult_m_v_thread(void* arg){
     
-    thread_data_m_v* data = (thread_data_m_m*) arg;
-    uint64_t m = data->A->m;
+    thread_data_m_v* data = (thread_data_m_v*) arg;
     uint64_t n = data->A->n;
 
     for (uint64_t i = data->start_row; i < data->end_row; i++) {
