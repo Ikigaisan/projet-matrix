@@ -42,7 +42,7 @@ void print_vector(vector *);
  *
  * @result z = x + y
  */
-void add_v_v(vector *, vector *, vector *);
+void add_v_v(vector *x, vector *y, vector *z);
 
 
 
@@ -57,7 +57,7 @@ void add_v_v(vector *, vector *, vector *);
  *
  * @result z = x - y
  */
-void sub_v_v(vector *, vector *, vector *);
+void sub_v_v(vector *x, vector *y, vector *z);
 
 /**
  * @brief Calule le produit scalaire entre deux vecteurs.
@@ -71,23 +71,23 @@ void sub_v_v(vector *, vector *, vector *);
  * @pre Les vecteurs x et y doivent être de la même taille.
  * 
  */
-void dot_prod(vector *, vector *, double *);
+void dot_prod(vector *x, vector *y, double *result);
 
 
 /**
  * Calcule la norme d'un vecteur
  * 
- * @param vector* le vecteur dont on calcule la norme
+ * @param vector* x le vecteur dont on calcule la norme
  * @param double* result Pointeur dnas lequel stocker la valeur de la norme
  * 
  * 
  */
-void norm(vector *, double *);
+void norm(vector *x, double *result);
 
 /**
  * Free correctement le vecteur.
  */
-void free_vector(vector *);
+void free_vector(vector *v);
 
 
 #endif /* _VECTOR_H_ */

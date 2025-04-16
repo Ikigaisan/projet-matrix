@@ -60,7 +60,7 @@ test_adv: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o
 	./test_adv
 
 compare: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o
-	$(CC) $(CFLAGS) -g -o compare $(TESTS)/compare.c $^ -pthread -lm
+	$(CC) $(CFLAGS) -o compare $(TESTS)/compare.c $^ -pthread -lm
 
 clean:
 	rm -f $(OBJECTS)/*.o
