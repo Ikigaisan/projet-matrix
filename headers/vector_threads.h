@@ -39,5 +39,4 @@ void *add_v_v_thread(void *arg);
 void *sub_v_v_thread(void *arg);
 
 
-
 #endif /* _VECTOR_H_T */
