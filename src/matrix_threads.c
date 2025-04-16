@@ -25,7 +25,7 @@ void* add_m_m_thread(void* arg){
 
     if(data->A->m != data->B->m ||data->A->m != data->C->m ||
         data->A->n != data->B->n || data->A->n != data->C->n){
-            fprinf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
+            fprintf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
             free_matrix(data->A);
             free_matrix(data->B);
             free_matrix(data->C);
@@ -47,7 +47,7 @@ void* sub_m_m_thread(void* arg){
 
     if(data->A->m != data->B->m ||data->A->m != data->C->m ||
         data->A->n != data->B->n || data->A->n != data->C->n){
-            fprinf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
+            fprintf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
             free_matrix(data->A);
             free_matrix(data->B);
             free_matrix(data->C);
