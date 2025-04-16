@@ -37,13 +37,11 @@ $(OBJECTS)/matrix.o: $(SRC)/matrix.c | $(OBJECTS)
 $(OBJECTS)/file.o: $(SRC)/file.c | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-
 $(OBJECTS)/vector_threads.o: $(SRC)/vector_threads.c $(HEADERS)/vector_threads.h | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJECTS):
 	mkdir -p $(OBJECTS)
-
 
 test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
 	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm

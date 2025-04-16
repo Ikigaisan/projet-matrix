@@ -12,7 +12,7 @@ Ce projet consiste à réaliser des opérations sur les matrices et vecteurs.
 ## Table des matières 
 - [Lancer le programme](#lancer-le-programme)
 - [Arborescence du projet](#arborescence-du-projet)
-- [Détails des fichiers](#descritpion-des-dossiers-et-fichiers)
+- [Détails des fichiers](#description-des-dossiers-et-fichiers)
 - [Tests](#tests)
 - [Nettoyage](#nettoyage)
 
@@ -111,14 +111,13 @@ make clean
 ├── Makefile
 └── README.md
 ```
-## Descritpion des dossiers et fichiers
+## Description des dossiers et fichiers
 
 ### headers/
 
 - ```file.h``` : Fonctions pour lire ou écrire des double, vecteurs, matrices et QR.
 
 - ```matrix.h``` : Fonctions pour créer, afficher et manipuler des matrices.
-
 
 - ```vector.h``` : Fonctions pour créer, afficher et manipuler des vecteurs.
 

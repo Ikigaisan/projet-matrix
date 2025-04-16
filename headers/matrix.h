@@ -101,7 +101,16 @@ void transp(matrix*A);
  */
 void mult_m_v(matrix *A, vector *B, vector *C);
 
-
+/**
+ * Décomposition QR d'une matrice.
+ *
+ * La décomposition QR d'une matrice A est une factorisation telle que :
+ * A = Q * R,
+ * où Q est une matrice orthogonale (ou orthonormée) et R est une matrice triangulaire supérieure.
+ *
+ * @param matrix* Q La matrice orthogonale/orthonormée obtenue.
+ * @param matrix* R La matrice triangulaire supérieure correspondante.
+ */
 QR_Decomposition *qr (matrix *A);
 
 
