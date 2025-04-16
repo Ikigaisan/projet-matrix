@@ -34,7 +34,7 @@ void* add_m_m_thread(void* arg){
 
 }
 
-void* subb_m_m_thread(void* arg){
+void* sub_m_m_thread(void* arg){
     
     thread_data_m_m* data = (thread_data_m_m*)arg;
     uint64_t m = data->A->m;

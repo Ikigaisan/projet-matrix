@@ -59,6 +59,17 @@ typedef struct {
  */
 void *add_m_m_thread(void *arg);
 
+ /**
+ * @brief Utilise les threads pour soustraire deux matrices
+ * 
+ * @param arg* pointeur vers une structure thread_data_m_m qui contient :
+ *  - Les indices de début et de fin des lignes des matrices; start_row et end_row
+ *  - Les pointeurs vers les matrices A, B et C
+ * 
+ * @result C[start:end] = A[start:end] - B[start:end]
+ */
+void *sub_m_m_thread(void *arg);
+
 
  /**
  * @brief Utilise les threads pour multiplier deux matrices

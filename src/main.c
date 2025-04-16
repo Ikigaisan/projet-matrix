@@ -285,7 +285,7 @@ int main(int argc, char **argv) {
             for(uint64_t i = 0; i < args->nb_threads; i++){
                 pthread_join(threads[i], NULL);
             }
-        }
+        } 
     
     
         if (args->output_stream == stdout) {
@@ -314,7 +314,32 @@ int main(int argc, char **argv) {
             print_matrix(B);
         }
         matrix *C = init_matrix(A->m, A->n);
-        sub_m_m(A, B, C);
+        //sub_m_m(A, B, C);
+
+        if (A->m != B->m || A->n != B->n) {
+            fprintf(stderr, "Erreur : les matrices A et B doivent avoir la même taille.\n");
+            exit(EXIT_FAILURE);
+        }else{
+            pthread_t threads[args->nb_threads];
+            thread_data_m_m thread_data[args->nb_threads]; 
+            size_t chunk_size = A->m / args->nb_threads;
+
+            for(uint64_t i = 0; i < args->nb_threads; i++){
+                thread_data[i].A = A;
+                thread_data[i].B = B;
+                thread_data[i].C = C;
+                thread_data[i].start_row = i * chunk_size;
+                thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
+
+                pthread_create(&threads[i], NULL, sub_m_m_thread, &thread_data[i]);
+
+            }
+
+            for(uint64_t i = 0; i < args->nb_threads; i++){
+                pthread_join(threads[i], NULL);
+            }
+        } 
+    
         if (args->output_stream == stdout) {
             printf("Résultat de la soustraction entre les deux matrices : \n");
             print_matrix(C);
