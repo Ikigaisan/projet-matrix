@@ -13,7 +13,7 @@ TESTS = tests
 
 
 
-main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o
+main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o
 	$(CC) -o $@ $^ -pthread -lm 
 
 
@@ -25,7 +25,7 @@ generator_vector: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o
 	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_vector.c $^ -lm
 	./$@
 
-$(OBJECTS)/main.o: $(SRC)/main.c $(HEADERS)/vector.h $(HEADERS)/matrix.h $(HEADERS)/file.h | $(OBJECTS)
+$(OBJECTS)/main.o: $(SRC)/main.c $(HEADERS) | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJECTS)/vector.o: $(SRC)/vector.c | $(OBJECTS)
@@ -39,6 +39,9 @@ $(OBJECTS)/file.o: $(SRC)/file.c | $(OBJECTS)
 
 
 $(OBJECTS)/vector_threads.o: $(SRC)/vector_threads.c $(HEADERS)/vector_threads.h | $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+$(OBJECTS)/matrix_threads.o : $(SRC)/matrix_threads.c $(HEADERS)/matrix_threads.h | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJECTS):

@@ -8,11 +8,13 @@
 
 void make_file_matrix(char* filename){
     uint64_t m = 3;
-    uint64_t n = 1;
+    uint64_t n = 3;
     matrix *A = init_matrix(m, n);
-    A->values[0][0] = rand()/2;
-    A->values[1][0] = rand()/2;
-    A->values[2][0] = rand()/2;
+    for(uint64_t i = 0; i<m; i++){
+        for(u_int64_t j = 0; j<n; j++){
+            A->values[i][j] = rand()/2;
+        }
+    }
     char *file_name = filename;
     FILE *file = fopen(file_name, "w+");
     write_matrix(A, file);
