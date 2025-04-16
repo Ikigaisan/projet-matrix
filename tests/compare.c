@@ -45,24 +45,27 @@ void compare_add_v_v(uint64_t size, int num_threads){
         data[i].y = y;
         data[i].z = z_multi;
         data[i].start_idx = i*chunk_size;
-        data[i].end_idx = (i==num_threads - 1) ? size:(i+1)*chunk_size;
+        data[i].end_idx = (i==num_threads - 1) ? size : (i+1)*chunk_size;
         pthread_create(&threads[i], NULL, add_v_v_thread, &data[i]);
+    }
+    for (uint64_t i = 0; i < num_threads; i++) {
+        pthread_join(threads[i], NULL);
     }
     clock_gettime(CLOCK_MONOTONIC, &end);
     elapsed_multi = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     // COmparaison
     printf("Pour la fonction [add] :\n");
-    printf(" - Le monothread a mis %f s \n",elapsed_mono);
+    printf("- Le monothread a mis %f s \n",elapsed_mono);
     printf("- Le multithread a mis %f s\n", elapsed_multi);
     
-    if(elapsed_multi>elapsed_mono){
+    if (elapsed_multi > elapsed_mono) {
         double diff = elapsed_multi - elapsed_mono;
-        double pourcent = (diff/elapsed_mono) * 100.0;
+        double pourcent = (diff / elapsed_mono) * 100.0;
         printf("Le monothread est plus rapide de %.2f%%\n", pourcent);
-    }else{
+    } else {
         double diff = elapsed_mono - elapsed_multi;
-        double pourcent = (diff/elapsed_multi) * 100.0;
+        double pourcent = (diff / elapsed_mono) * 100.0;
         printf("Le multithread est plus rapide de %.2f%%\n", pourcent);
     }
 
@@ -74,7 +77,7 @@ void compare_add_v_v(uint64_t size, int num_threads){
 }
 
 int main(int argc, char *argv[]){
-    uint64_t size = 10000;
+    uint64_t size = 10000000;
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <nombre_de_threads>\n", argv[0]);
         return EXIT_FAILURE;
@@ -89,7 +92,7 @@ int main(int argc, char *argv[]){
 
     printf("Lancement avec %d threads\n", num_threads);
 
-    compare_add_v_v(10000, num_threads);
+    compare_add_v_v(size, num_threads);
 
     return 0;
 }
