@@ -14,3 +14,14 @@ void* add_v_v_thread(void *arg) {
 
     return NULL;
 }
+
+void* sub_v_v_thread (void *arg) {
+    thread_data_v_v *data = (thread_data_v_v *)arg;
+
+    for(int i = data->start_idx; i < data->end_idx; i++) {
+        data->z->values[i] = data->x->values[i] - data->y->values[i];
+    }
+
+    return NULL; 
+
+}
