@@ -52,12 +52,6 @@ void print_matrix(matrix *);
 void add_m_m(matrix *, matrix *, matrix *);
 
 
-
-
-
-
-
-
 /**
  * Calcule la soustraction de deux matrices
  *
@@ -89,6 +83,7 @@ void free_matrix(matrix *);
  * @result C = A * B
 */
 void mult_m_m(matrix *A, matrix *B, matrix *C);
+
 /**
  * Calcule la transposée d'une matrice
  * 

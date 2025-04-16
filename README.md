@@ -1,10 +1,15 @@
 # LEPL1503 - Projet 2025 : Projet matrix
+Groupe L2
+
+Membres : Aymeric Grymonpré, Clara Hoffait, Emma Benmeridja, Lisa Fredon, Marthe Thiry, Oscar De Vleeschouwer 
+
+Environnement dans lequel le projet d'execute : Rasberry Pi
+
+Packages recquis : <errno.h>, <getopt.h>, <stdbool.h>, <stdint.h>, <stdio.h>, <stdlib.h>, <string.h>, <inttypes.h>, <math.h>, <float.h>, <time.h>, <sys/mman.h>, <fcntl.h>, <unistd.h>, <endian.h>, <errno.h>, <stdint.h>
 
 Ce projet consiste à réaliser des opérations sur les matrices et vecteurs.
-Cette partie contient une version adaptée aux matrices creuses. 
-Certaines opérations ne sont donc pas implémentées, et seule une version séquentielle est disponible.
 
-## Table des matières
+## Table des matières 
 - [Lancer le programme](#lancer-le-programme)
 - [Arborescence du projet](#arborescence-du-projet)
 - [Détails des fichiers](#descritpion-des-dossiers-et-fichiers)
@@ -12,12 +17,12 @@ Certaines opérations ne sont donc pas implémentées, et seule une version séq
 - [Nettoyage](#nettoyage)
 
 ## Lancer le programme
+
 ### Compilation
 
 ```sh
 make
 ```
-
 L'exécutable est alors généré à la racine du projet.
 
 ### Utilisation
@@ -65,6 +70,18 @@ Pour lancer les tests, tapez la commande
 ```sh
 make test
 ```
+
+### Tests mémoire
+Commande pour effectuer les tests Valgrind : tests sur la gestion de mémoire et la détection de fuites de mémoire sur le fichier main.
+ ```sh
+make valgrind
+```
+
+Commande pour effectuer les tests Valgrind : tests sur les tests unitaires.
+```sh
+make valgrindtest
+```
+Ces commandes sont compatibles uniquement avec un ordinateur Windows.
 
 ## Nettoyage
 ```sh

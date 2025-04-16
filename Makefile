@@ -61,3 +61,20 @@ clean:
 	rm -f *.bin
 
 .PHONY: clean test debug
+
+valgrind: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test
+
+	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test_file
+
+	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test_adv
+
+valgrindtest: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test
+
+	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test_file

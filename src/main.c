@@ -385,7 +385,25 @@ int main(int argc, char **argv) {
             }
         }
         free_matrix(A);
-    }else {
+    }
+    else if (strcmp(args->op, "valgrind") == 0) {
+        if (args->verbose) {
+            fprintf(stderr, "Lancement des tests sous Valgrind...\n");
+        }
+        int result = system("make valgrind");
+        free(args);
+        exit(result);
+    }
+    else if (strcmp(args->op, "valgrindtest") == 0) {
+        if (args->verbose) {
+            fprintf(stderr, "Lancement des tests basiques sous Valgrind...\n");
+        }
+        int result = system("make valgrindtest");
+        free(args);
+        exit(result);
+    }
+
+    else {
         fprintf(stderr, "Cette opération n'est pas implémentée...\n");
         exit(EXIT_FAILURE);
     }
