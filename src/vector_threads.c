@@ -28,7 +28,8 @@ void* sub_v_v_thread (void *arg) {
     thread_data_v_v *data = (thread_data_v_v *)arg;
 
     if(data->x->m != data->y->m || data->x->m != data->z->m){
-        fprintf(stderr, "Tailles des vecteurs invalides : x(%" PRIu64 ") y(%" PRIu64 ") z(%" PRIu64 ")", data->x->m, data->y->m, data->z->m);
+        fprintf(stderr, "Tailles des vecteurs invalides : x(%" PRIu64 ") y(%" PRIu64 ") z(%" PRIu64 ")", 
+            data->x->m, data->y->m, data->z->m);
         free_vector(data->x);
         free_vector(data->y);
         free_vector(data->z);
