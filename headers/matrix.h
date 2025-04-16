@@ -107,7 +107,13 @@ void transp(matrix*A);
 void mult_m_v(matrix *A, vector *B, vector *C);
 
 
-QR_Decomposition *qr (matrix *A);
+/**
+ * @brief Effectue la décomposition QR d'une matrice.
+ *
+ * @param A La matrice à décomposer.
+ * @return Une structure QR_Decomposition contenant les matrices Q et R, ou NULL en cas d'échec.
+ */
+ QR_Decomposition *qr(matrix *A);
 
 
 /**

@@ -295,10 +295,35 @@ vector* Q_i (matrix *A, uint64_t i) {
     return colone;
 }
 
+
 QR_Decomposition *qr(matrix *A) {
-    matrix *Q = A;
-    matrix *R = init_matrix(A->m, A->n);
-    if (!R) return NULL;
+    matrix *Q = init_matrix(A->m, A->n);
+    matrix *R = init_matrix(A->n, A->n);
+
+    uint64_t m = A->m, n = A->n;
+    if (!R) {
+        fprintf(stderr, "Erreur d'allocation mémoire pour R.\n");
+        free_matrix(Q);
+        return NULL;
+    }
+    if (!Q) {
+        fprintf(stderr, "Erreur d'allocation mémoire pour Q.\n");
+        free_matrix(R);
+        return NULL;
+    }
+
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            Q->values[i][j] = A->values[i][j];
+        }
+    }
+    for (uint64_t i = 0; i < n; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            R->values[i][j] = 0.0;
+        }
+    }
+
+
 
     for (uint64_t i = 0; i < A->n; i++) {
         vector *q_i = Q_i(Q, i);
