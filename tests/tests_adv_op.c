@@ -69,10 +69,18 @@ void test_qr_decomposition() {
     A4->values[1][0] = 4; A4->values[1][1] = 5; A4->values[1][2] = 6;
     A4->values[2][0] = 7; A4->values[2][1] = 8; A4->values[2][2] = 9;
     A4->values[3][0] = 10; A4->values[3][1] = 11; A4->values[3][2] = 12;
+    printf("Matrice A4:\n");
+    print_matrix(A4);
     QR_Decomposition *result4 = qr(A4);
+    printf("Q:\n");
+    print_matrix(result4->Q);
+    printf("R:\n");
+    print_matrix(result4->R);
     CU_ASSERT_PTR_NOT_NULL_FATAL(result4);
     matrix *QR4 = init_matrix(4, 3);
     mult_m_m(result4->Q, result4->R, QR4);
+    printf("QR:\n");
+    print_matrix(QR4);
     for (uint64_t i = 0; i < 4; i++) {
         for (uint64_t j = 0; j < 3; j++) {
             CU_ASSERT_DOUBLE_EQUAL(QR4->values[i][j], A4->values[i][j], EPSILON);
