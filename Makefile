@@ -44,6 +44,7 @@ $(OBJECTS)/vector_threads.o: $(SRC)/vector_threads.c $(HEADERS)/vector_threads.h
 $(OBJECTS)/matrix_threads.o : $(SRC)/matrix_threads.c $(HEADERS)/matrix_threads.h | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
+
 $(OBJECTS):
 	mkdir -p $(OBJECTS)
 
@@ -58,9 +59,12 @@ test_adv: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o
 	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
 	./test_adv
 
+compare: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o
+	$(CC) $(CFLAGS) -o compare $(TESTS)/compare.c $^ -pthread -lm
+
 clean:
 	rm -f $(OBJECTS)/*.o
-	rm -f main generator_matrix generator_vector test test_file test_adv temp
+	rm -f main generator_matrix generator_vector test test_file test_adv temp compare
 	rm -f *.bin
 
 .PHONY: clean test debug
