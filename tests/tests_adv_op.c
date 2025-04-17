@@ -298,7 +298,7 @@ void test_back_sub_zero_diagonal_inf(void) {
     // Zéro sur la diagonale (par exemple sur la deuxième ligne)
     U->values[1][1] = 0.0;  // Zéro sur la diagonale
 
-    uint64_t infinité = 0;  // Compte le nombre de solutions infinies
+    uint64_t infinite = 0;  // Compte le nombre de solutions infinies
 
     // Effectuer la substitution arrière
     for (int64_t i = m - 1; i >= 0; i--) {
@@ -307,7 +307,7 @@ void test_back_sub_zero_diagonal_inf(void) {
             if (fabs(b->values[i]) < EPSILON) {
                 // Cas d'infinité de solutions
                 x->values[i] = 1.0;  // Assigner une valeur arbitraire (par exemple 1)
-                infinité++;
+                infinite++;
             } else {
                 // Cas d'aucune solution
                 fprintf(stderr, "Aucune solution\n");
@@ -326,12 +326,12 @@ void test_back_sub_zero_diagonal_inf(void) {
     }
 
     // Vérification : Si infinité > 0, il faut imprimer le message "Infinité de solutions"
-    if (infinité > 0) {
+    if (infinite > 0) {
         fprintf(stderr, "Infinité de solutions\n");
     }
 
     // Vérification explicite de l'infinité de solutions
-    if (infinité > 0) {
+    if (infinite > 0) {
         // On peut tester qu'au moins un élément de x a été modifié (par exemple à 1.0 dans notre cas)
         CU_ASSERT_DOUBLE_EQUAL(x->values[1], 1.0, 1e-3);  // x[1] doit être égal à 1 si on a une infinité de solutions
     }
