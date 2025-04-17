@@ -23,8 +23,8 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A1);
-    free_matrix(result1->Q);
-    free_matrix(result1->R);
+    // free_matrix(result1->Q);
+    // free_matrix(result1->R);
     free_qr(result1);
 
     // Test 2: Matrice Diagonale
@@ -39,8 +39,8 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A2);
-    free_matrix(result2->Q);
-    free_matrix(result2->R);
+    // free_matrix(result2->Q);
+    // free_matrix(result2->R);
     free_qr(result2);
 
     // Test 3: Matrice Carrée Générale
@@ -58,8 +58,8 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A3);
-    free_matrix(result3->Q);
-    free_matrix(result3->R);
+    // free_matrix(result3->Q);
+    // free_matrix(result3->R);
     free_matrix(QR3);
     free_qr(result3);
     
@@ -82,8 +82,8 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A4);
-    free_matrix(result4->Q);
-    free_matrix(result4->R);
+    //free_matrix(result4->Q);
+    // free_matrix(result4->R);
     free_matrix(QR4);
     free_qr(result4);
     
