@@ -11,47 +11,84 @@
 #define EPSILON 1e-6  // Tolérance pour les comparaisons de flottants
 
 void test_qr_decomposition() {
-    uint64_t m = 3, n = 3;
-    
-    // Initialisation de la matrice A
-    matrix *A = init_matrix(m, n);
-    A->values[0][0] = 1; A->values[0][1] = 1; A->values[0][2] = 1;
-    A->values[1][0] = 1; A->values[1][1] = 2; A->values[1][2] = 3;
-    A->values[2][0] = 1; A->values[2][1] = 3; A->values[2][2] = 6;
-
-    // Cloner A car qr() modifie A
-    matrix *A_clone = init_matrix(m, n);
-    for (uint64_t i = 0; i < m; i++)
-        for (uint64_t j = 0; j < n; j++)
-            A_clone->values[i][j] = A->values[i][j];
-
-    // Exécuter la décomposition QR
-    QR_Decomposition *decomp = qr(A_clone);
-    CU_ASSERT_PTR_NOT_NULL_FATAL(decomp);
-    matrix *Q = decomp->Q;
-    matrix *R = decomp->R;
-
-    // Vérifier si A ≈ Q * R
-    matrix *QR = init_matrix(m, n);
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < n; j++) {
-            QR->values[i][j] = 0;
-            for (uint64_t k = 0; k < n; k++) {
-                QR->values[i][j] += Q->values[i][k] * R->values[k][j];
-            }
-            CU_ASSERT_DOUBLE_EQUAL(QR->values[i][j], A->values[i][j], 1e-6);
+    // Test 1: Matrice Identité
+    matrix *A1 = init_matrix(3, 3);
+    A1->values[0][0] = 1; A1->values[1][1] = 1; A1->values[2][2] = 1;
+    QR_Decomposition *result1 = qr(A1);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(result1);
+    for (uint64_t i = 0; i < 3; i++) {
+        for (uint64_t j = 0; j < 3; j++) {
+            CU_ASSERT_DOUBLE_EQUAL(result1->Q->values[i][j], (i == j) ? 1.0 : 0.0, EPSILON);
+            CU_ASSERT_DOUBLE_EQUAL(result1->R->values[i][j], (i == j) ? 1.0 : 0.0, EPSILON);
         }
     }
+    free_matrix(A1);
+    free_matrix(result1->Q);
+    free_matrix(result1->R);
+    free_qr(result1);
 
-    // Libération de la mémoire
-    free_matrix(A);
-    free_matrix(A_clone);
-    free_matrix(QR);
-    free_matrix(R);
-    // Q est en fait A_clone modifié → libérer seulement une fois
-    free_matrix(Q); 
-    free(decomp);
+    // Test 2: Matrice Diagonale
+    matrix *A2 = init_matrix(3, 3);
+    A2->values[0][0] = 2; A2->values[1][1] = 3; A2->values[2][2] = 4;
+    QR_Decomposition *result2 = qr(A2);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(result2);
+    for (uint64_t i = 0; i < 3; i++) {
+        for (uint64_t j = 0; j < 3; j++) {
+            CU_ASSERT_DOUBLE_EQUAL(result2->Q->values[i][j], (i == j) ? 1.0 : 0.0, EPSILON);
+            CU_ASSERT_DOUBLE_EQUAL(result2->R->values[i][j], A2->values[i][j], EPSILON);
+        }
+    }
+    free_matrix(A2);
+    free_matrix(result2->Q);
+    free_matrix(result2->R);
+    free_qr(result2);
+
+    // Test 3: Matrice Carrée Générale
+    matrix *A3 = init_matrix(3, 3);
+    A3->values[0][0] = 1; A3->values[0][1] = 2; A3->values[0][2] = 3;
+    A3->values[1][0] = 4; A3->values[1][1] = 5; A3->values[1][2] = 6;
+    A3->values[2][0] = 7; A3->values[2][1] = 8; A3->values[2][2] = 9;
+    QR_Decomposition *result3 = qr(A3);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(result3);
+    matrix *QR3 = init_matrix(3, 3);
+    mult_m_m(result3->Q, result3->R, QR3);
+    for (uint64_t i = 0; i < 3; i++) {
+        for (uint64_t j = 0; j < 3; j++) {
+            CU_ASSERT_DOUBLE_EQUAL(QR3->values[i][j], A3->values[i][j], EPSILON);
+        }
+    }
+    free_matrix(A3);
+    free_matrix(result3->Q);
+    free_matrix(result3->R);
+    free_matrix(QR3);
+    free_qr(result3);
+    
+    // Test 4: Matrice Rectangulaire (m > n)
+    matrix *A4 = init_matrix(4, 3);
+    A4->values[0][0] = 1; A4->values[0][1] = 2; A4->values[0][2] = 3;
+    A4->values[1][0] = 4; A4->values[1][1] = 5; A4->values[1][2] = 6;
+    A4->values[2][0] = 7; A4->values[2][1] = 8; A4->values[2][2] = 9;
+    A4->values[3][0] = 10; A4->values[3][1] = 11; A4->values[3][2] = 12;
+    
+    QR_Decomposition *result4 = qr(A4);
+    
+    CU_ASSERT_PTR_NOT_NULL_FATAL(result4);
+    matrix *QR4 = init_matrix(4, 3);
+    mult_m_m(result4->Q, result4->R, QR4);
+    
+    for (uint64_t i = 0; i < 4; i++) {
+        for (uint64_t j = 0; j < 3; j++) {
+            CU_ASSERT_DOUBLE_EQUAL(QR4->values[i][j], A4->values[i][j], EPSILON);
+        }
+    }
+    free_matrix(A4);
+    free_matrix(result4->Q);
+    free_matrix(result4->R);
+    free_matrix(QR4);
+    free_qr(result4);
+    
 }
+
 
 void test_lstsq() {
     // Création d'une matrice 2x2
@@ -177,6 +214,15 @@ void test_back_sub_zero_diagonal(void) {
     vector *x = init_vector(m);
     matrix *U = init_matrix(m, m);
 
+    if (!b || !x || !U) {
+        // Vérifier si l'allocation a échoué
+        fprintf(stderr, "Erreur d'allocation mémoire.\n");
+        free_vector(b);
+        free_vector(x);
+        free_matrix(U);
+        return;
+    }
+
     // Matrice avec un zéro sur la diagonale
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < m; j++) {
@@ -201,8 +247,10 @@ void test_back_sub_zero_diagonal(void) {
             } else {
                 // Cas d'aucune solution
                 fprintf(stderr, "Aucune solution\n");
+                free_vector(b);
+                free_vector(x);
+                free_matrix(U);
                 return;
-                //exit(1);
             }
         } else {
             // Effectuer la substitution classique
@@ -224,11 +272,20 @@ void test_back_sub_zero_diagonal(void) {
     free_matrix(U);
 }
 
+
 void test_back_sub_zero_diagonal_inf(void) {
     uint64_t m = 3;
     vector *b = init_vector(m);
     vector *x = init_vector(m);
     matrix *U = init_matrix(m, m);
+
+    if (!b || !x || !U) {
+        fprintf(stderr, "Erreur d'allocation de mémoire.\n");
+        free_vector(b);
+        free_vector(x);
+        free_matrix(U);
+        return;
+    }
 
     // Matrice avec un zéro sur la diagonale
     for (uint64_t i = 0; i < m; i++) {
@@ -254,8 +311,10 @@ void test_back_sub_zero_diagonal_inf(void) {
             } else {
                 // Cas d'aucune solution
                 fprintf(stderr, "Aucune solution\n");
+                free_vector(b);
+                free_vector(x);
+                free_matrix(U);
                 return;
-                //exit(1);
             }
         } else {
             // Effectuer la substitution classique
@@ -277,10 +336,12 @@ void test_back_sub_zero_diagonal_inf(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[1], 1.0, 1e-3);  // x[1] doit être égal à 1 si on a une infinité de solutions
     }
 
+    // Libération de la mémoire après l'utilisation
     free_vector(b);
     free_vector(x);
     free_matrix(U);
 }
+
 
 
 
@@ -390,7 +451,7 @@ int main(int argc, char **argv) {
     (CU_add_test(test_adv_op, "back_sub_diagonal_matrix", test_back_sub_diagonal_matrix) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_upper_triangular", test_back_sub_upper_triangular) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_zero_diagonal", test_back_sub_zero_diagonal) == NULL) ||
-    (CU_add_test(test_adv_op, "back_sub_zero_diagonal", test_back_sub_zero_diagonal_inf) == NULL) ||
+    (CU_add_test(test_adv_op, "back_sub_zero_diagonal_inf", test_back_sub_zero_diagonal_inf) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_single_element", test_back_sub_single_element) == NULL) || 
     (CU_add_test(test_adv_op, "back_sub_4x4_upper_triangular", test_back_sub_4x4_upper_triangular) == NULL)||
     (CU_add_test(test_adv_op, "back_sub_90x90_upper_triangular", test_back_sub_90x90_upper_triangular) == NULL)){
