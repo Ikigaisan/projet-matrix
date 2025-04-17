@@ -26,7 +26,6 @@ typedef struct {
 void* transp_thread(void* arg) {
     
     thread_data_transp* data = (thread_data_transp*)arg;
-    uint64_t m = data->A->m;
     uint64_t n = data->A->n;
 
     for (uint64_t i = data->start_row; i < data->end_row; i++) {
@@ -36,40 +35,97 @@ void* transp_thread(void* arg) {
     }
     return NULL;
 }
-void* mult_m_v_thread(void* arg) {
-    thread_data_mult* data = (thread_data_mult*)arg;
-    matrix* A = data->A;
-    vector* B = data->v;
-    vector* C = data->result;
-    uint64_t m = A->m;
-    uint64_t n = A->n;
 
-    for (uint64_t i = data->start_row; i < data->end_row; i++) {
-        C->values[i] = 0;
-        for (uint64_t j = 0; j < n; j++) {
-            C->values[i] += A->values[i][j] * B->values[j];
+void* add_m_m_thread(void* arg){
+    
+    thread_data_m_m* data = (thread_data_m_m*)arg;
+    uint64_t n = data->A->n;
+
+    if(data->A->m != data->B->m ||data->A->m != data->C->m ||
+        data->A->n != data->B->n || data->A->n != data->C->n){
+            fprintf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
+            free_matrix(data->A);
+            free_matrix(data->B);
+            free_matrix(data->C);
+            free(data);
+        }
+
+    for(uint64_t i = data->start_row; i < data->end_row; i++) {
+        for(uint64_t j = 0; j < n; j++) {
+            data->C->values[i][j] = data->A->values[i][j] + data->B->values[i][j];
         }
     }
     return NULL;
+
 }
 
+void* sub_m_m_thread(void* arg){
+    thread_data_m_m* data = (thread_data_m_m*)arg;
+    uint64_t n = data->A->n;
 
-void* mult_m_m_thread(void* arg) {
-    thread_data_mult_m* data = (thread_data_mult_m*)arg;
-    matrix* A = data->A;
-    matrix* B = data->B;
-    matrix* C = data->result;
-    uint64_t m = A->m;
-    uint64_t n = A->n;
-    uint64_t p = B->n;
+    if(data->A->m != data->B->m ||data->A->m != data->C->m ||
+        data->A->n != data->B->n || data->A->n != data->C->n){
+            fprintf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
+            free_matrix(data->A);
+            free_matrix(data->B);
+            free_matrix(data->C);
+            free(data);
+        }
 
-    for (uint64_t i = data->start_row; i < data->end_row; i++) {
-        for (uint64_t j = 0; j < p; j++) {
-            C->values[i][j] = 0;
+    for(uint64_t i = data->start_row; i < data->end_row; i++) {
+        for(uint64_t j = 0; j < n; j++) {
+            data->C->values[i][j] = data->A->values[i][j] - data->B->values[i][j];
+        }
+    }
+    return NULL;
+
+}
+
+void* mult_m_m_thread(void* arg){
+
+    thread_data_m_m* data = (thread_data_m_m*) arg;
+    uint64_t n = data->A->n;
+    uint64_t o = data->B->n;
+
+    if (data->A->n != data->B->m || 
+        data->A->m != data->C->m || data->B->n != data->C->n) {
+        fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 " x %" PRIu64 ")\n",
+                data->A->m, data->A->n, data->B->m, data->B->n);
+        exit(EXIT_FAILURE);
+    }
+
+    for(uint64_t i = data->start_row; i < data->end_row; i++){
+        for (uint64_t j = 0; j < o; j++) {
             for (uint64_t k = 0; k < n; k++) {
-                C->values[i][j] += A->values[i][k] * B->values[k][j];
+                data->C->values[i][j] += data->A->values[i][k] * data->B->values[k][j];  
             }
         }
     }
-    return NULL;
+    return NULL; 
+
 }
+
+void* mult_m_v_thread(void* arg){
+    
+    thread_data_m_v* data = (thread_data_m_v*) arg;
+    uint64_t n = data->A->n;
+    if(data->A->n != data->B->m || data->A->m != data->C->m){
+        fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 ") C(%" PRIu64 ")\n",
+                data->A->m, data->A->n, data->B->m, data->C->m);
+        free_matrix(data->A);
+        free_vector(data->B);
+        free_vector(data->C);
+        free(data);
+    }
+
+    for (uint64_t i = data->start_row; i < data->end_row; i++) {
+        double res = 0;
+        for (uint64_t j = 0; j < n; j++) {
+            res += data->A->values[i][j] * data->B->values[j];
+        }
+        data->C->values[i] = res;
+    }
+    return NULL;
+    
+}
+

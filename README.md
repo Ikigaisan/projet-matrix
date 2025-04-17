@@ -66,6 +66,16 @@ Pour lancer les tests, tapez la commande
 make test
 ```
 
+Pour lancer la comparaison entre le monothreading et le multithreading, tapez les commande 
+
+```sh
+make compare
+```
+```sh
+./compare [nombre-de-threads-souhaités]
+```
+
+
 ## Nettoyage
 ```sh
 make clean
@@ -76,18 +86,24 @@ make clean
 ./
 ├── headers (contient les fichiers headers)
 │   ├── file.h
+|   ├── matrix_threads.h
 │   ├── matrix.h
+|   ├── vector_threads.h
 │   ├── vector.h
 ├── help (contient les codes pour générer des vecteurs et matrices)
 |   ├── approximation.py
 │   ├── generator_matrix.c
 │   ├── generator_vector.c
+├── objects (vide mais contient les fichiers compilé lors du build)
 ├── src (contient les fichiers sources)
 |   ├── file.c
 |   ├── main.c
+|   ├── matrix_threads.c
 |   ├── matrix.c
+|   ├── vector_threads.c
 |   ├── vector.c
 ├── tests (contient les codes des tests)
+|   ├── compare.c
 |   ├── tests_basic_op.c
 |   ├── tests_file.c
 │   ├── tests_adv_op.c
@@ -100,10 +116,9 @@ make clean
 
 - ```file.h``` : Fonctions pour lire ou écrire des double, vecteurs, matrices et QR.
 
-- ```matrix.h``` : Fonctions pour créer, afficher et manipuler des matrices.
+- ```matrix.h``` / ```vector.h``` : Fonctions pour créer, afficher et manipuler des matrices et des vecteurs.
 
-
-- ```vector.h``` : Fonctions pour créer, afficher et manipuler des vecteurs.
+- ```matrix_threads.h``` / ```vector_threads.h``` : Fonctions pour manipuler les matrices et vecteurs avec des threads.
 
 
 
@@ -117,7 +132,6 @@ make clean
     - `vector_A.bin`
     - `vector_B.bin`
 
-
 ### src/ 
 
 
@@ -127,15 +141,20 @@ make clean
 
 - ```matrix.c``` / ```vector.c``` : Implémentation des opérations sur les matrices et vecteurs.
 
+- ```matrix_threads.c```/ ```vector_threads.c``` : Implémentation des opérations sur les matrices utilisant le multithreading.
+
 
 ### tests/
 
+- ```compare.c``` : Comparaison des fonctions de base entre le monothreading et le mutlithreading.
+
+- ```tests_adv_op.c``` : Test de `lstsq`, `qr`, `back_sub`.
 
 - ```tests_basic_op.c``` : Test des opérations de base (`add`, `sub`, `mult`, etc.).
 
 - ```tests_file.c``` : Test de la lecture et écriture des fichiers binaires.
 
-- ```tests_adv_op.c``` : Test de `lstsq`, `qr`, `back_sub`.
+
 
 
 
