@@ -362,7 +362,7 @@ QR_Decomposition *qr(matrix *A) {
             
         }
 
-        //suite algo sans q_i car problème sur Q si on modifie la colone i à la fin 
+        //suite algo version longue sans q_i car problème sur Q si on modifie la colone i à la fin 
 
         for (uint64_t k = 0; k < m; k++) {
             Q->values[k][i] /= norm_val;

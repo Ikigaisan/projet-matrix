@@ -50,10 +50,9 @@ test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
 	./test
 	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
 	./test_file
-
-test_adv: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o
-	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
+	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(LCUNIT) -lm
 	./test_adv
+
 
 clean:
 	rm -f $(OBJECTS)/*.o
