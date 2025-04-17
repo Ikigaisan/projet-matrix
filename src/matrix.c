@@ -5,7 +5,7 @@
 #include <inttypes.h>
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
-    matrix *A = (matrix *)malloc(sizeof(matrix));
+    matrix *A = (matrix *) malloc(sizeof(matrix));
     if (A == NULL) {
 
         fprintf(stderr,

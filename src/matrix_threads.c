@@ -1,9 +1,27 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 #include "../headers/matrix_threads.h"
+
+// Define thread_data_mult if not already defined
+typedef struct {
+    matrix* A;
+    vector* v;
+    vector* result;
+    uint64_t start_row;
+    uint64_t end_row;
+} thread_data_mult;
 #include <float.h>
 #include <math.h>
 #include <inttypes.h>
+
+// Define thread_data_mult_m if not already defined
+typedef struct {
+    matrix* A;
+    matrix* B;
+    matrix* result;
+    uint64_t start_row;
+    uint64_t end_row;
+} thread_data_mult_m;
 
 void* transp_thread(void* arg) {
     
