@@ -46,11 +46,11 @@ $(OBJECTS):
 
 
 test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
-	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm -g
+	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
 	./test
-	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm -g
+	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
 	./test_file
-	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(LCUNIT) -lm -g
+	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(LCUNIT) -lm
 	./test_adv
 
 
