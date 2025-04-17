@@ -68,14 +68,14 @@ void add_m_m(matrix *, matrix *, matrix *);
  *
  * @result C = A - B
  */
-void sub_m_m(matrix *, matrix *, matrix *);
+void sub_m_m(matrix *A, matrix *B, matrix *C);
 
 /**
  * Free une structure matrice
  * 
  * @param matrix* A, la matrice à free
  */
-void free_matrix(matrix *);
+void free_matrix(matrix *A);
 
 /**
  * Free une structure qr
@@ -141,7 +141,7 @@ void back_sub(vector *b, matrix *U, vector *x);
  * @returns 
  */
 
-vector *lstsq(matrix *, vector *);
+vector *lstsq(matrix *A, vector *b);
 
 
 
