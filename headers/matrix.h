@@ -77,6 +77,13 @@ void sub_m_m(matrix *, matrix *, matrix *);
  */
 void free_matrix(matrix *);
 
+/**
+ * Free une structure qr
+ * 
+ * @param Qr* Qr, la decomposition QR à free
+ */
+void free_qr(QR_Decomposition *);
+
 
 /** 
  * Calcule la multiplication de 2 matrices 

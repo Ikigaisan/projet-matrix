@@ -23,9 +23,9 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A1);
-    //free_matrix(result1->Q);
-    //free_matrix(result1->R);
-    free(result1);
+    free_matrix(result1->Q);
+    free_matrix(result1->R);
+    free_qr(result1);
 
     // Test 2: Matrice Diagonale
     matrix *A2 = init_matrix(3, 3);
@@ -39,9 +39,9 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A2);
-    //free_matrix(result2->Q);
-    //free_matrix(result2->R);
-    free(result2);
+    free_matrix(result2->Q);
+    free_matrix(result2->R);
+    free_qr(result2);
 
     // Test 3: Matrice Carrée Générale
     matrix *A3 = init_matrix(3, 3);
@@ -58,10 +58,10 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A3);
-    //free_matrix(result3->Q);
-    //free_matrix(result3->R);
+    free_matrix(result3->Q);
+    free_matrix(result3->R);
     free_matrix(QR3);
-    free(result3);
+    free_qr(result3);
     
     // Test 4: Matrice Rectangulaire (m > n)
     matrix *A4 = init_matrix(4, 3);
@@ -82,10 +82,10 @@ void test_qr_decomposition() {
         }
     }
     free_matrix(A4);
-    //free_matrix(result4->Q);
-    //free_matrix(result4->R);
+    free_matrix(result4->Q);
+    free_matrix(result4->R);
     free_matrix(QR4);
-    free(result4);
+    free_qr(result4);
     
 }
 
@@ -214,6 +214,15 @@ void test_back_sub_zero_diagonal(void) {
     vector *x = init_vector(m);
     matrix *U = init_matrix(m, m);
 
+    if (!b || !x || !U) {
+        // Vérifier si l'allocation a échoué
+        fprintf(stderr, "Erreur d'allocation mémoire.\n");
+        free_vector(b);
+        free_vector(x);
+        free_matrix(U);
+        return;
+    }
+
     // Matrice avec un zéro sur la diagonale
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < m; j++) {
@@ -238,8 +247,10 @@ void test_back_sub_zero_diagonal(void) {
             } else {
                 // Cas d'aucune solution
                 fprintf(stderr, "Aucune solution\n");
+                free_vector(b);
+                free_vector(x);
+                free_matrix(U);
                 return;
-                //exit(1);
             }
         } else {
             // Effectuer la substitution classique
@@ -261,11 +272,20 @@ void test_back_sub_zero_diagonal(void) {
     free_matrix(U);
 }
 
+
 void test_back_sub_zero_diagonal_inf(void) {
     uint64_t m = 3;
     vector *b = init_vector(m);
     vector *x = init_vector(m);
     matrix *U = init_matrix(m, m);
+
+    if (!b || !x || !U) {
+        fprintf(stderr, "Erreur d'allocation de mémoire.\n");
+        free_vector(b);
+        free_vector(x);
+        free_matrix(U);
+        return;
+    }
 
     // Matrice avec un zéro sur la diagonale
     for (uint64_t i = 0; i < m; i++) {
@@ -291,8 +311,10 @@ void test_back_sub_zero_diagonal_inf(void) {
             } else {
                 // Cas d'aucune solution
                 fprintf(stderr, "Aucune solution\n");
+                free_vector(b);
+                free_vector(x);
+                free_matrix(U);
                 return;
-                //exit(1);
             }
         } else {
             // Effectuer la substitution classique
@@ -314,10 +336,12 @@ void test_back_sub_zero_diagonal_inf(void) {
         CU_ASSERT_DOUBLE_EQUAL(x->values[1], 1.0, 1e-3);  // x[1] doit être égal à 1 si on a une infinité de solutions
     }
 
+    // Libération de la mémoire après l'utilisation
     free_vector(b);
     free_vector(x);
     free_matrix(U);
 }
+
 
 
 
@@ -427,7 +451,7 @@ int main(int argc, char **argv) {
     (CU_add_test(test_adv_op, "back_sub_diagonal_matrix", test_back_sub_diagonal_matrix) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_upper_triangular", test_back_sub_upper_triangular) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_zero_diagonal", test_back_sub_zero_diagonal) == NULL) ||
-    (CU_add_test(test_adv_op, "back_sub_zero_diagonal", test_back_sub_zero_diagonal_inf) == NULL) ||
+    (CU_add_test(test_adv_op, "back_sub_zero_diagonal_inf", test_back_sub_zero_diagonal_inf) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_single_element", test_back_sub_single_element) == NULL) || 
     (CU_add_test(test_adv_op, "back_sub_4x4_upper_triangular", test_back_sub_4x4_upper_triangular) == NULL)||
     (CU_add_test(test_adv_op, "back_sub_90x90_upper_triangular", test_back_sub_90x90_upper_triangular) == NULL)){
