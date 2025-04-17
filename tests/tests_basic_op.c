@@ -92,7 +92,7 @@ void test_mult_m_v(void) {
     }
     free_matrix(A);
     free_vector(B);
-    
+    free_vector(C);
 
 }
 void test_norm(void) {
