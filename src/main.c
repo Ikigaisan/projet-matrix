@@ -203,6 +203,7 @@ int main(int argc, char **argv) {
         free_vector(y);
         free_vector(z);
     }
+    }
 
     // Opération : Soustraction de deux vecteurs
     else if (strcmp(args->op, "sub_v_v") == 0) {
@@ -470,7 +471,7 @@ int main(int argc, char **argv) {
         free_matrix(C);
 
     // Opération : Multiplication d’une matrice par un vecteur
-    else if (strcmp(args->op, "mult_m_v") == 0) {
+    }else if (strcmp(args->op, "mult_m_v") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
             printf("Matrix A :\n");
@@ -479,13 +480,13 @@ int main(int argc, char **argv) {
         vector *b = read_vector(args->input_file_B);
         if (args->verbose) {
             printf("Vector b:\n");
-            print_vector(B);
+            print_vector(b);
         }
 
-        vector *C = init_vector(A->m);
+        vector *c = init_vector(A->m);
         // mult_m_v(A, B, C);
 
-        if (A->n != B->m) {
+        if (A->n != b->m) {
             fprintf(stderr, "Erreur : dimensions incompatibles.\n");
             exit(EXIT_FAILURE);
         }else{
@@ -495,8 +496,8 @@ int main(int argc, char **argv) {
 
             for(uint64_t i = 0; i < args->nb_threads; i++){
                 thread_data[i].A = A;
-                thread_data[i].B = B;
-                thread_data[i].C = C;
+                thread_data[i].B = b;
+                thread_data[i].C = c;
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
@@ -512,17 +513,17 @@ int main(int argc, char **argv) {
 
         if(args->output_stream == stdout){
             printf("Résultat de la multiplication entre la matrice et le vecteur : \n");
-            print_vector(C);
+            print_vector(c);
         }else{
-            write_vector(C, args->output_stream);
+            write_vector(c, args->output_stream);
             if(args->verbose){
                 printf("Résultat de la multiplication entre la matrice et le vecteur : \n");
-                print_vector(C);
+                print_vector(c);
             }
         }
         free_matrix(A);
         free_vector(b);
-        free_vector(result);
+        free_vector(c);
     }
 
     // Opération : Transposée d’une matrice (la fonction transp effectue la transposition sur place)

@@ -327,9 +327,9 @@ vector* Q_i (matrix *A, uint64_t i) {
     vector *colone = init_vector(A->m);
     if (!colone) return NULL;
     for(uint64_t j = 0; j < A->m; j++){
-        colone_i->values[j] = A->values[j][i];
+        colone->values[j] = A->values[j][i];
     }
-    return colone_i;
+    return colone;
 }
 
 
