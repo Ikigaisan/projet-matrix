@@ -13,7 +13,7 @@ TESTS = tests
 
 
 
-main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o
+main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o
 	$(CC) -o $@ $^ -pthread -lm 
 
 
@@ -25,7 +25,7 @@ generator_vector: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o
 	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_vector.c $^ -lm
 	./$@
 
-$(OBJECTS)/main.o: $(SRC)/main.c $(HEADERS)/vector.h $(HEADERS)/matrix.h $(HEADERS)/file.h | $(OBJECTS)
+$(OBJECTS)/main.o: $(SRC)/main.c $(HEADERS) | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJECTS)/vector.o: $(SRC)/vector.c | $(OBJECTS)
@@ -40,6 +40,10 @@ $(OBJECTS)/file.o: $(SRC)/file.c | $(OBJECTS)
 $(OBJECTS)/vector_threads.o: $(SRC)/vector_threads.c $(HEADERS)/vector_threads.h | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
+$(OBJECTS)/matrix_threads.o : $(SRC)/matrix_threads.c $(HEADERS)/matrix_threads.h | $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+
 $(OBJECTS):
 	mkdir -p $(OBJECTS)
 
@@ -48,14 +52,17 @@ test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
 	./test
 	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
 	./test_file
-
-test_adv: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o
 	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
 	./test_adv
 
+	
+
+compare: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o
+	$(CC) $(CFLAGS) -o compare $(TESTS)/compare.c $^ -pthread -lm
+
 clean:
 	rm -f $(OBJECTS)/*.o
-	rm -f main generator_matrix generator_vector test test_file test_adv temp
+	rm -f main generator_matrix generator_vector test test_file test_adv temp compare
 	rm -f *.bin
 
 .PHONY: clean test debug

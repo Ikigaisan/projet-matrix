@@ -10,7 +10,7 @@
  * La matrice est initialisée avec des zéros.
  */
 matrix *init_matrix(uint64_t m, uint64_t n) {
-    matrix *A = (matrix *)malloc(sizeof(matrix));
+    matrix *A = (matrix *) malloc(sizeof(matrix));
     if (A == NULL) {
         fprintf(stderr,
                 "Problème lors de l'allocation de l'espace mémoire pour une "
@@ -271,6 +271,15 @@ void back_sub(vector*b, matrix *U, vector*x){
         fprintf(stderr, "Infinité de solutions\n");
     }
 }
+void free_qr(QR_Decomposition *qr) {
+    if (qr != NULL) {
+        if (qr->Q != NULL)
+            free_matrix(qr->Q);
+        if (qr->R != NULL)
+            free_matrix(qr->R);
+        free(qr);
+    }
+}
 
 /* 
  * Résolution des moindres carrés.
@@ -287,7 +296,9 @@ vector *lstsq(matrix *A, vector *b){
     vector *b_tilde = init_vector(Q_t->m);
     mult_m_v(Q_t, b, b_tilde);
     vector *x = init_vector(b_tilde->m);
-    back_sub(b_tilde, QR->R, x);
+    back_sub( b_tilde,QR->R, x);
+    free_vector(b_tilde);
+    free_qr(QR);
     return x;
 }
 
@@ -316,62 +327,110 @@ vector* Q_i (matrix *A, uint64_t i) {
     vector *colone = init_vector(A->m);
     if (!colone) return NULL;
     for(uint64_t j = 0; j < A->m; j++){
-        colone->values[j] = A->values[j][i];
+        colone_i->values[j] = A->values[j][i];
     }
-    return colone;
+    return colone_i;
 }
 
-/* 
- * Calcul de la décomposition QR d'une matrice A.
- * Utilise le procédé de Gram-Schmidt modifié pour obtenir Q et R.
- */
-QR_Decomposition *qr(matrix *A) {
-    matrix *Q = A;
-    matrix *R = init_matrix(A->m, A->n);
-    if (!R) return NULL;
 
-    for (uint64_t i = 0; i < A->n; i++) {
+QR_Decomposition *qr(matrix *A) {
+    uint64_t m = A->m, n = A->n;
+
+    // Allouer les matrices Q et R
+    matrix *Q = init_matrix(m, n);
+    matrix *R = init_matrix(n, n);
+
+    if (!Q || !R) {
+        fprintf(stderr, "Erreur d'allocation mémoire pour Q ou R.\n");
+        free_matrix(Q);
+        free_matrix(R);
+        return NULL;
+    }
+
+    // Initialiser les valeurs de Q et R
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            Q->values[i][j] = A->values[i][j];
+        }
+    }
+
+    for (uint64_t i = 0; i < n; i++) {
+        for (uint64_t j = 0; j < n; j++) {
+            R->values[i][j] = 0.0;
+        }
+    }
+
+    // Decomposition QR
+    for (uint64_t i = 0; i < n; i++) {
         vector *q_i = Q_i(Q, i);
-        if (!q_i) return NULL;
+        if (!q_i) {
+            free_matrix(Q);
+            free_matrix(R);
+            return NULL;
+        }
 
         double norm_val = 0;
         norm(q_i, &norm_val);
         R->values[i][i] = norm_val;
 
-        // Si le vecteur est nul, on réaffecte aléatoirement jusqu'à obtenir une norme non nulle
-        if (norm_val == 0) {
-            do {
-                for (uint64_t j = 0; j < A->m; j++) {
-                    q_i->values[j] = (double)rand() / RAND_MAX;
+        // cas spécifique si R (i,i) = 0
+        while (fabs(norm_val) < DBL_EPSILON) {
+            for (uint64_t j = 0; j < A->m; j++) {
+                q_i->values[j] = (double)rand() / RAND_MAX;
+            }
+
+            for (uint64_t j = 0; j < i; j++) {
+                double dot;
+                vector *q_j = Q_i(Q, j);
+                if (!q_j) {
+                    free_vector(q_i);
+                    free_matrix(Q);
+                    free_matrix(R);
+                    return NULL;
                 }
-                for (uint64_t j = 0; j < i; j++) {
-                    double dot;
-                    vector *q_j = Q_i(Q, j);
-                    if (!q_j) return NULL;
-                    dot_prod(q_i, q_j, &dot);
-                    vector_subtract(q_i, q_j, dot);
-                    free(q_j);
-                }
-                norm(q_i, &norm_val);
-            } while (norm_val == 0);
+
+                dot_prod(q_i, q_j, &dot);
+                vector_subtract(q_i, q_j, dot);
+                free_vector(q_j);  // Libérer q_j après utilisation
+            }
+
+            norm(q_i, &norm_val);
         }
-        vector_divide(q_i, norm_val);
-        for (uint64_t j = i + 1; j < A->n; j++) {
-            vector *q_j = Q_i(Q, j);
-            if (!q_j) return NULL;
-            dot_prod(q_i, q_j, &R->values[i][j]);
-            vector_subtract(q_j, q_i, R->values[i][j]);
-            free(q_j);
+
+        // Normalisation de q_i
+        for (uint64_t k = 0; k < m; k++) {
+            Q->values[k][i] /= norm_val;
         }
-        free(q_i);
+
+        // Calcul de R et mise à jour de Q
+        for (uint64_t j = i + 1; j < n; j++) {
+            double dot = 0.0;
+            for (uint64_t k = 0; k < m; k++) {
+                dot += Q->values[k][i] * Q->values[k][j];
+            }
+            R->values[i][j] = dot;
+
+            for (uint64_t k = 0; k < m; k++) {
+                Q->values[k][j] -= dot * Q->values[k][i];
+            }
+        }
+
+        // Libérer q_i après utilisation
+        free_vector(q_i);
     }
-    // Allocation de la structure QR_Decomposition
+
+    // Allouer la structure QR_Decomposition
     QR_Decomposition *qr = malloc(sizeof(QR_Decomposition));
     if (!qr) {
         fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
+        free_matrix(Q);
+        free_matrix(R);
         return NULL;
     }
+
     qr->R = R;
     qr->Q = Q;
+
     return qr;
 }
+

@@ -62,14 +62,21 @@ void add_m_m(matrix *, matrix *, matrix *);
  *
  * @result C = A - B
  */
-void sub_m_m(matrix *, matrix *, matrix *);
+void sub_m_m(matrix *A, matrix *B, matrix *C);
 
 /**
  * Free une structure matrice
  * 
  * @param matrix* A, la matrice à free
  */
-void free_matrix(matrix *);
+void free_matrix(matrix *A);
+
+/**
+ * Free une structure qr
+ * 
+ * @param Qr* Qr, la decomposition QR à free
+ */
+void free_qr(QR_Decomposition *);
 
 
 /** 
@@ -108,11 +115,10 @@ void mult_m_v(matrix *A, vector *B, vector *C);
  * A = Q * R,
  * où Q est une matrice orthogonale (ou orthonormée) et R est une matrice triangulaire supérieure.
  *
- * @param matrix* Q La matrice orthogonale/orthonormée obtenue.
- * @param matrix* R La matrice triangulaire supérieure correspondante.
+ * @param A La matrice à décomposer.
+ * @return Une structure QR_Decomposition contenant les matrices Q et R, ou NULL en cas d'échec.
  */
 QR_Decomposition *qr (matrix *A);
-
 
 /**
  * Résolution par substitution arrière.
@@ -132,7 +138,7 @@ void back_sub(vector *b, matrix *U, vector *x);
  * @returns 
  */
 
-vector *lstsq(matrix *, vector *);
+vector *lstsq(matrix *A, vector *b);
 
 
 

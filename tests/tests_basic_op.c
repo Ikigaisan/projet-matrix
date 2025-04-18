@@ -14,7 +14,7 @@
 
 // Test de l'addition de deux vecteurs
 void test_add_v_v(void){
-    uint64_t m = 300;
+    uint64_t m = 200;
     vector *v = init_vector(m);
     vector *w = init_vector(m);
 
@@ -62,8 +62,17 @@ void test_add_m_m(void) {
                                    A->values[i][j] + B->values[i][j], 1e-3);
         }
     }
-
-    // Libération de la mémoire
+    
+    // Libération de la mémoire allouée pour les matrices
+    for (uint64_t i = 0; i < m; i++) {
+        free(A->values[i]);
+        free(B->values[i]);
+        free(C->values[i]);
+    }
+    free(A->values);
+    free(B->values);
+    free(C->values);
+    
     free(A);
     free(B);
     free(C);
