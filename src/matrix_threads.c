@@ -27,6 +27,7 @@ void* add_m_m_thread(void* arg){
             free_matrix(data->B);
             free_matrix(data->C);
             free(data);
+            exit(EXIT_FAILURE);
         }
 
     for(uint64_t i = data->start_row; i < data->end_row; i++) {
@@ -49,6 +50,7 @@ void* sub_m_m_thread(void* arg){
             free_matrix(data->B);
             free_matrix(data->C);
             free(data);
+            exit(EXIT_FAILURE);
         }
 
     for(uint64_t i = data->start_row; i < data->end_row; i++) {
@@ -95,6 +97,7 @@ void* mult_m_v_thread(void* arg){
         free_vector(data->B);
         free_vector(data->C);
         free(data);
+        exit(EXIT_FAILURE);
     }
 
     for (uint64_t i = data->start_row; i < data->end_row; i++) {
