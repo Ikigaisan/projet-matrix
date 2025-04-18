@@ -33,6 +33,27 @@ typedef struct {
 } thread_data_m_v;
 
 
+typedef struct {
+    matrix* A;
+    vector* v;
+    vector* result;
+    uint64_t start_row;
+    uint64_t end_row;
+} thread_data_mult;
+#include <float.h>
+#include <math.h>
+#include <inttypes.h>
+
+
+typedef struct {
+    matrix* A;
+    matrix* B;
+    matrix* result;
+    uint64_t start_row;
+    uint64_t end_row;
+} thread_data_mult_m;
+
+
 /**
  * @brief Fonction exécutée par chaque thread pour transposer une partie de la matrice.
  *
