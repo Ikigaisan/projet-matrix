@@ -223,7 +223,7 @@ void transp(matrix*A){
  * Résolution par substitution arrière.
  * Résout un système triangulaire supérieur Ux = b.
  */
-void back_sub(matrix *U, vector*b, vector*x){
+void back_sub(vector*b, matrix *U, vector*x){
     uint64_t m = b->m;
     bool infinite = false;
     // Copie initiale de b dans x
@@ -287,7 +287,7 @@ vector *lstsq(matrix *A, vector *b){
     vector *b_tilde = init_vector(Q_t->m);
     mult_m_v(Q_t, b, b_tilde);
     vector *x = init_vector(b_tilde->m);
-    back_sub(QR->R, b_tilde, x);
+    back_sub(b_tilde, QR->R, x);
     return x;
 }
 
