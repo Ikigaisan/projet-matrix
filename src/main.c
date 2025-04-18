@@ -440,7 +440,7 @@ int main(int argc, char **argv) {
         matrix *Q = init_matrix(A->m, A->m);
         matrix *R = init_matrix(A->m, A->n);
         // Calcul de la décomposition QR
-        QR(A, Q, R);
+   
         if (args->output_stream == stdout) {
             printf("Matrice Q :\n");
             print_matrix(Q);

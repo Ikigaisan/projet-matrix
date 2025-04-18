@@ -223,7 +223,7 @@ void transp(matrix*A){
  * Résolution par substitution arrière.
  * Résout un système triangulaire supérieur Ux = b.
  */
-void back_sub(vector*b, matrix *U, vector*x){
+void back_sub(matrix *U, vector*b, vector*x){
     uint64_t m = b->m;
     bool infinite = false;
     // Copie initiale de b dans x
