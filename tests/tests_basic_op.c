@@ -33,9 +33,9 @@ void test_add_v_v(void){
     }
 
     // Libération de la mémoire
-    free(v);
-    free(w);
-    free(z);
+    free_vector(v);
+    free_vector(w);
+    free_vector(z);
 }
 
 // Test de l'addition de deux matrices
