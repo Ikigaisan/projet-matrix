@@ -1,23 +1,28 @@
 # LEPL1503 - Projet 2025 : Projet matrix
+Groupe L2
+
+Membres : Aymeric Grymonpré, Clara Hoffait, Emma Benmeridja, Lisa Fredon, Marthe Thiry, Oscar De Vleeschouwer 
+
+Environnement dans lequel le projet d'execute : Rasberry Pi
+
+Packages recquis : <errno.h>, <getopt.h>, <stdbool.h>, <stdint.h>, <stdio.h>, <stdlib.h>, <string.h>, <inttypes.h>, <math.h>, <float.h>, <time.h>, <sys/mman.h>, <fcntl.h>, <unistd.h>, <endian.h>, <errno.h>, <stdint.h>
 
 Ce projet consiste à réaliser des opérations sur les matrices et vecteurs.
-Cette partie contient une version adaptée aux matrices creuses. 
-Certaines opérations ne sont donc pas implémentées, et seule une version séquentielle est disponible.
 
-## Table des matières
+## Table des matières 
 - [Lancer le programme](#lancer-le-programme)
 - [Arborescence du projet](#arborescence-du-projet)
-- [Détails des fichiers](#descritpion-des-dossiers-et-fichiers)
+- [Détails des fichiers](#description-des-dossiers-et-fichiers)
 - [Tests](#tests)
 - [Nettoyage](#nettoyage)
 
 ## Lancer le programme
+
 ### Compilation
 
 ```sh
 make
 ```
-
 L'exécutable est alors généré à la racine du projet.
 
 ### Utilisation
@@ -66,6 +71,19 @@ Pour lancer les tests, tapez la commande
 make test
 ```
 
+### Tests mémoire
+Commande pour effectuer les tests Valgrind : tests sur la gestion de mémoire et la détection de fuites de mémoire sur le fichier main.
+ ```sh
+make valgrind
+```
+
+Commande pour effectuer les tests Valgrind : tests sur les tests unitaires.
+```sh
+make valgrindtest
+```
+Ces commandes sont compatibles uniquement avec un ordinateur Windows.
+
+### Comparaison monothreading et multithreading
 Pour lancer la comparaison entre le monothreading et le multithreading, tapez les commande 
 
 ```sh
@@ -74,7 +92,6 @@ make compare
 ```sh
 ./compare [nombre-de-threads-souhaités]
 ```
-
 
 ## Nettoyage
 ```sh
@@ -110,7 +127,7 @@ make clean
 ├── Makefile
 └── README.md
 ```
-## Descritpion des dossiers et fichiers
+## Description des dossiers et fichiers
 
 ### headers/
 
@@ -118,7 +135,11 @@ make clean
 
 - ```matrix.h``` / ```vector.h``` : Fonctions pour créer, afficher et manipuler des matrices et des vecteurs.
 
+<<<<<<< README.md
+- ```vector.h``` : Fonctions pour créer, afficher et manipuler des vecteurs.
+=======
 - ```matrix_threads.h``` / ```vector_threads.h``` : Fonctions pour manipuler les matrices et vecteurs avec des threads.
+>>>>>>> README.md
 
 
 

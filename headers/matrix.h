@@ -52,12 +52,6 @@ void print_matrix(matrix *);
 void add_m_m(matrix *, matrix *, matrix *);
 
 
-
-
-
-
-
-
 /**
  * Calcule la soustraction de deux matrices
  *
@@ -96,6 +90,7 @@ void free_qr(QR_Decomposition *);
  * @result C = A * B
 */
 void mult_m_m(matrix *A, matrix *B, matrix *C);
+
 /**
  * Calcule la transposée d'une matrice
  * 
@@ -113,15 +108,17 @@ void transp(matrix*A);
  */
 void mult_m_v(matrix *A, vector *B, vector *C);
 
-
 /**
- * @brief Effectue la décomposition QR d'une matrice.
+ * Décomposition QR d'une matrice.
+ *
+ * La décomposition QR d'une matrice A est une factorisation telle que :
+ * A = Q * R,
+ * où Q est une matrice orthogonale (ou orthonormée) et R est une matrice triangulaire supérieure.
  *
  * @param A La matrice à décomposer.
  * @return Une structure QR_Decomposition contenant les matrices Q et R, ou NULL en cas d'échec.
  */
- QR_Decomposition *qr(matrix *A);
-
+QR_Decomposition *qr (matrix *A);
 
 /**
  * Résolution par substitution arrière.

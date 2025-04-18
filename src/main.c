@@ -14,45 +14,40 @@
 #include "../headers/matrix_threads.h"
 #include <pthread.h>
 
+// Structure pour stocker les arguments de la ligne de commande
 typedef struct {
-    bool verbose;
-    uint8_t nb_threads;
-    FILE *output_stream;
-    uint8_t deg;
-    char *op;
-    FILE *input_file_A;
-    FILE *input_file_B;
+    bool verbose;             // Mode verbeux : affiche les messages de debug sur stderr
+    uint8_t nb_threads;       // Nombre de threads à utiliser
+    FILE *output_stream;      // Fichier de sortie (stdout par défaut)
+    uint8_t deg;              // Degré du polynôme pour lstsq (interpolation)
+    char *op;                 // Nom de l'opération à effectuer
+    FILE *input_file_A;       // Premier fichier d'entrée (vecteur/matrice)
+    FILE *input_file_B;       // Deuxième fichier d'entrée, optionnel (si l'opération en nécessite deux)
 } args_t;
 
+// Affiche l'aide et la syntaxe d'utilisation
 void usage(char *prog_name) {
     fprintf(stderr, "UTILISATION :\n");
-    fprintf(stderr, "   %s [OPTIONS] name_op input_file_A [input_file_B]\n",
-            prog_name);
+    fprintf(stderr, "   %s [OPTIONS] name_op input_file_A [input_file_B]\n", prog_name);
     fprintf(stderr, "   name_op : nom de l'opération à effectuer.\n");
     fprintf(stderr,
-            "   input_file_A : chemin relatif ou absolu vers le fichier "
-            "contenant le "
+            "   input_file_A : chemin relatif ou absolu vers le fichier contenant le "
             "premier vecteur/matrice de l'opération, au format binaire.\n");
     fprintf(stderr,
-            "   input_file_B : optionnel ; chemin relatif ou absolu vers "
-            "le fichier contenant le second vecteur/matrice de "
+            "   input_file_B : optionnel ; chemin relatif ou absolu vers le fichier contenant le second vecteur/matrice de "
             "l'opération s'il y en a deux, au format binaire.\n");
-    fprintf(stderr, "   -v : autorise les messages de debug sur la sortie "
-                    "d'erreur standard. Défaut : false.\n");
+    fprintf(stderr, "   -v : autorise les messages de debug sur la sortie d'erreur standard. Défaut : false.\n");
     fprintf(stderr,
-            "   -n n_threads : spécifie le nombre de threads qui peuvent "
-            "être utilisés. Défaut : 1.\n");
+            "   -n n_threads : spécifie le nombre de threads qui peuvent être utilisés. Défaut : 1.\n");
     fprintf(stderr,
-            "   -f output_stream : chemin relatif ou absolu vers le "
-            "fichier qui contiendra le vecteur ou la matrice résultante "
-            "au format binaire. Défaut : stdout.\n");
-    fprintf(stderr, "   -d degree (juste pour lstsq) : degré du polynôme "
-                    "d'interpolation (uint8_t). Défaut : 1.\n");
+            "   -f output_stream : chemin relatif ou absolu vers le fichier qui contiendra le vecteur ou la matrice résultante au format binaire. Défaut : stdout.\n");
+    fprintf(stderr, "   -d degree (juste pour lstsq) : degré du polynôme d'interpolation (uint8_t). Défaut : 1.\n");
 }
 
+// Fonction de parsing des arguments de la ligne de commande
 int parse_args(args_t *args, int argc, char **argv) {
-    // Valeurs par défaut
-    args->verbose = false; 
+    // Initialisation des valeurs par défaut
+    args->verbose = false;
     args->nb_threads = 1;
     args->output_stream = stdout;
     args->deg = 1; 
@@ -61,6 +56,8 @@ int parse_args(args_t *args, int argc, char **argv) {
     args->input_file_B = NULL;
 
     int opt;
+
+    // Analyse des options passées en ligne de commande grâce à getopt
     while ((opt = getopt(argc, argv, "hn:vf:d:")) != -1) {
         switch (opt) {
         case 'n':
@@ -99,12 +96,13 @@ int parse_args(args_t *args, int argc, char **argv) {
         }
     }
 
+    // Vérification qu'il y a suffisamment d'arguments restants
     if (argc == optind || argc == optind + 1) {
-        fprintf(stderr, "Vous devez fournir une opération et les fichiers "
-                        "d'instances correspondant.\n");
+        fprintf(stderr, "Vous devez fournir une opération et les fichiers d'instances correspondant.\n");
         exit(EXIT_FAILURE);
     }
 
+    // Récupération du nom de l'opération et ouverture du premier fichier
     args->op = argv[optind++];
     if (NULL == (args->input_file_A = fopen(argv[optind++], "r"))) {
         fprintf(stderr,
@@ -113,6 +111,7 @@ int parse_args(args_t *args, int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    // Certaines opérations nécessitent un deuxième fichier d'entrée
     if (strcmp(args->op, "add_v_v") == 0 || strcmp(args->op, "sub_v_v") == 0 ||
         strcmp(args->op, "dot_prod") == 0 || strcmp(args->op, "add_m_m") == 0 ||
         strcmp(args->op, "sub_m_m") == 0 || strcmp(args->op, "mult_m_v") == 0 ||
@@ -121,8 +120,7 @@ int parse_args(args_t *args, int argc, char **argv) {
         strcmp(args->op, "QR") == 0) {
         if (optind == argc) {
             fprintf(stderr,
-                    "Vous devez fournir un second fichier d'instance pour "
-                    "cette opération.\n");
+                    "Vous devez fournir un second fichier d'instance pour cette opération.\n");
             exit(EXIT_FAILURE);
         }
         if (NULL == (args->input_file_B = fopen(argv[optind], "r"))) {
@@ -136,13 +134,23 @@ int parse_args(args_t *args, int argc, char **argv) {
     return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//                               Fonction main                              //
+//////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv) {
+    // Allocation dynamique de la structure args
     args_t *args = (args_t *)malloc(sizeof(args_t));
     if (args == NULL) {
         exit(EXIT_FAILURE);
     }
+    // Analyse et stockage des arguments de la ligne de commande
     parse_args(args, argc, argv);
 
+    //////////////////////////////
+    //         VECTEURS         //
+    //////////////////////////////
+
+    // Opération : Addition de deux vecteurs
     if (strcmp(args->op, "add_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
         if (args->verbose) {
@@ -154,7 +162,8 @@ int main(int argc, char **argv) {
             printf("vector y : \n");
             print_vector(y);
         }
-        vector *z = init_vector(x->m); // Vecteur qui contiendra x + y
+        // Initialisation du vecteur résultat qui contiendra x + y
+        vector *z = init_vector(x->m);
 
         if(x->m != y->m){
             fprintf(stderr, "Erreur : les vecteurs x et y doivent avoir la même taille.\n");
@@ -164,24 +173,22 @@ int main(int argc, char **argv) {
         thread_data_v_v thread_data[args->nb_threads];
         size_t chunk_size = x->m / args->nb_threads;
 
-        // Création des threads qui utilisent la fonction add_v_v_thread
-        for(uint64_t i = 0; i< args->nb_threads; i++){
+        // Création des threads pour l'addition en parallèle
+        for(uint64_t i = 0; i < args->nb_threads; i++){
             thread_data[i].x = x;
             thread_data[i].y = y;
             thread_data[i].z = z;
             thread_data[i].start_idx = i * chunk_size;
-            thread_data[i].end_idx = (i == args->nb_threads -1)? x->m : (i+1)*chunk_size;
-
-            pthread_create(&threads[i],NULL,add_v_v_thread, &thread_data[i]);
+            thread_data[i].end_idx = (i == args->nb_threads - 1) ? x->m : (i+1)*chunk_size;
+            pthread_create(&threads[i], NULL, add_v_v_thread, &thread_data);
         }
 
+        // Attente de la fin de tous les threads
         for(uint64_t i = 0; i < args->nb_threads; i++){
             pthread_join(threads[i], NULL);
         }
 
-        }
-
-        
+        // Affichage et/ou écriture du résultat
         if (args->output_stream == stdout) {
             printf("Résultat de l'addition entre les deux vecteurs' : \n");
             print_vector(z);
@@ -195,7 +202,10 @@ int main(int argc, char **argv) {
         free_vector(x);
         free_vector(y);
         free_vector(z);
-    }else if (strcmp(args->op, "sub_v_v") == 0) {
+    }
+
+    // Opération : Soustraction de deux vecteurs
+    else if (strcmp(args->op, "sub_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
         if (args->verbose) {
             printf("vector x : \n");
@@ -249,7 +259,10 @@ int main(int argc, char **argv) {
         free_vector(x);
         free_vector(y);
         free_vector(z);
-    } else if (strcmp(args->op, "add_m_m") == 0) {
+    }
+
+    // Opération : Addition de deux matrices
+    else if (strcmp(args->op, "add_m_m") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
             printf("matrix A : \n");
@@ -301,8 +314,10 @@ int main(int argc, char **argv) {
         free_matrix(A);
         free_matrix(B);
         free_matrix(C);
+    }
 
-    }else if (strcmp(args->op, "sub_m_m") == 0) {
+    // Opération : Soustraction de deux matrices
+    else if (strcmp(args->op, "sub_m_m") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
             printf("matrix A : \n");
@@ -353,8 +368,10 @@ int main(int argc, char **argv) {
         free_matrix(A);
         free_matrix(B);
         free_matrix(C);
+    }
 
-    }else if (strcmp(args->op, "dot_prod") == 0) {
+    // Opération : Produit scalaire de deux vecteurs
+    else if (strcmp(args->op, "dot_prod") == 0) {
         vector *x = read_vector(args->input_file_A);
         if (args->verbose) {
             printf("vector x : \n");
@@ -365,45 +382,47 @@ int main(int argc, char **argv) {
             printf("vector y : \n");
             print_vector(y);
         }
-
         double result;
         dot_prod(x, y, &result);
-
-        if(args->output_stream == stdout) {   
+        if (args->output_stream == stdout) {   
             printf("Produit scalaire : %f\n", result);
         } else {
             write_double(result, args->output_stream);
             if(args->verbose){
                 printf("Résultat du produit scalaire : %f\n", result);
             }
-        }        
-
+        }
         free_vector(x);
         free_vector(y);
-    } else if(strcmp(args->op, "norm") == 0) {
+    }
+
+    // Opération : Calcul de la norme 2 d'un vecteur
+    else if (strcmp(args->op, "norm") == 0) {
         vector *a = read_vector(args->input_file_A);
-        if(args->verbose) {
+        if (args->verbose) {
             printf("Vector a :\n");
             print_vector(a);
         }
-
         double result;
         norm(a, &result);
-        if(args->output_stream == stdout) {
+        if (args->output_stream == stdout) {
             printf("Norme : %f\n", result);
-        }else {
-            write_double(result, args-> output_stream);
+        } else {
+            write_double(result, args->output_stream);
             if(args->verbose){
                 printf("Résultat de la norme : %f\n", result);
             }
         }
-    }else if(strcmp(args->op,"mult_m_m") == 0) {
+        free_vector(a);
+    }
+
+    // Opération : Multiplication de deux matrices
+    else if (strcmp(args->op, "mult_m_m") == 0) {
         matrix *A = read_matrix(args->input_file_A);
         if (args->verbose) {
             printf("Matrix A : \n");
             print_matrix(A);
         }
-
         matrix *B = read_matrix(args->input_file_B);
         if (args->verbose) {
             printf("Matrix B : \n");
@@ -450,16 +469,15 @@ int main(int argc, char **argv) {
         free_matrix(B);
         free_matrix(C);
 
-    }else if (strcmp(args->op, "mult_m_v")== 0)
-    {
+    // Opération : Multiplication d’une matrice par un vecteur
+    else if (strcmp(args->op, "mult_m_v") == 0) {
         matrix *A = read_matrix(args->input_file_A);
-        if(args->verbose){
+        if (args->verbose) {
             printf("Matrix A :\n");
             print_matrix(A);
         }
-
-        vector *B = read_vector(args->input_file_B);
-        if(args->verbose){
+        vector *b = read_vector(args->input_file_B);
+        if (args->verbose) {
             printf("Vector b:\n");
             print_vector(B);
         }
@@ -503,12 +521,14 @@ int main(int argc, char **argv) {
             }
         }
         free_matrix(A);
-        free_vector(B);
-        free_vector(C);
+        free_vector(b);
+        free_vector(result);
+    }
 
-    }else if(strcmp(args->op, "transp")== 0){
+    // Opération : Transposée d’une matrice (la fonction transp effectue la transposition sur place)
+    else if (strcmp(args->op, "transp") == 0) {
         matrix *A = read_matrix(args->input_file_A);
-        if(args->verbose){
+        if (args->verbose) {
             printf("Matrix A :\n");
             print_matrix(A);
         }
@@ -558,12 +578,79 @@ int main(int argc, char **argv) {
             }
         }
         free_matrix(A);
+    }
+
+    // Opération : Substitution arrière
+    else if (strcmp(args->op, "back_sub") == 0) {
+        // Lecture de la matrice A et du vecteur b
+        matrix *A = read_matrix(args->input_file_A);
+        vector *b = read_vector(args->input_file_B);
+        // Allocation du vecteur solution
+        vector *result = init_vector(b->m);
+        // Appel de la fonction de substitution arrière
+        back_sub(b, A, result);
+        if (args->output_stream == stdout) {
+            printf("Résultat de la substitution arrière :\n");
+            print_vector(result);
+        } else {
+            write_vector(result, args->output_stream);
+        }
+        free_matrix(A);
+        free_vector(b);
+        free_vector(result);
+    }
+
+    // Opération : Décomposition QR
+    else if (strcmp(args->op, "QR") == 0) {
+        // Lecture de la matrice A
+        matrix *A = read_matrix(args->input_file_A);
+        // Allocation des matrices Q et R
+        // On suppose ici que Q est carrée de dimensions A->m x A->m et R est de dimensions A->m x A->n
+        matrix *Q = init_matrix(A->m, A->m);
+        matrix *R = init_matrix(A->m, A->n);
+        // Calcul de la décomposition QR
+   
+        if (args->output_stream == stdout) {
+            printf("Matrice Q :\n");
+            print_matrix(Q);
+            printf("Matrice R :\n");
+            print_matrix(R);
+        } else {
+            write_matrix(Q, args->output_stream);
+            write_matrix(R, args->output_stream);
+        }
+        free_matrix(A);
+        free_matrix(Q);
+        free_matrix(R);
+    }
+
+    // Opération : Lancement de tests sous Valgrind
+    else if (strcmp(args->op, "valgrind") == 0) {
+        if (args->verbose) {
+            fprintf(stderr, "Lancement des tests sous Valgrind...\n");
+        }
+        int result = system("make valgrind");
+        free(args);
+        exit(result);
+    }
+
+    // Opération : Lancement de tests basiques sous Valgrind
+    else if (strcmp(args->op, "valgrindtest") == 0) {
+        if (args->verbose) {
+            fprintf(stderr, "Lancement des tests basiques sous Valgrind...\n");
+        }
+        int result = system("make valgrindtest");
+        free(args);
+        exit(result);
+    }
     
-    }else {
+    // Si l'opération demandée n'est pas implémentée
+    else {
         fprintf(stderr, "Cette opération n'est pas implémentée...\n");
         exit(EXIT_FAILURE);
     }
 
+    // Fermeture des fichiers ouverts
     fclose(args->input_file_A);
     if (strcmp(args->op, "add_v_v") == 0 || strcmp(args->op, "sub_v_v") == 0 ||
         strcmp(args->op, "dot_prod") == 0 || strcmp(args->op, "add_m_m") == 0 ||

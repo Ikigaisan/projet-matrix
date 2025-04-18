@@ -37,7 +37,6 @@ $(OBJECTS)/matrix.o: $(SRC)/matrix.c | $(OBJECTS)
 $(OBJECTS)/file.o: $(SRC)/file.c | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-
 $(OBJECTS)/vector_threads.o: $(SRC)/vector_threads.c $(HEADERS)/vector_threads.h | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
@@ -47,7 +46,6 @@ $(OBJECTS)/matrix_threads.o : $(SRC)/matrix_threads.c $(HEADERS)/matrix_threads.
 
 $(OBJECTS):
 	mkdir -p $(OBJECTS)
-
 
 test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
 	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
@@ -68,3 +66,20 @@ clean:
 	rm -f *.bin
 
 .PHONY: clean test debug
+
+valgrind: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test
+
+	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test_file
+
+	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test_adv
+
+valgrindtest: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test
+
+	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
+	valgrind --leak-check=full --track-origins=yes ./test_file
