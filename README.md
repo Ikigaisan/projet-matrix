@@ -91,7 +91,7 @@ Pour compiler les fichiers de comparaison, tapez cette commande :
 make compare
 ```
 Il existe deux modes d'affichage à ce programme :
-- ```console``` : affiche les résultats des comparaisons sur le terminal.
+- ```console``` : affiche les résultats des comparaisons sur le terminal, cet affichage est moins clair mais permet de voir les résultats sans passer par pyplot.
 - ``` graphique``` : crée un fichier csv ```restults_compare.csv``` qui va pouvoir être par la suite lu par un programme python pour en faire des graphes.
     
     ***Attention :*** L'affichage graphique n'est pas fait pour fonctionner sur un raspberry qui n'a peut-être pas accès aux librairies ``matplotlib``, ``pandas`` ou encore ``math``.
