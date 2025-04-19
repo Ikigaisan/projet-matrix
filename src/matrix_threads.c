@@ -73,12 +73,21 @@ void* mult_m_m_thread(void* arg){
         fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 " x %" PRIu64 ")\n",
                 data->A->m, data->A->n, data->B->m, data->B->n);
         exit(EXIT_FAILURE);
-    }
+    }   
 
-    for(uint64_t i = data->start_row; i < data->end_row; i++){
-        for (uint64_t j = 0; j < o; j++) {
-            for (uint64_t k = 0; k < n; k++) {
-                data->C->values[i][j] += data->A->values[i][k] * data->B->values[k][j];  
+    // Taille des blocs (permet d'optimiser le cache)
+    uint64_t block_size = 64;
+
+    // Division de la matrice par blocs
+    for (uint64_t i = data->start_row; i < data->end_row; i += block_size) {
+        for (uint64_t j = 0; j < o; j += block_size) {
+            // Calcul des blocs A et B
+            for (uint64_t bi = i; bi < i + block_size && bi < data->A->m; bi++) {
+                for (uint64_t bj = j; bj < j + block_size && bj < o; bj++) {
+                    for (uint64_t k = 0; k < n; k++) {
+                        data->C->values[bi][bj] += data->A->values[bi][k] * data->B->values[k][bj];
+                    }
+                }
             }
         }
     }

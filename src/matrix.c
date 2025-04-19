@@ -183,15 +183,26 @@ void mult_m_m(matrix *A, matrix *B, matrix *C){
             C->values[i][j] = 0;
         }
     }
-    // Calcul standard de la multiplication matricielle
-    for (uint64_t i = 0; i < m; i++) {
-        for (uint64_t j = 0; j < o; j++) {
-            for (uint64_t k = 0; k < n; k++) {
-                C->values[i][j] += A->values[i][k] * B->values[k][j];  
+    // Taille des blocs (permet d'optimiser le cache)
+    uint64_t block_size = 64;
+
+    // On divise la matrice par blocs
+    for (uint64_t i = 0; i < m; i += block_size) {
+        for (uint64_t j = 0; j < o; j += block_size) {
+            for (uint64_t k = 0; k < n; k += block_size) {
+                // On traite un sous-bloc de A et B et on met à jour le sous-bloc de C
+                for (uint64_t ii = i; ii < i + block_size && ii < m; ++ii) {
+                    for (uint64_t jj = j; jj < j + block_size && jj < o; ++jj) {
+                        for (uint64_t kk = k; kk < k + block_size && kk < n; ++kk) {
+                            C->values[ii][jj] += A->values[ii][kk] * B->values[kk][jj];
+                        }
+                    }
+                }
             }
         }
     }
 }
+
 
 /* 
  * Transposition d'une matrice A.
