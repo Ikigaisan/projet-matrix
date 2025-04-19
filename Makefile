@@ -65,6 +65,7 @@ clean:
 	rm -f main generator_matrix generator_vector test test_file test_adv temp compare
 	rm -f *.bin
 	rm -f results_compare.csv
+	rm -f comparaison_performances.png
 
 .PHONY: clean test debug
 

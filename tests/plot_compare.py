@@ -1,29 +1,36 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import math
 
-# Lire le CSV avec des noms de colonnes appropriés
+# Lecture du csv
 df = pd.read_csv("results_compare.csv", names=["fonction", "taille", "mono", "multi"])
 
-# Nombre de sous-graphes que tu souhaites afficher (par exemple, une colonne de 3 graphes)
-n_fonctions = len(df["fonction"].unique())
-cols = 1  # Nombre de colonnes (1 par défaut, tu peux changer à plusieurs si tu préfères)
-rows = n_fonctions  # Le nombre de lignes sera égal au nombre de fonctions
+# Paramètres pour l'affichage du plot (pour afficher tous les graphes en une page)
+n_fonctions = len(df["fonction"].unique())  # Nombre de sous-graphes à afficher
+cols = 2  # Nombre de colonnes
+rows = math.ceil(n_fonctions / cols)  # Nombre de lignes
 
 # Créer un subplot pour chaque fonction
-fig, axes = plt.subplots(rows, cols, figsize=(8, 6 * rows))  # Ajuste la taille de la figure si nécessaire
+fig, axes = plt.subplots(rows, cols, figsize=(12, 3.5 * rows), constrained_layout=True)
+axes = axes.flatten()  # Très important : aplatir le tableau 2D
 
-# Pour chaque fonction différente
+# Plot de chaque fonction
 for i, nom_fonction in enumerate(df["fonction"].unique()):
     sous_df = df[df["fonction"] == nom_fonction]
-    ax = axes[i] if rows > 1 else axes  # Accéder au bon sous-graphe
+    ax = axes[i]
     ax.plot(sous_df["taille"], sous_df["mono"], marker="o", label=f"{nom_fonction} mono")
     ax.plot(sous_df["taille"], sous_df["multi"], marker="s", label=f"{nom_fonction} multi")
     
     ax.set_title(f"Comparaison des performances - {nom_fonction}")
     ax.set_xlabel("Taille des données")
-    ax.set_ylabel("Temps d'exécution (s)")
+    ax.set_ylabel("Temps d'exécution [s]")
     ax.legend()
     ax.grid()
 
-plt.tight_layout()  # Ajuste la disposition des sous-graphiques
-plt.show()
+# Si nombre de fonctions est impair, cacher les axes restants non utilisés
+for j in range(i + 1, len(axes)):
+    fig.delaxes(axes[j])
+
+plt.tight_layout()
+plt.savefig("comparaison_performances.png", dpi=300)
+#plt.show()

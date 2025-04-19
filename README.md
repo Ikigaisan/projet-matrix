@@ -84,14 +84,27 @@ make valgrindtest
 Ces commandes sont compatibles uniquement avec un ordinateur Windows.
 
 ### Comparaison monothreading et multithreading
-Pour lancer la comparaison entre le monothreading et le multithreading, tapez les commande 
+Il est possible de lancer une comparaison entre le monothreading et le multithreading.
+Pour compiler les fichiers de comparaison, tapez cette commande :
 
 ```sh
 make compare
 ```
+Il existe deux modes d'affichage à ce programme :
+- ```console``` : affiche les résultats des comparaisons sur le terminal.
+- ``` graphique``` : crée un fichier csv ```restults_compare.csv``` qui va pouvoir être par la suite lu par un programme python pour en faire des graphes.
+    
+    ***Attention :*** L'affichage graphique n'est pas fait pour fonctionner sur un raspberry qui n'a peut-être pas accès aux librairies ``matplotlib``, ``pandas`` ou encore ``math``.
+
 ```sh
-./compare [nombre-de-threads-souhaités]
+./compare [nombre-de-threads-souhaités] [mode-d-affichage]
 ```
+
+Si l'option graphique a été effectuée, pour créer les graphes il suffit de taper cette commande :
+```sh
+python3 tests/plot_compare.py
+```
+Les graphes vont ainsi être sauvegardé dans un fichier nommé ```comparaison_performance.png```
 
 ## Nettoyage
 ```sh
