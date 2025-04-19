@@ -64,6 +64,7 @@ clean:
 	rm -f $(OBJECTS)/*.o
 	rm -f main generator_matrix generator_vector test test_file test_adv temp compare
 	rm -f *.bin
+	rm -f results_compare.csv
 
 .PHONY: clean test debug
 
