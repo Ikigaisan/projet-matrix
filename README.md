@@ -148,11 +148,7 @@ make clean
 
 - ```matrix.h``` / ```vector.h``` : Fonctions pour créer, afficher et manipuler des matrices et des vecteurs.
 
-<<<<<<< README.md
-- ```vector.h``` : Fonctions pour créer, afficher et manipuler des vecteurs.
-=======
 - ```matrix_threads.h``` / ```vector_threads.h``` : Fonctions pour manipuler les matrices et vecteurs avec des threads.
->>>>>>> README.md
 
 
 
