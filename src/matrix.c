@@ -241,6 +241,12 @@ void back_sub(vector*b, matrix *U, vector*x){
     for (uint64_t i = 0; i < m; i++ ){
         x->values[i] = b->values[i];
     }
+
+    if (m<1 || U->m != m || U->n != m || x->m != m){
+        fprintf(stderr, "Dimensions invalides pour la substitution arrière.\n");
+        exit(EXIT_FAILURE);
+    }
+
     // Cas particulier : une seule inconnue
     if (m == 1) {
         if (fabs(U->values[0][0]) < DBL_EPSILON) {
@@ -257,10 +263,7 @@ void back_sub(vector*b, matrix *U, vector*x){
         }
         return;
     }
-    if (m < 1){
-        fprintf(stderr, "La matrice n'est pas valide.\n");
-        return;
-    }
+
     // Résolution par substitution arrière pour m > 1
     for (int64_t i = m-1; i >= 0; i--){
         for (int64_t j = m-1; j > i; j--){
@@ -317,6 +320,10 @@ vector *lstsq(matrix *A, vector *b){
  * Soustraction d'un vecteur src multiplié par un scalaire au vecteur dest.
  */
 void vector_subtract(vector *dest, vector *src, double scalar) {
+    if (dest->m != src->m) {
+        fprintf(stderr, "Les vecteurs ont des tailles différentes\n");
+        exit(EXIT_FAILURE);
+    }
     for (uint64_t i = 0; i < dest->m; i++) {
         dest->values[i] -= scalar * src->values[i];
     }
@@ -326,6 +333,10 @@ void vector_subtract(vector *dest, vector *src, double scalar) {
  * Division de chaque élément d'un vecteur par un scalaire.
  */
 void vector_divide(vector *v, double scalar) {
+    if (scalar == 0) {
+        fprintf(stderr, "Division par zéro dans vector_divide.\n");
+        exit(EXIT_FAILURE);
+    }
     for (uint64_t i = 0; i < v->m; i++) {
         v->values[i] /= scalar;
     }
@@ -335,6 +346,10 @@ void vector_divide(vector *v, double scalar) {
  * Extrait la ième colonne d'une matrice A sous forme de vecteur.
  */
 vector* Q_i (matrix *A, uint64_t i) {
+    if (i >= A->n) {
+        fprintf(stderr, "Index de colonne invalide dans Q_i.\n");
+        return NULL;
+    }
     vector *colone = init_vector(A->m);
     if (!colone) return NULL;
     for(uint64_t j = 0; j < A->m; j++){
