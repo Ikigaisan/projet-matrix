@@ -74,11 +74,9 @@ void print_vector(vector *v) {
  */
 void add_v_v(vector *x, vector *y, vector *z) {
     uint64_t m = x->m;
-    if(m != y->m){
+    if(m != y->m || m != z->m){
         fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
-    }
-    if(m != z->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
+        exit(EXIT_FAILURE);
     }
 
     for (uint64_t i = 0; i < m; i++) {
@@ -95,11 +93,9 @@ void add_v_v(vector *x, vector *y, vector *z) {
  */
 void sub_v_v(vector *x, vector *y, vector *z) {
     uint64_t m = x->m;
-    if(m != y->m){
+    if(m != y->m || m != z->m){
         fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
-    }
-    if(m != z->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
+        exit(EXIT_FAILURE);
     }
     for (uint64_t i = 0; i < m; i++) {
         z->values[i] = x->values[i] - y->values[i];
