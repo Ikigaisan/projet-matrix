@@ -10,6 +10,7 @@
 #include "../headers/file.h"
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
+#include "../headers/error.h"
 #include "../headers/vector_threads.h"
 #include "../headers/matrix_threads.h"
 #include <pthread.h>
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
     // Allocation dynamique de la structure args
     args_t *args = (args_t *)malloc(sizeof(args_t));
     if (args == NULL) {
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_ALLOC);
     }
     // Analyse et stockage des arguments de la ligne de commande
     parse_args(args, argc, argv);
@@ -153,23 +154,25 @@ int main(int argc, char **argv) {
     // Opération : Addition de deux vecteurs
     if (strcmp(args->op, "add_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
-        if (args->verbose) {
-            printf("vector x : \n");
-            print_vector(x);
-        }
         vector *y = read_vector(args->input_file_B);
-        if (args->verbose) {
+
+        if (!x || !y) handle_error(ERROR_NULL_POINTER);
+        if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+
+        if (args->verbose) { 
+            printf("vector x : \n");
+            print_vector(x); 
             printf("vector y : \n");
-            print_vector(y);
+            print_vector(y); 
         }
+        
+        if (x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
+        
         // Initialisation du vecteur résultat qui contiendra x + y
         vector *z = init_vector(x->m);
+        if (!z) handle_error(ERROR_ALLOC);
 
-        if(x->m != y->m){
-            fprintf(stderr, "Erreur : les vecteurs x et y doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
-            pthread_t threads[args->nb_threads];
+        pthread_t threads[args->nb_threads];
         thread_data_v_v thread_data[args->nb_threads];
         size_t chunk_size = x->m / args->nb_threads;
 
@@ -180,6 +183,7 @@ int main(int argc, char **argv) {
             thread_data[i].z = z;
             thread_data[i].start_idx = i * chunk_size;
             thread_data[i].end_idx = (i == args->nb_threads - 1) ? x->m : (i+1)*chunk_size;
+            // Il faudrait aussi gérer les erreurs de thread
             pthread_create(&threads[i], NULL, add_v_v_thread, &thread_data);
         }
 
@@ -203,49 +207,47 @@ int main(int argc, char **argv) {
         free_vector(y);
         free_vector(z);
     }
-    }
 
     // Opération : Soustraction de deux vecteurs
     else if (strcmp(args->op, "sub_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
+        vector *y = read_vector(args->input_file_B);
+
+        if (!x || !y) handle_error(ERROR_NULL_POINTER);
+        if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+
         if (args->verbose) {
             printf("vector x : \n");
             print_vector(x);
-        }
-        vector *y = read_vector(args->input_file_B);
-        if (args->verbose) {
+
             printf("vector y : \n");
             print_vector(y);
         }
         vector *z = init_vector(x->m);
 
-        if(x->m != y->m){
-            fprintf(stderr, "Erreur : les vecteurs x et y doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
-            pthread_t threads[args->nb_threads]; // tableau de threads en mode threadpool mais de nb_threads --> création de nb_threads
-            thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
-            size_t chunk_size = x->m / args->nb_threads; // défini la répartition dans les différents threads
-            
-            // sub_v_v(x, y, z); on le supprime parce que mtn on passe en multithreads et plus en monothread ? 
-            // Création des threads qui utilisent la fonction sub_v_v_thread
-    
-            for(uint64_t i = 0; i < args->nb_threads; i++) {
-                thread_data[i].x = x;
-                thread_data[i].y = y;
-                thread_data[i].z = z;
-                thread_data[i].start_idx = i*chunk_size;
-                thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
-    
-                pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
-    
-            }
-    
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
-            }
-        }
+        if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
 
+        pthread_t threads[args->nb_threads]; // tableau de threads en mode threadpool mais de nb_threads --> création de nb_threads
+        thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
+        size_t chunk_size = x->m / args->nb_threads; // défini la répartition dans les différents threads
+            
+        // sub_v_v(x, y, z); on le supprime parce que mtn on passe en multithreads et plus en monothread ? 
+        // Création des threads qui utilisent la fonction sub_v_v_thread
+    
+        for(uint64_t i = 0; i < args->nb_threads; i++) {
+            thread_data[i].x = x;
+            thread_data[i].y = y;
+            thread_data[i].z = z;
+            thread_data[i].start_idx = i*chunk_size;
+            thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
+            // Il faudrait aussi gérer les erreurs de thread
+            pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
+    
+        }
+    
+        for(uint64_t i = 0; i < args->nb_threads; i++){
+            pthread_join(threads[i], NULL);
+        }
     
         if (args->output_stream == stdout) {
             printf("Résultat de la soustraction entre les deux vecteurs : \n");

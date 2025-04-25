@@ -1,6 +1,9 @@
 #include "../headers/vector.h"
 #include <math.h>
 #include <inttypes.h>
+#include "../headers/error.h"
+
+#define SUCCESS 0
 
 /**
  * Alloue et initialise un vecteur de taille m.
@@ -72,16 +75,17 @@ void print_vector(vector *v) {
  * @param y Le second vecteur.
  * @param z Le vecteur résultat.
  */
-void add_v_v(vector *x, vector *y, vector *z) {
+int add_v_v(vector *x, vector *y, vector *z) {
+    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
+    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+
     uint64_t m = x->m;
-    if(m != y->m || m != z->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
-        exit(EXIT_FAILURE);
-    }
+    if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
 
     for (uint64_t i = 0; i < m; i++) {
         z->values[i] = x->values[i] + y->values[i];
     }
+    return SUCCESS;
 }
 
 /**
@@ -91,15 +95,17 @@ void add_v_v(vector *x, vector *y, vector *z) {
  * @param y Le vecteur à soustraire.
  * @param z Le vecteur résultat.
  */
-void sub_v_v(vector *x, vector *y, vector *z) {
+int sub_v_v(vector *x, vector *y, vector *z) {
+    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
+    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+
     uint64_t m = x->m;
-    if(m != y->m || m != z->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
-        exit(EXIT_FAILURE);
-    }
+    if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
+
     for (uint64_t i = 0; i < m; i++) {
         z->values[i] = x->values[i] - y->values[i];
     }
+    return SUCCESS;
 }
 
 /**
@@ -109,15 +115,17 @@ void sub_v_v(vector *x, vector *y, vector *z) {
  * @param y Le second vecteur.
  * @param result Pointeur sur le résultat du produit scalaire.
  */
-void dot_prod(vector *x, vector *y, double *result){
+int dot_prod(vector *x, vector *y, double *result){
+    if (!x || !y || !result) handle_error(ERROR_NULL_POINTER);
+    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+
     *result = 0.0;
-    if(x->m != y->m){
-        fprintf(stderr, "Erreur : les vecteurs doivent avoir la même taille !\n");
-        exit(EXIT_FAILURE);
-    }
+    if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
+
     for(uint64_t i = 0; i < x->m; i++){
         *result += x->values[i] * y->values[i];
     }
+    return SUCCESS;
 }
 
 /**
@@ -126,15 +134,16 @@ void dot_prod(vector *x, vector *y, double *result){
  * @param x Le vecteur dont on calcule la norme.
  * @param result Pointeur sur la variable recevant la norme.
  */
-void norm(vector *x, double *result){
-    if (!x || !x->values || !result) {
-        fprintf(stderr, "Erreur : pointeur NULL détecté dans norm()\n");
-        exit(EXIT_FAILURE);
-    }
+int norm(vector *x, double *result){
+    if (!x || !result) handle_error(ERROR_NULL_POINTER);
+    if (!x->values) handle_error(ERROR_NULL_VALUES);
+
     double s = 0;
     uint64_t m = x->m;
     for (uint64_t i = 0; i < m; i++){
         s += (x->values[i]) * (x->values[i]);
     }
     *result = sqrt(s); 
+
+    return SUCCESS;
 }
