@@ -45,14 +45,11 @@ void print_vector(vector *v) {
     printf("]\n");
 }
 
-/**
- * Additionne deux vecteurs x et y et stocke le résultat dans z.
- *
- * @param x Le premier vecteur.
- * @param y Le second vecteur.
- * @param z Le vecteur résultat.
- */
+
 int add_v_v(vector *x, vector *y, vector *z) {
+    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
+    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+
     uint64_t m = x->m;
     if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
 
@@ -62,14 +59,11 @@ int add_v_v(vector *x, vector *y, vector *z) {
     return SUCCESS;
 }
 
-/**
- * Soustrait le vecteur y au vecteur x et stocke le résultat dans z.
- *
- * @param x Le vecteur de départ.
- * @param y Le vecteur à soustraire.
- * @param z Le vecteur résultat.
- */
+
 int sub_v_v(vector *x, vector *y, vector *z) {
+    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
+    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+
     uint64_t m = x->m;
     if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
 
@@ -79,16 +73,9 @@ int sub_v_v(vector *x, vector *y, vector *z) {
     return SUCCESS;
 }
 
-/**
- * Calcule le produit scalaire de deux vecteurs x et y.
- *
- * @param x Le premier vecteur.
- * @param y Le second vecteur.
- * @param result Pointeur sur le résultat du produit scalaire.
- */
 int dot_prod(vector *x, vector *y, double *result){
     if (!x || !y || !result) handle_error(ERROR_NULL_POINTER);
-    if (!x->values || !y->values) handle_error(ERROR_NULL_VALUES);
+    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
 
     *result = 0.0;
     if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);

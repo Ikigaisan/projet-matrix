@@ -253,6 +253,7 @@ int main(int argc, char **argv) {
             free_vector(y);
             handle_error(ERROR_ALLOC_STRUCT);
         }
+        if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
 
         if(x->m != y->m) {
             free_vector(x);
@@ -260,6 +261,7 @@ int main(int argc, char **argv) {
             free_vector(z);
             handle_error(ERROR_SIZE_MISMATCH);
         }
+        if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
 
         pthread_t threads[args->nb_threads]; // tableau de threads en mode threadpool mais de nb_threads --> création de nb_threads
         thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
