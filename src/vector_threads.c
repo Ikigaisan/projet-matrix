@@ -22,7 +22,7 @@ void* add_v_v_thread(void *arg) {
     }
 
     if (data == NULL) {
-        handle_error(ERROR_NULL_POINTER);
+        handle_error(ERROR_ALLOC_STRUCT);
     }
 
     if (data->x == NULL || data->y == NULL || data->z == NULL){
