@@ -47,9 +47,6 @@ void print_vector(vector *v) {
 
 
 int add_v_v(vector *x, vector *y, vector *z) {
-    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
-    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
-
     uint64_t m = x->m;
     if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
 
@@ -61,9 +58,6 @@ int add_v_v(vector *x, vector *y, vector *z) {
 
 
 int sub_v_v(vector *x, vector *y, vector *z) {
-    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
-    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
-
     uint64_t m = x->m;
     if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
 

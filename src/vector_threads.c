@@ -21,6 +21,18 @@ void* add_v_v_thread(void *arg) {
         handle_error(ERROR_INDEX_OUT_OF_BOUNDS); //Permet d'éviter d'ecrire en dehors du tableau
     }
 
+    if (data == NULL) {
+        handle_error(ERROR_NULL_POINTER);
+    }
+
+    if (data->x == NULL || data->y == NULL || data->z == NULL){
+        handle_error(ERROR_ALLOC_VALUES);
+    }
+
+    if (data->start_idx >= data->x->m || data->end_idx > data->x->m || data->start_idx >= data->end_idx) {
+        handle_error(ERROR_INDEX_OUT_OF_BOUNDS); //Permet d'éviter d'ecrire en dehors du tableau
+    }
+
     if(data->x->m != data->y->m || data->x->m != data->z->m){
         free_vector(data->x);
         free_vector(data->y);
