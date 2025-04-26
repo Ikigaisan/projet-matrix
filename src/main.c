@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
     // Allocation dynamique de la structure args
     args_t *args = (args_t *)malloc(sizeof(args_t));
     if (args == NULL) {
-        handle_error(ERROR_ALLOC);
+        handle_error(ERROR_ALLOC_STRUCT);
     }
     // Analyse et stockage des arguments de la ligne de commande
     parse_args(args, argc, argv);
@@ -156,8 +156,8 @@ int main(int argc, char **argv) {
         vector *x = read_vector(args->input_file_A);
         vector *y = read_vector(args->input_file_B);
 
-        if (!x || !y) handle_error(ERROR_NULL_POINTER);
-        if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+        if (!x || !y) handle_error(ERROR_ALLOC_STRUCT);
+        if (!x->values || !y->values) handle_error(ERROR_ALLOC_VALUES);
 
         if (args->verbose) { 
             printf("vector x : \n");
@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
         
         // Initialisation du vecteur résultat qui contiendra x + y
         vector *z = init_vector(x->m);
-        if (!z) handle_error(ERROR_ALLOC);
+        if (!z) handle_error(ERROR_ALLOC_STRUCT);
 
         pthread_t threads[args->nb_threads];
         thread_data_v_v thread_data[args->nb_threads];
@@ -183,8 +183,9 @@ int main(int argc, char **argv) {
             thread_data[i].z = z;
             thread_data[i].start_idx = i * chunk_size;
             thread_data[i].end_idx = (i == args->nb_threads - 1) ? x->m : (i+1)*chunk_size;
-            // Il faudrait aussi gérer les erreurs de thread
-            pthread_create(&threads[i], NULL, add_v_v_thread, &thread_data);
+
+            int thread_create_error = pthread_create(&threads[i], NULL, add_v_v_thread, &thread_data[i]);
+            if (thread_create_error != 0) handle_error(ERROR_THREADS);
         }
 
         // Attente de la fin de tous les threads
@@ -241,8 +242,8 @@ int main(int argc, char **argv) {
             thread_data[i].start_idx = i*chunk_size;
             thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
             // Il faudrait aussi gérer les erreurs de thread
-            pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
-    
+            int thread_create_error = pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
+            if (thread_create_error != 0) handle_error(ERROR_THREADS);
         }
     
         for(uint64_t i = 0; i < args->nb_threads; i++){

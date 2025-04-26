@@ -16,21 +16,13 @@
 vector *init_vector(uint64_t m) {
     vector *v = (vector *)malloc(sizeof(vector));
     if (v == NULL) {
-        fprintf(
-            stderr,
-            "Problème lors de l'allocation de l'espace mémoire pour un vecteur : %s\n",
-            strerror(errno));
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_NULL_POINTER);
     }
     v->m = m;
     v->values = (double *)malloc(m * sizeof(double));
     if (v->values == NULL) {
-        fprintf(
-            stderr,
-            "Problème lors de l'allocation de l'espace mémoire pour un vecteur : %s\n",
-            strerror(errno));
         free_vector(v);
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_NULL_VALUES);
     }
     // Initialisation à zéro de chaque élément
     for (uint64_t i = 0; i < m; i++) {
@@ -76,9 +68,6 @@ void print_vector(vector *v) {
  * @param z Le vecteur résultat.
  */
 int add_v_v(vector *x, vector *y, vector *z) {
-    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
-    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
-
     uint64_t m = x->m;
     if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
 
@@ -96,9 +85,6 @@ int add_v_v(vector *x, vector *y, vector *z) {
  * @param z Le vecteur résultat.
  */
 int sub_v_v(vector *x, vector *y, vector *z) {
-    if (!x || !y || !z) handle_error(ERROR_NULL_POINTER);
-    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
-
     uint64_t m = x->m;
     if(m != y->m || m != z->m) handle_error(ERROR_SIZE_MISMATCH);
 
