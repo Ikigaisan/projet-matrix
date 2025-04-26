@@ -11,7 +11,7 @@ void* add_v_v_thread(void *arg) {
     thread_data_v_v *data = (thread_data_v_v *)arg;  // On "déballe" le arg
 
     if (data == NULL) {
-        handle_error(ERROR_NULL_POINTER);
+        handle_error(ERROR_ALLOC_STRUCT);
     }
 
     if (data->x == NULL || data->y == NULL || data->z == NULL){

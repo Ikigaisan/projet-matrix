@@ -156,8 +156,8 @@ int main(int argc, char **argv) {
         vector *x = read_vector(args->input_file_A);
         vector *y = read_vector(args->input_file_B);
 
-        if (!x || !y) handle_error(ERROR_ALLOC_STRUCT);
-        if (!x->values || !y->values) handle_error(ERROR_ALLOC_VALUES);
+        if (!x || !y) handle_error(ERROR_NULL_POINTER);
+        if (!x->values || !y->values) handle_error(ERROR_NULL_VALUES);
 
         if (args->verbose) { 
             printf("vector x : \n");
