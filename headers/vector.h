@@ -41,8 +41,8 @@ void print_vector(vector *);
  * de x avec y sera stockée
  *
  * @result z = x + y
- */
-void add_v_v(vector *x, vector *y, vector *z);
+ */ 
+int add_v_v(vector *x, vector *y, vector *z);
 
 
 
@@ -57,7 +57,7 @@ void add_v_v(vector *x, vector *y, vector *z);
  *
  * @result z = x - y
  */
-void sub_v_v(vector *x, vector *y, vector *z);
+int sub_v_v(vector *x, vector *y, vector *z);
 
 /**
  * @brief Calule le produit scalaire entre deux vecteurs.
@@ -71,7 +71,7 @@ void sub_v_v(vector *x, vector *y, vector *z);
  * @pre Les vecteurs x et y doivent être de la même taille.
  * 
  */
-void dot_prod(vector *x, vector *y, double *result);
+int dot_prod(vector *x, vector *y, double *result);
 
 
 /**
@@ -82,7 +82,7 @@ void dot_prod(vector *x, vector *y, double *result);
  * 
  * 
  */
-void norm(vector *x, double *result);
+int norm(vector *x, double *result);
 
 /**
  * Free correctement le vecteur.
