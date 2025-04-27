@@ -49,7 +49,6 @@ void* add_v_v_thread(void *arg) {
     pthread_exit((void*) SUCCESS);
 }
 
-
 void* sub_v_v_thread (void *arg) {
     thread_data_v_v *data = (thread_data_v_v *)arg;
 
