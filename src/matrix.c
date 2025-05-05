@@ -118,6 +118,7 @@ int sub_m_m(matrix *A, matrix *B, matrix *C) {
             C->values[i][j] = A->values[i][j] - B->values[i][j];
         }
     }
+    return SUCCESS;
 }
 
 /* 
