@@ -69,7 +69,7 @@ int sub_v_v(vector *x, vector *y, vector *z) {
 
 int dot_prod(vector *x, vector *y, double *result){
     if (!x || !y || !result) handle_error(ERROR_NULL_POINTER);
-    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+    if (!x->values || !y->values) handle_error(ERROR_NULL_VALUES);
 
     *result = 0.0;
     if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
