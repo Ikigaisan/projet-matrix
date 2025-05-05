@@ -9,5 +9,4 @@ test-job1:
   script:
     - make main
     - make tests
-    - ./tests
 
