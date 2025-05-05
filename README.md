@@ -68,7 +68,7 @@ Un fichier ne contenant que la valeur `double`directement en format binaire.
 Pour lancer les tests, tapez la commande
 
 ```sh
-make test
+make tests
 ```
 
 ### Tests mémoire

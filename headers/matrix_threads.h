@@ -91,7 +91,6 @@ void *add_m_m_thread(void *arg);
  */
 void *sub_m_m_thread(void *arg);
 
-
  /**
  * @brief Utilise les threads pour multiplier deux matrices
  * 
@@ -104,7 +103,6 @@ void *sub_m_m_thread(void *arg);
  */
 void *mult_m_m_thread(void *arg);
 
-
 /**
  * @brief Utilise les threads pour multiplier une matrice et un vecteur
  * 
@@ -116,8 +114,6 @@ void *mult_m_m_thread(void *arg);
  *         en effectuant le produit matricie/vecteur standard : C = A × B
  */
 void *mult_m_v_thread(void *arg);
-
-
 
  #endif // _MATRIX_H_T
 

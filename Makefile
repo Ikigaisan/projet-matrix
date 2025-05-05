@@ -47,7 +47,7 @@ $(OBJECTS)/matrix_threads.o : $(SRC)/matrix_threads.c $(HEADERS)/matrix_threads.
 $(OBJECTS):
 	mkdir -p $(OBJECTS)
 
-test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+tests: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
 	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
 	./test
 	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm

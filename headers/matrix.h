@@ -51,7 +51,6 @@ void print_matrix(matrix *);
  */
 void add_m_m(matrix *, matrix *, matrix *);
 
-
 /**
  * Calcule la soustraction de deux matrices
  *
@@ -77,7 +76,6 @@ void free_matrix(matrix *A);
  * @param Qr* Qr, la decomposition QR à free
  */
 void free_qr(QR_Decomposition *);
-
 
 /** 
  * Calcule la multiplication de 2 matrices 
@@ -139,9 +137,6 @@ void back_sub(vector *b, matrix *U, vector *x);
  */
 
 vector *lstsq(matrix *A, vector *b);
-
-
-
 
 #endif /* _MATRIX_H_ */
 
