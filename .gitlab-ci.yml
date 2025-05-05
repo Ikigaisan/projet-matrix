@@ -5,7 +5,7 @@ build-job:
     - make tests
 
 test-job1:
-  stage: tests
+  stage: test
   script:
     - make main
     - make tests
