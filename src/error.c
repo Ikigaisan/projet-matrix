@@ -31,6 +31,9 @@ void handle_error(int code) {
         case ERROR_DIV_bY_0 : 
             fprintf(stderr, "Erreur : Division par zéro. \n");
             break;
+        case ERROR_FILE :            
+            fprintf(stderr, "Erreur : Fichier non valide. \n");
+            break;
         default:
             fprintf(stderr, "Erreur inconnue (code %d).\n", code);
     }

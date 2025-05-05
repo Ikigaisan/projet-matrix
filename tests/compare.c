@@ -67,7 +67,7 @@ void compare_add_v_v(uint64_t size, int num_threads, int mode_graph){
     uint64_t chunk_size = size/num_threads;
 
     clock_gettime(CLOCK_MONOTONIC, &start);
-    for(u_int64_t i = 0; i< num_threads; i++){
+    for(uint64_t i = 0; i< num_threads; i++){
         data[i].x = x;
         data[i].y = y;
         data[i].z = z;

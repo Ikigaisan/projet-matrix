@@ -10,6 +10,7 @@
 #define ERROR_THREADS -7
 #define ERROR_NO_SOLUTION -8
 #define ERROR_DIV_bY_0 -9
+#define ERROR_FILE -10
 
 void handle_error(int code);
 
