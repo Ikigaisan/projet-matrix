@@ -12,8 +12,6 @@ typedef struct {
     double *values; // Les valeurs contenues dans le vecteur
 } vector;
 
-
-
 /**
  * Initialise un vecteur de taille m avec des zéros.
  *
@@ -44,9 +42,6 @@ void print_vector(vector *);
  */
 void add_v_v(vector *x, vector *y, vector *z);
 
-
-
-
 /**
  * Calcule la soustraction de deux vecteurs
  *
@@ -73,7 +68,6 @@ void sub_v_v(vector *x, vector *y, vector *z);
  */
 void dot_prod(vector *x, vector *y, double *result);
 
-
 /**
  * Calcule la norme d'un vecteur
  * 
@@ -88,6 +82,5 @@ void norm(vector *x, double *result);
  * Free correctement le vecteur.
  */
 void free_vector(vector *v);
-
 
 #endif /* _VECTOR_H_ */

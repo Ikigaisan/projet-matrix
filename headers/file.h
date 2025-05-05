@@ -63,6 +63,7 @@ void write_vector(vector *, FILE *);
  * représentée dans le fichier
  */
 matrix *read_matrix(FILE *);
+
 /**
  * Écrit le contenu d'une matrice dans un fichier
  *
@@ -90,6 +91,7 @@ void write_matrix(matrix *, FILE *);
  * désirez :))
  */
 QR_Decomposition *read_QR(FILE *file);
+
 /**
  * Ecrit la décomposition QR d'une matrice dans un fichier
  *
@@ -102,6 +104,5 @@ QR_Decomposition *read_QR(FILE *file);
  * le format de l'énoncé
  */
 void write_QR(matrix *, matrix *, FILE *);
-
 
 #endif /* _FILE_H_ */

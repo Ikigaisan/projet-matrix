@@ -134,9 +134,8 @@ int parse_args(args_t *args, int argc, char **argv) {
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//                               Fonction main                              //
-//////////////////////////////////////////////////////////////////////////////
+// Fonction main //
+
 int main(int argc, char **argv) {
     // Allocation dynamique de la structure args
     args_t *args = (args_t *)malloc(sizeof(args_t));
@@ -146,9 +145,7 @@ int main(int argc, char **argv) {
     // Analyse et stockage des arguments de la ligne de commande
     parse_args(args, argc, argv);
 
-    //////////////////////////////
-    //         VECTEURS         //
-    //////////////////////////////
+    // VECTEURS //
 
     // Opération : Addition de deux vecteurs
     if (strcmp(args->op, "add_v_v") == 0) {
@@ -509,7 +506,6 @@ int main(int argc, char **argv) {
                 pthread_join(threads[i], NULL);
             }
         }
-
 
         if(args->output_stream == stdout){
             printf("Résultat de la multiplication entre la matrice et le vecteur : \n");
