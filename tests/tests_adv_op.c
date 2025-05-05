@@ -191,7 +191,11 @@ void test_back_sub_upper_triangular(void) {
     // Vérification avec calcul manuel
     vector *expected_x = init_vector(m);
     for (int64_t i = m - 1; i >= 0; i--) {
-        expected_x->values[i] = b->values[i];
+        vector *b_copy = init_vector(m);
+        for (uint64_t i = 0; i < m; i++) {
+            b_copy->values[i] = b->values[i];
+        }
+        expected_x->values[i] = b_copy->values[i];
         for (uint64_t j = i + 1; j < m; j++) {
             expected_x->values[i] -= U->values[i][j] * expected_x->values[j];
         }
@@ -381,7 +385,11 @@ void test_back_sub_4x4_upper_triangular(void) {
     // Vérification avec calcul manuel pour une matrice 4x4
     vector *expected_x = init_vector(m);
     for (int64_t i = m - 1; i >= 0; i--) {
-        expected_x->values[i] = b->values[i];
+        vector *b_copy = init_vector(m);
+        for (uint64_t i = 0; i < m; i++) {
+            b_copy->values[i] = b->values[i];
+        }
+        expected_x->values[i] = b_copy->values[i];
         for (uint64_t j = i + 1; j < m; j++) {
             expected_x->values[i] -= U->values[i][j] * expected_x->values[j];
         }
@@ -418,7 +426,11 @@ void test_back_sub_90x90_upper_triangular(void) {
     // Vérification avec calcul manuel pour une matrice 90x90
     vector *expected_x = init_vector(m);
     for (int64_t i = m - 1; i >= 0; i--) {
-        expected_x->values[i] = b->values[i];
+        vector *b_copy = init_vector(m);
+        for (uint64_t i = 0; i < m; i++) {
+            b_copy->values[i] = b->values[i];
+        }
+        expected_x->values[i] = b_copy->values[i];
         for (uint64_t j = i + 1; j < m; j++) {
             expected_x->values[i] -= U->values[i][j] * expected_x->values[j];
         }
