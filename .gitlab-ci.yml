@@ -2,12 +2,12 @@ build-job:
   stage: build
   script:
     - make main
-    - make test
+    - make tests
 
 test-job1:
-  stage: test
+  stage: tests
   script:
     - make main
-    - make test
-    - ./test
+    - make tests
+    - ./tests
 
