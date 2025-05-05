@@ -172,7 +172,7 @@ void test_sub_m_m(void) {
     for (uint64_t i = 0; i < m; i++)
         for (uint64_t j = 0; j < n; j++) {
             CU_ASSERT_DOUBLE_EQUAL(C->values[i][j],
-                                   A->values[i][j] - B->values[i][j], 1e-3);
+                                   A->values[i][j] - B->values[i][j], 1e-5);
         }
 
     free_matrix(A);
