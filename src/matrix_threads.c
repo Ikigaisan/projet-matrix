@@ -2,6 +2,8 @@
 #include "../headers/vector.h"
 #include "../headers/matrix_threads.h"
 #include "../headers/error.h"
+#include <math.h>
+#include <inttypes.h>
 
 #define SUCCESS 0
 #define FAILURE 1

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include "vector.h"
+#include <pthread.h>
 
 #ifndef _MATRIX_H_T
 #define _MATRIX_H_T
