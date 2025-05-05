@@ -15,6 +15,10 @@
 #include "../headers/matrix_threads.h"
 #include <pthread.h>
 
+#define SUCCESS 0
+
+void* status;
+
 // Structure pour stocker les arguments de la ligne de commande
 typedef struct {
     bool verbose;             // Mode verbeux : affiche les messages de debug sur stderr
@@ -147,6 +151,8 @@ int main(int argc, char **argv) {
     // Analyse et stockage des arguments de la ligne de commande
     parse_args(args, argc, argv);
 
+    bool error_occurred = false;
+
     //////////////////////////////
     //         VECTEURS         //
     //////////////////////////////
@@ -278,6 +284,9 @@ int main(int argc, char **argv) {
             print_matrix(B);
         }
         matrix *C = init_matrix(A->m, A->n);
+        //verif read_matrix et init_matrix ont bien fonctionné
+        if (!A || !A->values || !B || !B->values || !C || !C->values) {
+            handle_error(ERROR_NULL_POINTER);}
         // add_m_m(A, B, C); idem 
 
         if (A->m != B->m || A->n != B->n) handle_error(ERROR_SIZE_MISMATCH);
@@ -293,15 +302,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
-
+                int ret = pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+                if (ret != 0) {
+                    free_matrix(A);
+                    free_matrix(B);
+                    free_matrix(C);
+                    handle_error(ERROR_THREADS);
+                }
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_matrix(B);
+                free_matrix(C);
+                handle_error(ERROR_THREADS);
             }
         } 
-    
     
         if (args->output_stream == stdout) {
             printf("Résultat de l'addition entre les deux matrices : \n");
@@ -346,12 +370,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, sub_m_m_thread, &thread_data[i]);
+                int ret = pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+                //Libération si le thread a echoué
+                if (ret != 0) {
+                    free_matrix(A);
+                    free_matrix(B);
+                    free_matrix(C);
+                    handle_error(ERROR_THREADS);
+                }
 
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_matrix(B);
+                free_matrix(C);
+                handle_error(ERROR_THREADS);
             }
         } 
     
@@ -444,12 +486,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, mult_m_m_thread, &thread_data[i]);
+                int ret = pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+                //Libération si le thread a echoué
+                if (ret != 0) {
+                    free_matrix(A);
+                    free_matrix(B);
+                    free_matrix(C);
+                    handle_error(ERROR_THREADS);
+                }
 
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_matrix(B);
+                free_matrix(C);
+                handle_error(ERROR_THREADS);
             }
         }
         
@@ -496,12 +556,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, mult_m_v_thread, &thread_data[i]);
+                int ret = pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+                //Libération si le thread a echoué
+                if (ret != 0) {
+                    free_matrix(A);
+                    free_vector(b);
+                    free_vector(c);
+                    handle_error(ERROR_THREADS);
+                }
 
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_vector(b);
+                free_vector(c);
+                handle_error(ERROR_THREADS);
             }
         }
 
@@ -524,13 +602,18 @@ int main(int argc, char **argv) {
     // Opération : Transposée d’une matrice (la fonction transp effectue la transposition sur place)
     else if (strcmp(args->op, "transp") == 0) {
         matrix *A = read_matrix(args->input_file_A);
+        
+        //Verif que read_matrix est fonctionné
+        if (!A || !A->values) handle_error(ERROR_NULL_POINTER);
         if (args->verbose) {
             printf("Matrix A :\n");
             print_matrix(A);
         }
     
         matrix* T = init_matrix(A->n, A->m); // Matrice transposée 
-    
+        //Verif que init_matrix est fonctionné
+        if (!T || !T->values) handle_error(ERROR_ALLOC_STRUCT);
+
         pthread_t threads[args->nb_threads];
         thread_data_transp thread_data[args->nb_threads];
         uint64_t chunk_size = A->m / args->nb_threads; // Division par ligne pour la transposition
@@ -542,7 +625,8 @@ int main(int argc, char **argv) {
             thread_data[i].start_row = i * chunk_size;
             thread_data[i].end_row = (i == args->nb_threads - 1) ? A->m : (i + 1) * chunk_size;
     
-            pthread_create(&threads[i], NULL, transp_thread, &thread_data[i]);
+            int ret = pthread_create(&threads[i], NULL, transp_thread, &thread_data[i]);
+            if (ret != 0) handle_error(ERROR_THREADS);
         }
     
         for (uint64_t i = 0; i < args->nb_threads; i++) {
