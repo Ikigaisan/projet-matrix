@@ -215,7 +215,7 @@ int main(int argc, char **argv) {
         vector *y = read_vector(args->input_file_B);
 
         if (!x || !y) handle_error(ERROR_NULL_POINTER);
-        if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+        if (!x->values || !y->values) handle_error(ERROR_NULL_VALUES);
 
         if (args->verbose) {
             printf("vector x : \n");
@@ -280,10 +280,8 @@ int main(int argc, char **argv) {
         matrix *C = init_matrix(A->m, A->n);
         // add_m_m(A, B, C); idem 
 
-        if (A->m != B->m || A->n != B->n) {
-            fprintf(stderr, "Erreur : les matrices A et B doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
+        if (A->m != B->m || A->n != B->n) handle_error(ERROR_SIZE_MISMATCH);
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_m thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;
@@ -335,10 +333,8 @@ int main(int argc, char **argv) {
         matrix *C = init_matrix(A->m, A->n);
         //sub_m_m(A, B, C);
 
-        if (A->m != B->m || A->n != B->n) {
-            fprintf(stderr, "Erreur : les matrices A et B doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
+        if (A->m != B->m || A->n != B->n) handle_error(ERROR_SIZE_MISMATCH);
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_m thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;
@@ -435,10 +431,8 @@ int main(int argc, char **argv) {
         matrix *C = init_matrix(A->m, B->n);
         // mult_m_m(A, B, Result);
 
-        if (A->n != B->m) {
-            fprintf(stderr, "Erreur : dimensions incompatibles.\n");
-            exit(EXIT_FAILURE);
-        }else{
+        if (A->n != B->m) handle_error(ERROR_SIZE_MISMATCH);
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_m thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;
@@ -489,10 +483,8 @@ int main(int argc, char **argv) {
         vector *c = init_vector(A->m);
         // mult_m_v(A, B, C);
 
-        if (A->n != b->m) {
-            fprintf(stderr, "Erreur : dimensions incompatibles.\n");
-            exit(EXIT_FAILURE);
-        }else{
+        if (A->n != b->m) handle_error(ERROR_SIZE_MISMATCH);
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_v thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;

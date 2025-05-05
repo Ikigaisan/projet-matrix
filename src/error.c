@@ -23,7 +23,13 @@ void handle_error(int code) {
             fprintf(stderr, "Erreur: Indices hors des limites.\n");
             break;
         case ERROR_THREADS: 
-            fprintf(stderr, "Erreur : écehc de la création du thread. \n");
+            fprintf(stderr, "Erreur : échec de la création du thread. \n");
+            break;
+        case ERROR_NO_SOLUTION :
+            fprintf(stderr, "Erreur : Aucune solution. \n");
+            break;
+        case ERROR_DIV_bY_0 : 
+            fprintf(stderr, "Erreur : Division par zéro. \n");
             break;
         default:
             fprintf(stderr, "Erreur inconnue (code %d).\n", code);

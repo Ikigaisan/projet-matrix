@@ -16,13 +16,13 @@
 vector *init_vector(uint64_t m) {
     vector *v = (vector *)malloc(sizeof(vector));
     if (v == NULL) {
-        handle_error(ERROR_NULL_POINTER);
+        handle_error(ERROR_ALLOC_STRUCT);
     }
     v->m = m;
     v->values = (double *)malloc(m * sizeof(double));
     if (v->values == NULL) {
         free_vector(v);
-        handle_error(ERROR_NULL_VALUES);
+        handle_error(ERROR_ALLOC_VALUES);
     }
     // Initialisation à zéro de chaque élément
     for (uint64_t i = 0; i < m; i++) {
@@ -103,7 +103,7 @@ int sub_v_v(vector *x, vector *y, vector *z) {
  */
 int dot_prod(vector *x, vector *y, double *result){
     if (!x || !y || !result) handle_error(ERROR_NULL_POINTER);
-    if (!x->values || !x->values) handle_error(ERROR_NULL_VALUES);
+    if (!x->values || !y->values) handle_error(ERROR_NULL_VALUES);
 
     *result = 0.0;
     if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);

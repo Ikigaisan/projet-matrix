@@ -8,6 +8,8 @@
 #define ERROR_NULL_VALUES -5
 #define ERROR_INDEX_OUT_OF_BOUNDS -6
 #define ERROR_THREADS -7
+#define ERROR_NO_SOLUTION -8
+#define ERROR_DIV_bY_0 -9
 
 void handle_error(int code);
 
