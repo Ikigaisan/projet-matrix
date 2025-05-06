@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import math
 
 # Lecture du csv
-df = pd.read_csv("results_compare.csv", names=["fonction", "taille", "mono", "multi"])
+df = pd.read_csv("results_compare.csv", names=["fonction", "taille", "mono", "multi", "threads"])
 
 # Paramètres pour l'affichage du plot (pour afficher tous les graphes en une page)
 n_fonctions = len(df["fonction"].unique())  # Nombre de sous-graphes à afficher
@@ -26,6 +26,10 @@ for i, nom_fonction in enumerate(df["fonction"].unique()):
     ax.set_ylabel("Temps d'exécution [s]")
     ax.legend()
     ax.grid()
+    
+
+nb_threads = df["threads"].iloc[0]  # Suppose que c'est la même valeur pour toutes les lignes
+fig.suptitle(f"Comparaison des performances en fonction du nombre de threads ({nb_threads} threads)", fontsize=16)
 
 # Si nombre de fonctions est impair, cacher les axes restants non utilisés
 for j in range(i + 1, len(axes)):
