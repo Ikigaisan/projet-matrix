@@ -162,28 +162,7 @@ int main(int argc, char **argv) {
         // Initialisation du vecteur résultat qui contiendra x + y
         vector *z = init_vector(x->m);
 
-        if(x->m != y->m){
-            fprintf(stderr, "Erreur : les vecteurs x et y doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
-            pthread_t threads[args->nb_threads];
-        thread_data_v_v thread_data[args->nb_threads];
-        size_t chunk_size = x->m / args->nb_threads;
-
-        // Création des threads pour l'addition en parallèle
-        for(uint64_t i = 0; i < args->nb_threads; i++){
-            thread_data[i].x = x;
-            thread_data[i].y = y;
-            thread_data[i].z = z;
-            thread_data[i].start_idx = i * chunk_size;
-            thread_data[i].end_idx = (i == args->nb_threads - 1) ? x->m : (i+1)*chunk_size;
-            pthread_create(&threads[i], NULL, add_v_v_thread, &thread_data);
-        }
-
-        // Attente de la fin de tous les threads
-        for(uint64_t i = 0; i < args->nb_threads; i++){
-            pthread_join(threads[i], NULL);
-        }
+        add_v_v(x,y,z);
 
         // Affichage et/ou écriture du résultat
         if (args->output_stream == stdout) {
@@ -199,7 +178,7 @@ int main(int argc, char **argv) {
         free_vector(x);
         free_vector(y);
         free_vector(z);
-    }
+    
     }
 
     // Opération : Soustraction de deux vecteurs

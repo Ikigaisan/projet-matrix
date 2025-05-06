@@ -29,10 +29,10 @@ void print_comparison(double elapsed_mono, double elapsed_multi){
 }
 
 // Insère les résultats dans un fichier CSV
-void insert_csv(const char *func_name, double elapsed_mono, double elapsed_multi, uint64_t size){
+void insert_csv(const char *func_name, double elapsed_mono, double elapsed_multi, uint64_t size, int num_threads){
     FILE *file = fopen("results_compare.csv", "a");
     if(file != NULL){
-        fprintf(file, "%s,%" PRIu64 ",%f,%f\n", func_name, size, elapsed_mono, elapsed_multi);
+        fprintf(file, "%s,%" PRIu64 ",%f,%f,%d\n", func_name, size, elapsed_mono, elapsed_multi, num_threads);
         fclose(file);
     }
 }
@@ -80,7 +80,7 @@ void compare_add_v_v(uint64_t size, int num_threads, int mode_graph){
 
     // Affichage ou export CSV
     if(mode_graph){
-        insert_csv("add_v_v", elapsed_mono, elapsed_multi, size);
+        insert_csv("add_v_v", elapsed_mono, elapsed_multi, size, num_threads);
     }else{
         printf("\nPour la fonction [add_v_v] avec des vecteurs de taille %" PRIu64 ":\n", size);
         print_comparison(elapsed_mono, elapsed_multi);
@@ -135,7 +135,7 @@ void compare_add_m_m(uint64_t size, int num_threads, int mode_graph){
     elapsed_multi = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     if(mode_graph){
-        insert_csv("add_m_m", elapsed_mono, elapsed_multi, size);
+        insert_csv("add_m_m", elapsed_mono, elapsed_multi, size, num_threads);
     }else{
         printf("\nPour la fonction [add_m_m] avec une taille de %" PRIu64 ":\n", size);
         print_comparison(elapsed_mono, elapsed_multi);
@@ -189,7 +189,7 @@ void compare_transp(uint64_t size, int num_threads, int mode_graph){
     elapsed_multi = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     if(mode_graph){
-        insert_csv("transp", elapsed_mono, elapsed_multi, size);
+        insert_csv("transp", elapsed_mono, elapsed_multi, size, num_threads);
     }else{
         printf("\nPour la fonction [transp] avec une taille de %" PRIu64 ":\n", size);
         print_comparison(elapsed_mono, elapsed_multi);
@@ -239,7 +239,7 @@ void compare_mult_m_v(uint64_t size, int num_threads, int mode_graph){
     elapsed_multi = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     if(mode_graph){
-        insert_csv("mult_m_v", elapsed_mono, elapsed_multi, size);
+        insert_csv("mult_m_v", elapsed_mono, elapsed_multi, size, num_threads);
     }else{
         printf("\nPour la fonction [mult_m_v] avec une taille de %" PRIu64 ":\n", size);
         print_comparison(elapsed_mono, elapsed_multi);
@@ -293,7 +293,7 @@ void compare_mult_m_m(uint64_t size, int num_threads, int mode_graph){
     elapsed_multi = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     if(mode_graph){
-        insert_csv("mult_m_m", elapsed_mono, elapsed_multi, size);
+        insert_csv("mult_m_m", elapsed_mono, elapsed_multi, size, num_threads);
     }else{
         printf("\nPour la fonction [mult_m_m] avec une taille de %" PRIu64 ":\n", size);
         print_comparison(elapsed_mono, elapsed_multi);
@@ -329,7 +329,7 @@ int main(int argc, char *argv[]){
 
     printf("Lancement avec %d threads\n", num_threads);
 
-    uint64_t sizes[] = {10, 50, 100, 500, 1000, 2000, 3000};
+    uint64_t sizes[] = {10, 50, 100, 500, 1000, 2000, 3000, 4000, 5000};
     uint64_t n = sizeof(sizes)/sizeof(sizes[0]);
 
     // Lancement des comparaisons pour chaque taille
