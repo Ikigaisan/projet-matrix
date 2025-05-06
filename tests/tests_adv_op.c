@@ -115,6 +115,45 @@ void test_lstsq() {
     free_vector(expected_x);
 }
 
+void test_lstsq_overdetermined() {
+    // Création d'une matrice 3x2
+    matrix *A = init_matrix(3, 2);
+    A->values[0][0] = 1; A->values[0][1] = 1;
+    A->values[1][0] = 1; A->values[1][1] = -1;
+    A->values[2][0] = 2; A->values[2][1] = 0;
+
+    // Création d'un vecteur b 
+    vector *b = init_vector(3);
+    b->values[0] = 3;
+    b->values[1] = 1;
+    b->values[2] = 4;
+
+    // Calcul de x attendu : résolution de Ax = b
+    // [ 1  1 ] [ x1 ]   [ 3 ]
+    // [ 1 -1 ] [ x2 ] = [ 1 ]
+    // [ 2  0 ] [ x3 ] = [ 4 ]
+    // x1 = 2, x2 = 1
+    vector *expected_x = init_vector(2);
+    expected_x->values[0] = 2.0;
+    expected_x->values[1] = 1.0;
+
+    // Exécution de lstsq
+    vector *x = lstsq(A, b);
+    CU_ASSERT_DOUBLE_EQUAL(x->values[0], expected_x->values[0], 1e-3);
+    CU_ASSERT_DOUBLE_EQUAL(x->values[1], expected_x->values[1], 1e-3);
+
+    // Libération de la mémoire
+    free_matrix(A);
+    free_vector(b);
+    free_vector(x);
+    free_vector(expected_x);
+}
+
+
+
+
+
+
 
 void test_back_sub_identity_matrix(void) {
     uint64_t m = 3;
@@ -411,7 +450,7 @@ void test_back_sub_90x90_upper_triangular(void) {
 
     // Vérification avec calcul manuel pour une matrice 90x90
     vector *expected_x = init_vector(m);
-    for (int64_t i = m - 1; i >= 0; i--) {
+    for (uint64_t i = m - 1; i >= 0; i--) {
         expected_x->values[i] = b->values[i];
         for (uint64_t j = i + 1; j < m; j++) {
             expected_x->values[i] -= U->values[i][j] * expected_x->values[j];
@@ -439,8 +478,9 @@ int main(int argc, char **argv) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-    if (CU_add_test(test_adv_op, "test_lstsq", test_lstsq) == NULL ||
-    CU_add_test(test_adv_op, "test_qr_decomposition", test_qr_decomposition) == NULL ||
+    if ( (CU_add_test(test_adv_op, "test_lstsq", test_lstsq) == NULL) ||
+    (CU_add_test(test_adv_op, "test_lstsq_overdetermined", test_lstsq_overdetermined) == NULL) ||
+    (CU_add_test(test_adv_op, "test_qr_decomposition", test_qr_decomposition) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_identity_matrix", test_back_sub_identity_matrix) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_diagonal_matrix", test_back_sub_diagonal_matrix) == NULL) ||
     (CU_add_test(test_adv_op, "back_sub_upper_triangular", test_back_sub_upper_triangular) == NULL) ||
