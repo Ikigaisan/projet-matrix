@@ -80,6 +80,85 @@ void test_qr_decomposition() {
     // free_matrix(result4->R);
     free_matrix(QR4);
     free_qr(result4);
+
+
+    // Test 5: Matrice Grande (20x20)
+
+    matrix *A5 = init_matrix(20, 20);
+    for (uint64_t i = 0; i < 20; i++) {
+        for (uint64_t j = 0; j < 20; j++) {
+            A5->values[i][j] = (double)(rand() % 10 + 1);
+        }
+    }
+
+    QR_Decomposition *result5 = qr(A5);
+    CU_ASSERT_PTR_NOT_NULL_FATAL(result5);
+
+    
+    matrix *QR5 = init_matrix(20, 20);
+    mult_m_m(result5->Q, result5->R, QR5);
+    for (uint64_t i = 0; i < 20; i++) {
+        for (uint64_t j = 0; j < 20; j++) {
+            CU_ASSERT_DOUBLE_EQUAL(QR5->values[i][j], A5->values[i][j], EPSILON);
+        }
+    }
+
+    free_matrix(A5);
+    free_matrix(QR5);
+    free_qr(result5);
+
+
+
+    // Test 6: Matrice Rectangulaire grande (m > n)
+    uint64_t m = 23;
+    uint64_t n = 20;
+    matrix *A6 = init_matrix(m, n);
+    
+
+    // Matrice triangulaire supérieure aléatoire (mxn)
+    for (uint64_t i = 0; i < m; i++) {
+        for (uint64_t j = 0; j < n; j++) {  // Remplir toute la matrice avec des valeurs aléatoires
+            A6->values[i][j] = (double)(rand() % 10 + 1);  // Valeurs aléatoires entre 1 et 10
+        }
+        
+    }
+    
+    QR_Decomposition *result6 = qr(A6);
+    
+    CU_ASSERT_PTR_NOT_NULL_FATAL(result6);
+    matrix *QR6 = init_matrix(m, n);
+    mult_m_m(result6->Q, result6->R, QR6);
+    
+    for (uint64_t i = 0; i < 4; i++) {
+        for (uint64_t j = 0; j < 3; j++) {
+            CU_ASSERT_DOUBLE_EQUAL(QR6->values[i][j], A6->values[i][j], EPSILON);
+        }
+    }
+    free_matrix(A6);
+    //free_matrix(result4->Q);
+    // free_matrix(result4->R);
+    free_matrix(QR6);
+    free_qr(result6);
+
+
+
+    // Test 7: Matrice Rectangulaire invalide (m < n)
+    matrix *A7 = init_matrix(3, 5);  // m < n
+    for (uint64_t i = 0; i < 3; i++) {
+        for (uint64_t j = 0; j < 5; j++) {
+            A7->values[i][j] = (double)(rand() % 10 + 1);
+        }
+    }
+
+    QR_Decomposition *result7 = qr(A7);
+
+    // Vérifie que l'erreur est bien détectée
+    CU_ASSERT_PTR_NULL(result7);
+
+    free_matrix(A7);
+
+
+    
     
 }
 

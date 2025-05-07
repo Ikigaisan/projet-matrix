@@ -362,6 +362,11 @@ vector* Q_i (matrix *A, uint64_t i) {
 QR_Decomposition *qr(matrix *A) {
     uint64_t m = A->m, n = A->n;
 
+    if(m < n) {
+        fprintf(stderr, "Erreur : La matrice A doit être de taille m x n avec m >= n.\n");
+        return NULL;
+    }
+
     // Allouer les matrices Q et R
     matrix *Q = init_matrix(m, n);
     matrix *R = init_matrix(n, n);
