@@ -269,6 +269,7 @@ int back_sub(vector*b, matrix *U, vector*x){
         return 1;
     }
 }
+
 void free_qr(QR_Decomposition *qr) {
     if (qr != NULL) {
         if (qr->Q != NULL)
