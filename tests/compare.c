@@ -338,6 +338,20 @@ int main(int argc, char *argv[]){
         compare_mult_m_v(i, num_threads, mode_graph);
         compare_mult_m_m(i, num_threads, mode_graph);
     }
+    for(uint64_t i = 1200; i <= 5000; i += 400){
+        compare_add_v_v(i, num_threads, mode_graph);
+        compare_add_m_m(i, num_threads, mode_graph);
+        compare_transp(i, num_threads, mode_graph);
+        compare_mult_m_v(i, num_threads, mode_graph);
+        compare_mult_m_m(i, num_threads, mode_graph);
+    }
+    for(uint64_t i = 6000; i <= 10000; i += 2000){
+        compare_add_v_v(i, num_threads, mode_graph);
+        compare_add_m_m(i, num_threads, mode_graph);
+        compare_transp(i, num_threads, mode_graph);
+        compare_mult_m_v(i, num_threads, mode_graph);
+        compare_mult_m_m(i, num_threads, mode_graph);
+    }
 
     return 0;
 }

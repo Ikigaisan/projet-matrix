@@ -5,10 +5,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-/* 
- * Allocation et initialisation d'une matrice de dimensions m x n.
- * La matrice est initialisée avec des zéros.
- */
+
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *) malloc(sizeof(matrix));
     if (A == NULL) {
@@ -47,9 +44,7 @@ matrix *init_matrix(uint64_t m, uint64_t n) {
     return A;
 }
 
-/* 
- * Libération de la mémoire allouée pour une matrice.
- */
+
 void free_matrix(matrix *A){
     if(A != NULL){
         for(uint64_t i = 0; i < A->m; i++){
@@ -60,9 +55,7 @@ void free_matrix(matrix *A){
     }
 }
 
-/* 
- * Affichage de la matrice au format lisible.
- */
+
 void print_matrix(matrix *A) {
     if (A->m == 0) {
         printf("[[]]\n");
@@ -92,10 +85,7 @@ void print_matrix(matrix *A) {
     }
 }
 
-/* 
- * Addition de deux matrices A et B et stockage du résultat dans C.
- * Les dimensions de A, B et C doivent être compatibles.
- */
+
 void add_m_m(matrix *A, matrix *B, matrix *C) {
     if (A->values == NULL) {
         fprintf(stderr, "Erreur : Mémoire non allouée pour A->values\n");
@@ -123,9 +113,7 @@ void add_m_m(matrix *A, matrix *B, matrix *C) {
     }
 }
 
-/* 
- * Soustraction de deux matrices A et B et stockage du résultat dans C.
- */
+
 void sub_m_m(matrix *A, matrix *B, matrix *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
@@ -141,9 +129,7 @@ void sub_m_m(matrix *A, matrix *B, matrix *C) {
     }
 }
 
-/* 
- * Multiplication d'une matrice A par un vecteur B, résultat dans C.
- */
+
 void mult_m_v(matrix *A, vector *B, vector *C) {
     uint64_t m = A->m;
     uint64_t n = A->n;
@@ -165,9 +151,7 @@ void mult_m_v(matrix *A, vector *B, vector *C) {
     }
 }
 
-/* 
- * Multiplication de deux matrices A et B, résultat dans C.
- */
+
 void mult_m_m(matrix *A, matrix *B, matrix *C){
     uint64_t m = A->m;
     uint64_t n = A->n;
@@ -184,30 +168,31 @@ void mult_m_m(matrix *A, matrix *B, matrix *C){
         }
     }
     // Taille des blocs (permet d'optimiser le cache)
-    uint64_t block_size = 64;
+    uint64_t bs = 64;
 
-    // On divise la matrice par blocs
-    for (uint64_t i = 0; i < m; i += block_size) {
-        for (uint64_t j = 0; j < o; j += block_size) {
-            for (uint64_t k = 0; k < n; k += block_size) {
-                // On traite un sous-bloc de A et B et on met à jour le sous-bloc de C
-                for (uint64_t ii = i; ii < i + block_size && ii < m; ++ii) {
-                    for (uint64_t jj = j; jj < j + block_size && jj < o; ++jj) {
-                        for (uint64_t kk = k; kk < k + block_size && kk < n; ++kk) {
-                            C->values[ii][jj] += A->values[ii][kk] * B->values[kk][jj];
+    // On divise la matrice en blocs
+    for (uint64_t ii = 0; ii < m; ii += bs) {
+        for (uint64_t jj = 0; jj < o; jj += bs) {
+            for (uint64_t kk = 0; kk < n; kk += bs) {
+
+                // On parcourt les blocs
+                for (uint64_t i = ii; i < ii + bs && i < m; i++) {
+                    for (uint64_t j = jj; j < jj + bs && j < o; j++) {
+                        double sum = 0.0;
+                        for (uint64_t k = kk; k < kk + bs && k < n; k++) {
+                            sum += A->values[i][k] * B->values[k][j];
                         }
+                        C->values[i][j] += sum;
                     }
                 }
             }
         }
     }
+
 }
 
 
-/* 
- * Transposition d'une matrice A.
- * La matrice transposée remplace l'originale.
- */
+
 void transp(matrix*A){
     uint64_t m = A->m;
     uint64_t n = A->n;
@@ -230,10 +215,7 @@ void transp(matrix*A){
     free(T);
 }
 
-/* 
- * Résolution par substitution arrière.
- * Résout un système triangulaire supérieur Ux = b.
- */
+
 void back_sub(vector*b, matrix *U, vector*x){
     uint64_t m = b->m;
     bool infinite = false;
@@ -295,10 +277,7 @@ void free_qr(QR_Decomposition *qr) {
     }
 }
 
-/* 
- * Résolution des moindres carrés.
- * Trouve la meilleure approximation x pour A*x ≈ b via une décomposition QR.
- */
+
 vector *lstsq(matrix *A, vector *b){
     if(A->m < A->n || b->m != A->m){
         fprintf(stderr, "Erreur : dimensions invalides : A(%" PRIu64 " x %" PRIu64 "), b(%" PRIu64 ")", A->m, A->n, b->m);
@@ -316,9 +295,7 @@ vector *lstsq(matrix *A, vector *b){
     return x;
 }
 
-/* 
- * Soustraction d'un vecteur src multiplié par un scalaire au vecteur dest.
- */
+
 void vector_subtract(vector *dest, vector *src, double scalar) {
     if (dest->m != src->m) {
         fprintf(stderr, "Les vecteurs ont des tailles différentes\n");
@@ -329,9 +306,7 @@ void vector_subtract(vector *dest, vector *src, double scalar) {
     }
 }
 
-/* 
- * Division de chaque élément d'un vecteur par un scalaire.
- */
+
 void vector_divide(vector *v, double scalar) {
     if (scalar == 0) {
         fprintf(stderr, "Division par zéro dans vector_divide.\n");
@@ -342,9 +317,7 @@ void vector_divide(vector *v, double scalar) {
     }
 }
 
-/* 
- * Extrait la ième colonne d'une matrice A sous forme de vecteur.
- */
+
 vector* Q_i (matrix *A, uint64_t i) {
     if (i >= A->n) {
         fprintf(stderr, "Index de colonne invalide dans Q_i.\n");

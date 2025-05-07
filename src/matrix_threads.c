@@ -80,20 +80,26 @@ void* mult_m_m_thread(void* arg){
     }   
 
     // Taille des blocs pour améliorer les performances cache
-    uint64_t block_size = 64;
+    uint64_t bs = 64;
 
-    // Parcours des blocs de la matrice
-    for (uint64_t i = data->start_row; i < data->end_row; i += block_size) {
-        for (uint64_t j = 0; j < o; j += block_size) {
-            for (uint64_t bi = i; bi < i + block_size && bi < data->A->m; bi++) {
-                for (uint64_t bj = j; bj < j + block_size && bj < o; bj++) {
-                    for (uint64_t k = 0; k < n; k++) {
-                        data->C->values[bi][bj] += data->A->values[bi][k] * data->B->values[k][bj];
+    // On divise la matrice en blocs
+    for (uint64_t ii = data->start_row; ii < data->end_row; ii += bs) {
+        for (uint64_t jj = 0; jj < o; jj += bs) {
+            for (uint64_t kk = 0; kk < n; kk += bs) {
+                // On parcourt les blocs
+                for (uint64_t i = ii; i < ii + bs && i < data->A->m; i++) {
+                    for (uint64_t j = jj; j < jj + bs && j < o; j++) {
+                        double sum = 0.0;
+                        for (uint64_t k = kk; k < kk + bs && k < n; k++) {
+                            sum += data->A->values[i][k] * data->B->values[k][j];
+                        }
+                        data->C->values[i][j] += sum;
                     }
                 }
             }
         }
     }
+
     return NULL; 
 }
 
