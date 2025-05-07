@@ -329,16 +329,14 @@ int main(int argc, char *argv[]){
 
     printf("Lancement avec %d threads\n", num_threads);
 
-    uint64_t sizes[] = {10, 50, 100, 500, 1000, 2000, 3000, 4000, 5000};
-    uint64_t n = sizeof(sizes)/sizeof(sizes[0]);
 
     // Lancement des comparaisons pour chaque taille
-    for(uint64_t i = 0; i < n; i++){
-        compare_add_v_v(sizes[i], num_threads, mode_graph);
-        compare_add_m_m(sizes[i], num_threads, mode_graph);
-        compare_transp(sizes[i], num_threads, mode_graph);
-        compare_mult_m_v(sizes[i], num_threads, mode_graph);
-        compare_mult_m_m(sizes[i], num_threads, mode_graph);
+    for(uint64_t i = 10; i <= 1000; i += 10){
+        compare_add_v_v(i, num_threads, mode_graph);
+        compare_add_m_m(i, num_threads, mode_graph);
+        compare_transp(i, num_threads, mode_graph);
+        compare_mult_m_v(i, num_threads, mode_graph);
+        compare_mult_m_m(i, num_threads, mode_graph);
     }
 
     return 0;

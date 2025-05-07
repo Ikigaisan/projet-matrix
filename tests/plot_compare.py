@@ -18,8 +18,8 @@ axes = axes.flatten()  # Très important : aplatir le tableau 2D
 for i, nom_fonction in enumerate(df["fonction"].unique()):
     sous_df = df[df["fonction"] == nom_fonction]
     ax = axes[i]
-    ax.plot(sous_df["taille"], sous_df["mono"], marker="o", label=f"{nom_fonction} mono")
-    ax.plot(sous_df["taille"], sous_df["multi"], marker="s", label=f"{nom_fonction} multi")
+    ax.plot(sous_df["taille"], sous_df["mono"], marker="o", markersize=3, label=f"{nom_fonction} mono")
+    ax.plot(sous_df["taille"], sous_df["multi"], marker="s", markersize=3, label=f"{nom_fonction} multi")
     
     ax.set_title(f"Comparaison des performances - {nom_fonction}")
     ax.set_xlabel("Taille des données")
