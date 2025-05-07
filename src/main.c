@@ -543,7 +543,14 @@ int main(int argc, char **argv) {
         // Allocation du vecteur solution
         vector *result = init_vector(b->m);
         // Appel de la fonction de substitution arrière
-        back_sub(b, A, result);
+        int success = back_sub(b, A, result);
+        if(!success){
+            free_matrix(A);
+            free_vector(b);
+            free_vector(result);
+            exit(EXIT_FAILURE);
+        }
+
         if (args->output_stream == stdout) {
             printf("Résultat de la substitution arrière :\n");
             print_vector(result);
@@ -554,7 +561,6 @@ int main(int argc, char **argv) {
         free_vector(b);
         free_vector(result);
     }
-
     // Opération : Décomposition QR
     else if (strcmp(args->op, "qr") == 0) {
         // Lecture de la matrice A

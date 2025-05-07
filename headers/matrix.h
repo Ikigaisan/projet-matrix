@@ -125,7 +125,7 @@ QR_Decomposition *qr (matrix *A);
  * @param matrix* U la matrice triangulaire supérieure
  * @param vector* x le vecteur solution (résultat)
  */
-void back_sub(vector *b, matrix *U, vector *x);
+int back_sub(vector *b, matrix *U, vector *x);
 
 /**
  * Calcule la régression polynomiale.

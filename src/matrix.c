@@ -216,7 +216,7 @@ void transp(matrix*A){
 }
 
 
-void back_sub(vector*b, matrix *U, vector*x){
+int back_sub(vector*b, matrix *U, vector*x){
     uint64_t m = b->m;
     bool infinite = false;
     // Copie initiale de b dans x
@@ -236,14 +236,15 @@ void back_sub(vector*b, matrix *U, vector*x){
                 // Infinité de solutions, on attribue une valeur arbitraire
                 x->values[0] = 1.0;
                 fprintf(stderr, "Infinité de solutions\n");
+                return 1;
             } else {
                 fprintf(stderr, "Aucune solution\n");
-                return;
+                return 1;
             }
         } else {
             x->values[0] = b->values[0] / U->values[0][0];
         }
-        return;
+        return 0;
     }
 
     // Résolution par substitution arrière pour m > 1
