@@ -1,12 +1,158 @@
+stages: [build, test]
+# -----------------------------------------------------------------------
+# GitLab CI/CD configuration file
+# This file defines the CI/CD pipeline for the project.
+# Students are encouraged to modify the build and test jobs as needed.
+# Documentation: https://docs.gitlab.com/ee/ci/yaml/
+# -----------------------------------------------------------------------
+# Basic build and test jobs
+stages:
+  - build
+  - test
+
+# Build job: Compiles the main and test binaries
 build-job:
   stage: build
   script:
-    - make main
-    - make tests
+    - mkdir -p objects  # Create the objects directory if it doesn't exist
+    - make main         # Build the main binary
+    - make test         # Build the test binary
+  artifacts:
+    name: "main-$CI_COMMIT_SHORT_SHA"  # Name the artifact with the commit hash
+    paths:
+      - main            # Include the main binary in the artifacts
+      - test            # Include the test binary in the artifacts
 
-test-job1:
+# Test job: Runs the test binary
+my-unit-test:
+  stage: test
+  needs:
+    - job: build-job    # Ensure the build-job is completed and artifacts are available
+      artifacts: true
+  script:
+    - ./test            # Run the test binary  # TODO - students should run their tests here
+
+# ----------------------------------------------------------------------
+# Default artifacts configuration
+
+.default_artifacts: &default_artifacts
+  # Upload artifacts even when the job fails
+  when: always
+  expire_in: 5 week     # Artifacts will expire after 5 weeks
+  paths:
+    - result-*.xml      # Include result XML files
+    - "*.log"           # Include log files
+
+# ----------------------------------------------------------------------
+# Extended test suite
+
+# Build job for the extended test suite
+build:
+  stage: build
+  script:
+    - mkdir -p objects  # Create the objects directory if it doesn't exist
+    # TODO - students if you have multiple version of project (i.e sparse etc), you can change the build and the test command binary (--binary)
+    - make              # Build the project
+  artifacts:
+    name: "main-$CI_COMMIT_SHORT_SHA"  # Name the artifact with the commit hash
+    paths:
+      - main            # Include the main binary in the artifacts
+
+# Test-all job: Runs all tests
+test-all:
+  stage: test
+  needs:
+    - job: build        # Ensure the build job is completed and artifacts are available
+      artifacts: true
+  script:
+    - cp /ci_tests_runner.py "$CI_PROJECT_DIR/"  # Copy the test runner script
+    # TODO - students if you have multiple version of project (i.e sparse etc), you can change the build and the test command binary (--binary)
+    - python3 ci_tests_runner.py --mode all --verbose --junit result-all.xml --timeout_per_test 120 --binary "./main" --logfile "result-all.log"
+  artifacts:
+    <<: *default_artifacts
+    reports:
+      junit: result-all.xml  # Test results visible in GitLab’s *Tests* tab
+  allow_failure: true        # Allow the pipeline to continue even if this job fails
+  when: manual               # This job must be triggered manually
+
+# Test-functional job: Runs functional tests
+test-functional:
+  stage: test
+  needs:
+    - job: build        # Ensure the build job is completed and artifacts are available
+      artifacts: true
+  script:
+    - cp /ci_tests_runner.py "$CI_PROJECT_DIR/"  # Copy the test runner script
+    - python3 ci_tests_runner.py --mode functional --verbose --junit result-func.xml --timeout_per_test 120 --binary "./main" --logfile "result-func.log"
+  artifacts:
+    <<: *default_artifacts
+    reports:
+      junit: result-func.xml
+  allow_failure: true        # Allow the pipeline to continue even if this job fails
+  when: manual               # This job must be triggered manually
+
+# Test-memory job: Runs memory tests (e.g., Valgrind)
+test-memory:
+  stage: test
+  needs:
+    - job: build        # Ensure the build job is completed and artifacts are available
+      artifacts: true
+  script:
+    - cp /ci_tests_runner.py "$CI_PROJECT_DIR/"  # Copy the test runner script
+    - python3 ci_tests_runner.py --mode valgrind --verbose --junit result-mem.xml --timeout_per_test 120 --binary "./main" --logfile "result-mem.log"
+  artifacts:
+    <<: *default_artifacts
+    reports:
+      junit: result-mem.xml
+  allow_failure: true        # Allow the pipeline to continue even if this job fails
+  when: manual               # This job must be triggered manually
+
+# Test-performance job: Runs performance tests
+test-performance:
+  stage: test
+  needs:
+    - job: build        # Ensure the build job is completed and artifacts are available
+      artifacts: true
+  script:
+    - cp /ci_tests_runner.py "$CI_PROJECT_DIR/"  # Copy the test runner script
+    - python3 ci_tests_runner.py --mode performance --verbose --junit result-perf.xml --timeout_per_test 120 --binary "./main" --logfile "result-perf.log"
+  artifacts:
+    <<: *default_artifacts
+    reports:
+      junit: result-perf.xml
+  allow_failure: true        # Allow the pipeline to continue even if this job fails
+  when: manual               # This job must be triggered manually
+
+static-analysis:
   stage: test
   script:
-    - make main
-    - make tests
+    - cp /ci_clang_tidy2junit.py "$CI_PROJECT_DIR/"  # Copy the test runner script
+    - clang-tidy src/*.c -- -Iinclude > tidy.log || true
+    - cppcheck --enable=warning,style src 2> cppcheck.log || true
+    # Convert output → JUnit so GitLab Tests tab shows each warning
+    - python3 ci_clang_tidy2junit.py tidy.log cppcheck.log -o junit-static.xml
+  artifacts:
+    reports:
+      junit: junit-static.xml
+    paths: [tidy.log, cppcheck.log, junit-static.xml]
+  when: manual
+  allow_failure: true
 
+coverage:
+  stage: test
+  script:
+    - make clean
+    - mkdir -p objects          # ensure obj dir exists if Makefile doesn't
+    - make CC="clang --coverage" CFLAGS+=" -O0 -g" main
+    - make CC="clang --coverage" CFLAGS+=" -O0 -g" test
+    - ./test      # run something to emit .gcda files # TODO - students should run their tests here
+    - gcovr -r . --gcov-executable "llvm-cov gcov" --txt-metric branch --html-details -o coverage.html --txt - | tee coverage_branch.txt
+    - gcovr -r . --gcov-executable "llvm-cov gcov" --txt-metric line --html-details -o coverage_line.html --txt - | tee coverage_line.txt
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - coverage_branch.html
+      - coverage_line.html
+      - coverage_branch.txt
+      - coverage_line.txt
+  when: manual
