@@ -226,7 +226,7 @@ int back_sub(vector*b, matrix *U, vector*x){
 
     if (m<1 || U->m != m || U->n != m || x->m != m){
         fprintf(stderr, "Dimensions invalides pour la substitution arrière.\n");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     // Cas particulier : une seule inconnue
@@ -259,13 +259,14 @@ int back_sub(vector*b, matrix *U, vector*x){
             }
             else {
                 fprintf(stderr, "Aucune solution\n");
-                return;
+                return 1;
             }
         }
         x->values[i] /= U->values[i][i];
     }
     if (infinite == true){
         fprintf(stderr, "Infinité de solutions\n");
+        return 1;
     }
 }
 void free_qr(QR_Decomposition *qr) {
