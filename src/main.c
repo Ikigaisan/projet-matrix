@@ -115,7 +115,7 @@ int parse_args(args_t *args, int argc, char **argv) {
     if (strcmp(args->op, "add_v_v") == 0 || strcmp(args->op, "sub_v_v") == 0 ||
         strcmp(args->op, "dot_prod") == 0 || strcmp(args->op, "add_m_m") == 0 ||
         strcmp(args->op, "sub_m_m") == 0 || strcmp(args->op, "mult_m_v") == 0 ||
-        strcmp(args->op, "mult_m_m") == 0 || strcmp(args->op, "QR") == 0 ||
+        strcmp(args->op, "mult_m_m") == 0 || strcmp(args->op, "qr") == 0 ||
         strcmp(args->op, "back_sub") == 0 || strcmp(args->op, "lstsq") == 0) {
         if (optind == argc) {
             fprintf(stderr,
@@ -556,7 +556,7 @@ int main(int argc, char **argv) {
     }
 
     // Opération : Décomposition QR
-    else if (strcmp(args->op, "QR") == 0) {
+    else if (strcmp(args->op, "qr") == 0) {
         // Lecture de la matrice A
         matrix *A = read_matrix(args->input_file_A);
         // Allocation des matrices Q et R
@@ -578,25 +578,23 @@ int main(int argc, char **argv) {
         free_matrix(Q);
         free_matrix(R);
     }
-
-    // Opération : Lancement de tests sous Valgrind
-    else if (strcmp(args->op, "valgrind") == 0) {
-        if (args->verbose) {
-            fprintf(stderr, "Lancement des tests sous Valgrind...\n");
+    else if (strcmp(args->op, "lstsq") == 0) {
+        // Lecture de la matrice A et du vecteur b
+        matrix *A = read_matrix(args->input_file_A);
+        vector *b = read_vector(args->input_file_B);
+        // Allocation du vecteur solution
+        vector *result = init_vector(b->m);
+        // Appel de la fonction de substitution arrière
+        result =lstsq(b, A);
+        if (args->output_stream == stdout) {
+            printf("Résultat de la substitution arrière :\n");
+            print_vector(result);
+        } else {
+            write_vector(result, args->output_stream);
         }
-        int result = system("make valgrind");
-        free(args);
-        exit(result);
-    }
-
-    // Opération : Lancement de tests basiques sous Valgrind
-    else if (strcmp(args->op, "valgrindtest") == 0) {
-        if (args->verbose) {
-            fprintf(stderr, "Lancement des tests basiques sous Valgrind...\n");
-        }
-        int result = system("make valgrindtest");
-        free(args);
-        exit(result);
+        free_matrix(A);
+        free_vector(b);
+        free_vector(result);
     }
     
     // Si l'opération demandée n'est pas implémentée
