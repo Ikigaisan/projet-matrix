@@ -115,9 +115,9 @@ int parse_args(args_t *args, int argc, char **argv) {
     if (strcmp(args->op, "add_v_v") == 0 || strcmp(args->op, "sub_v_v") == 0 ||
         strcmp(args->op, "dot_prod") == 0 || strcmp(args->op, "add_m_m") == 0 ||
         strcmp(args->op, "sub_m_m") == 0 || strcmp(args->op, "mult_m_v") == 0 ||
-        strcmp(args->op, "mult_m_m") == 0 || strcmp(args->op, "norm") == 0 ||
+        strcmp(args->op, "mult_m_m") == 0 || strcmp(args->op, "QR") == 0 ||
         strcmp(args->op, "back_sub") == 0 || strcmp(args->op, "lstsq") == 0 ||
-        strcmp(args->op, "QR") == 0) {
+        ) {
         if (optind == argc) {
             fprintf(stderr,
                     "Vous devez fournir un second fichier d'instance pour cette opération.\n");
