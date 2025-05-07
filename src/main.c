@@ -585,7 +585,7 @@ int main(int argc, char **argv) {
         // Allocation du vecteur solution
         vector *result = init_vector(b->m);
         // Appel de la fonction de substitution arrière
-        result =lstsq(b, A);
+        result =lstsq(A, b);
         if (args->output_stream == stdout) {
             printf("Résultat de la substitution arrière :\n");
             print_vector(result);
