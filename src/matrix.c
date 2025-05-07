@@ -268,6 +268,7 @@ int back_sub(vector*b, matrix *U, vector*x){
         fprintf(stderr, "Infinité de solutions\n");
         return 1;
     }
+    return 0;
 }
 
 void free_qr(QR_Decomposition *qr) {
