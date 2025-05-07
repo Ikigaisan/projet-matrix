@@ -472,8 +472,19 @@ int main(int argc, char **argv) {
         }
         matrix *C = init_matrix(A->m, B->n);
         // mult_m_m(A, B, Result);
+        if (!A || !A->values || !B || !B->values || !C || !C->values){ 
+            free_matrix(A);
+            free_matrix(B);
+            free_matrix(C);
+            handle_error(ERROR_NULL_POINTER);
+        }
 
-        if (A->n != B->m) handle_error(ERROR_SIZE_MISMATCH);
+        if (A->n != B->m){ 
+            free_matrix(A);
+            free_matrix(B);
+            free_matrix(C);
+            handle_error(ERROR_SIZE_MISMATCH);
+        }
         else{
             pthread_t threads[args->nb_threads];
             thread_data_m_m thread_data[args->nb_threads]; 
@@ -665,8 +676,16 @@ int main(int argc, char **argv) {
         // Lecture de la matrice A et du vecteur b
         matrix *A = read_matrix(args->input_file_A);
         vector *b = read_vector(args->input_file_B);
+        if (!A || !A->values) handle_error(ERROR_NULL_POINTER);
+        if (!b || !b->values) handle_error(ERROR_NULL_POINTER);
         // Allocation du vecteur solution
         vector *result = init_vector(b->m);
+        if (!result || !result->values || !b || !b->values || !A || !A->values) {
+            free_matrix(A);
+            free_vector(b);
+            free_vector(result);
+            handle_error(ERROR_NULL_POINTER);
+        }
         // Appel de la fonction de substitution arrière
         back_sub(b, A, result);
         if (args->output_stream == stdout) {
@@ -688,6 +707,12 @@ int main(int argc, char **argv) {
         // On suppose ici que Q est carrée de dimensions A->m x A->m et R est de dimensions A->m x A->n
         matrix *Q = init_matrix(A->m, A->m);
         matrix *R = init_matrix(A->m, A->n);
+        if (!A || !A->values || !Q || !Q->values || !R || !R->values) {
+            free_matrix(A);
+            free_matrix(Q);
+            free_matrix(R);
+            handle_error(ERROR_NULL_POINTER);
+        }
         // Calcul de la décomposition QR
    
         if (args->output_stream == stdout) {

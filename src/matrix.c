@@ -363,6 +363,7 @@ QR_Decomposition *qr(matrix *A) {
     for (uint64_t i = 0; i < n; i++) {
         vector *q_i = Q_i(Q, i);
         if (!q_i) {
+            fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
             free_matrix(Q);
             free_matrix(R);
             return NULL;
