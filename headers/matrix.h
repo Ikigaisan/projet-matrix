@@ -133,7 +133,7 @@ void back_sub(vector *b, matrix *U, vector *x);
  * @param matrix* A Matrixe m x n
  * @param vector* b Vecteur m
  * 
- * @returns 
+ * @returns vector*x
  */
 
 vector *lstsq(matrix *A, vector *b);

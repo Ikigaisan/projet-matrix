@@ -21,15 +21,15 @@ for i, nom_fonction in enumerate(df["fonction"].unique()):
     ax.plot(sous_df["taille"], sous_df["mono"], marker="o", markersize=3, label=f"{nom_fonction} mono")
     ax.plot(sous_df["taille"], sous_df["multi"], marker="s", markersize=3, label=f"{nom_fonction} multi")
     
-    ax.set_title(f"Comparaison des performances - {nom_fonction}")
-    ax.set_xlabel("Taille des données")
-    ax.set_ylabel("Temps d'exécution [s]")
-    ax.legend()
+    ax.set_title(f"Comparaison des performances - {nom_fonction}", fontsize=16)
+    ax.set_xlabel("Taille des données", fontsize=14)
+    ax.set_ylabel("Temps d'exécution [s]", fontsize=14)
+    ax.legend(fontsize = 12)
     ax.grid()
     
 
 nb_threads = df["threads"].iloc[0]  # Suppose que c'est la même valeur pour toutes les lignes
-fig.suptitle(f"Comparaison des performances en fonction du nombre de threads ({nb_threads} threads)", fontsize=16)
+fig.suptitle(f"Comparaison des performances en fonction du nombre de threads ({nb_threads} threads)", fontsize=20)
 
 # Si nombre de fonctions est impair, cacher les axes restants non utilisés
 for j in range(i + 1, len(axes)):

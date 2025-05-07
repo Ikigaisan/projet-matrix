@@ -3,7 +3,7 @@
 #include <math.h>
 #include <inttypes.h>
 
-// Additionne deux vecteurs x et y, résultat dans z (portion traitée par un thread)
+
 void* add_v_v_thread(void *arg) {
     thread_data_v_v *data = (thread_data_v_v *)arg;  // On récupère les données du thread
 
@@ -26,7 +26,7 @@ void* add_v_v_thread(void *arg) {
     return NULL;
 }
 
-// Soustraction de deux vecteurs x et y, résultat dans z (portion traitée par un thread)
+
 void* sub_v_v_thread (void *arg) {
     thread_data_v_v *data = (thread_data_v_v *)arg;
 

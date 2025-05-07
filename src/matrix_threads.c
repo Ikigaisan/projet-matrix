@@ -2,7 +2,7 @@
 #include "../headers/vector.h"
 #include "../headers/matrix_threads.h"
 
-// Transpose une portion de la matrice A dans T (ligne i devient colonne i)
+
 void* transp_thread(void* arg) {
     thread_data_transp* data = (thread_data_transp*)arg;
     uint64_t n = data->A->n;
@@ -15,7 +15,7 @@ void* transp_thread(void* arg) {
     return NULL;
 }
 
-// Additionne deux matrices A et B, stocke le résultat dans C (portion par thread)
+
 void* add_m_m_thread(void* arg){
     thread_data_m_m* data = (thread_data_m_m*)arg;
     uint64_t n = data->A->n;
@@ -40,7 +40,7 @@ void* add_m_m_thread(void* arg){
     return NULL;
 }
 
-// Soustrait deux matrices A et B, stocke le résultat dans C (portion par thread)
+
 void* sub_m_m_thread(void* arg){
     thread_data_m_m* data = (thread_data_m_m*)arg;
     uint64_t n = data->A->n;
@@ -65,7 +65,7 @@ void* sub_m_m_thread(void* arg){
     return NULL;
 }
 
-// Multiplie deux matrices A et B, stocke le résultat dans C (portion par thread avec blocage)
+
 void* mult_m_m_thread(void* arg){
     thread_data_m_m* data = (thread_data_m_m*) arg;
     uint64_t n = data->A->n;
@@ -103,7 +103,7 @@ void* mult_m_m_thread(void* arg){
     return NULL; 
 }
 
-// Multiplie une matrice A par un vecteur B, stocke le résultat dans le vecteur C (par thread)
+
 void* mult_m_v_thread(void* arg){
     thread_data_m_v* data = (thread_data_m_v*) arg;
     uint64_t n = data->A->n;
