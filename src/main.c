@@ -750,20 +750,6 @@ int main(int argc, char **argv) {
             pthread_join(threads[i], NULL);
         }
     
-        // Libérer A pour éviter les fuites de mémoire suite au changement de dimensions 
-
-        for (uint64_t i = 0; i < A->m; i++) {
-            free(A->values[i]);
-        }
-        free(A->values);
-
-        // Mise à jour de la matrice A avec la transposée
-        A->m = T->m;
-        A->n = T->n;
-        A->values = T->values;
-    
-        free_matrix(T);
-    
         if (args->output_stream == stdout) {
             printf("Résultat de la transposée :\n");
             print_matrix(A);
@@ -775,6 +761,7 @@ int main(int argc, char **argv) {
             }
         }
         free_matrix(A);
+        free_matrix(T);
     }
 
     // Opération : Substitution arrière
