@@ -4,38 +4,28 @@
 #include <math.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include "../headers/error.h"
+#define SUCCESS 0
 
 
 matrix *init_matrix(uint64_t m, uint64_t n) {
     matrix *A = (matrix *) malloc(sizeof(matrix));
     if (A == NULL) {
-        fprintf(stderr,
-                "Problème lors de l'allocation de l'espace mémoire pour une "
-                "matrice : %s\n",
-                strerror(errno));               
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_ALLOC_STRUCT);
     }
     A->m = m;
     A->n = n;
     A->values = (double **)malloc(m * sizeof(double *));
     if (A->values == NULL) {
-        fprintf(stderr,
-                "Problème lors de l'allocation de l'espace mémoire pour une "
-                "matrice : %s\n",
-                strerror(errno));
         free_matrix(A);
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_ALLOC_VALUES);
     }
     // Allocation et initialisation à zéro de chaque ligne
     for (uint64_t i = 0; i < m; i++) {
         A->values[i] = (double *)malloc(n * sizeof(double));
         if (A->values[i] == NULL) {
-            fprintf(
-                stderr,
-                "Problème lors de l'allocation de l'espace mémoire pour une "
-                "matrice : %s\n",
-                strerror(errno));
-            exit(EXIT_FAILURE);
+            free_matrix(A);
+            handle_error(ERROR_ALLOC_VALUES);
         }
         for (uint64_t j = 0; j < n; j++) {
             A->values[i][j] = 0;
@@ -85,82 +75,95 @@ void print_matrix(matrix *A) {
     }
 }
 
-
-void add_m_m(matrix *A, matrix *B, matrix *C) {
-    if (A->values == NULL) {
-        fprintf(stderr, "Erreur : Mémoire non allouée pour A->values\n");
-        exit(EXIT_FAILURE);
-    }
-    if (B->values == NULL) {
-        fprintf(stderr, "Erreur : Mémoire non allouée pour B->values\n");
-        exit(EXIT_FAILURE);
-    }
-    if (C->values == NULL) {
-        fprintf(stderr, "Erreur : Mémoire non allouée pour C->values\n");
-        exit(EXIT_FAILURE);
+/* 
+ * Addition de deux matrices A et B et stockage du résultat dans C.
+ * Les dimensions de A, B et C doivent être compatibles.
+ */
+int add_m_m(matrix *A, matrix *B, matrix *C) {
+    if (!A || !B ){
+        free_matrix(A);
+        free_matrix(B);
+        free_matrix(C);
+        handle_error(ERROR_NULL_POINTER);
+    } 
+    if (!A->values || !B->values) {
+        free_matrix(A);
+        free_matrix(B);
+        free_matrix(C);
+        handle_error(ERROR_NULL_VALUES);
     }
     uint64_t m = A->m;
     uint64_t n = A->n;
-    if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") B(%" PRIu64 " x %" PRIu64 ")\n", m, n, B->m, B->n);
-        exit(EXIT_FAILURE);
-    }
+    if(m != B->m || n != B-> n) handle_error(ERROR_SIZE_MISMATCH);
     // Addition élément par élément
     for (uint64_t i = 0; i < m; i++) {
+        if (!A->values[i] || !B->values[i]){
+            free_matrix(A);
+            free_matrix(B);
+            free_matrix(C);
+            handle_error(ERROR_NULL_VALUES);
+        } 
         for (uint64_t j = 0; j < n; j++) {
             C->values[i][j] = A->values[i][j] + B->values[i][j];
         }
     }
+    return SUCCESS;
 }
 
-
-void sub_m_m(matrix *A, matrix *B, matrix *C) {
+/* 
+ * Soustraction de deux matrices A et B et stockage du résultat dans C.
+ */
+int sub_m_m(matrix *A, matrix *B, matrix *C) {
+    if (!A || !B) handle_error(ERROR_NULL_POINTER);
+    if (!A->values || !B->values) handle_error(ERROR_NULL_VALUES);
     uint64_t m = A->m;
     uint64_t n = A->n;
-    if(m != B->m || n != B-> n){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") B(%" PRIu64 " x %" PRIu64 ")\n", m, n, B->m, B->n);
-        exit(EXIT_FAILURE);
-    }
+    if(m != B->m || n != B-> n) handle_error(ERROR_SIZE_MISMATCH);
     // Soustraction élément par élément
     for (uint64_t i = 0; i < m; i++) {
+        if (!A->values[i] || !B->values[i]) handle_error(ERROR_NULL_VALUES);
         for (uint64_t j = 0; j < n; j++) {
             C->values[i][j] = A->values[i][j] - B->values[i][j];
         }
     }
+    return SUCCESS;
 }
 
-
-void mult_m_v(matrix *A, vector *B, vector *C) {
+/* 
+ * Multiplication d'une matrice A par un vecteur B, résultat dans C.
+ */
+int mult_m_v(matrix *A, vector *b, vector *c) {
+    if (!A || !b ) handle_error(ERROR_NULL_POINTER);
+    if (!A->values || !b->values) handle_error(ERROR_NULL_VALUES);
     uint64_t m = A->m;
     uint64_t n = A->n;
-    if(n != B->m){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 ")\n", m, n, B->m);
-        exit(EXIT_FAILURE);
-    }
-    if(m != C->m){
-        fprintf(stderr, "Erreur : Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et C(%" PRIu64 ")\n", m, n, C->m);
-        exit(EXIT_FAILURE);
-    }
+    if(n != b->m) handle_error(ERROR_SIZE_MISMATCH);
+    if(m != c->m) handle_error(ERROR_SIZE_MISMATCH);
     // Calcul du produit matrice-vecteur
     for (int i = 0; i < m; i++) {
+        if (!A->values[i]) handle_error(ERROR_NULL_VALUES);
         double res = 0;
         for (int j = 0; j < n; j++) {
-            res += A->values[i][j] * B->values[j];
+            res += A->values[i][j] * b->values[j];
         }
-        C->values[i] = res;
+        c->values[i] = res;
     }
+    return SUCCESS;
 }
 
-
-void mult_m_m(matrix *A, matrix *B, matrix *C){
+/* 
+ * Multiplication de deux matrices A et B, résultat dans C.
+ */
+int mult_m_m(matrix *A, matrix *B, matrix *C){
+    if (!A || !B ) handle_error(ERROR_NULL_POINTER);
+    if (!A->values || !B->values) {
+        handle_error(ERROR_NULL_VALUES);
+    }
     uint64_t m = A->m;
     uint64_t n = A->n;
     uint64_t o = B->n;
-    if (A->n != B->m) {
-        fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 " x %" PRIu64 ")\n",
-                A->m, A->n, B->m, B->n);
-        exit(EXIT_FAILURE);
-    }
+    if (A->n != B->m) handle_error(ERROR_SIZE_MISMATCH);
+
     // Initialisation de C à zéro
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < o; j++) {
@@ -188,14 +191,18 @@ void mult_m_m(matrix *A, matrix *B, matrix *C){
             }
         }
     }
-
+    return SUCCESS;
 }
 
 
-
-void transp(matrix*A){
+/* 
+ * Transposition d'une matrice A.
+ * La matrice transposée remplace l'originale.
+ */
+int transp(matrix*A){
     uint64_t m = A->m;
     uint64_t n = A->n;
+
     // Création d'une matrice temporaire T pour stocker la transposée
     matrix *T = init_matrix(n, m);
     for (uint64_t i = 0; i < m; i++) {
@@ -212,21 +219,28 @@ void transp(matrix*A){
     A->m = n;
     A->n = m;
     A->values = T->values;
+
     free(T);
+
+    return SUCCESS;
 }
 
+/* 
+ * Résolution par substitution arrière.
+ * Résout un système triangulaire supérieur Ux = b.
+ */
+int back_sub(vector*b, matrix *U, vector*x){
 
-void back_sub(vector*b, matrix *U, vector*x){
     uint64_t m = b->m;
     bool infinite = false;
+
     // Copie initiale de b dans x
     for (uint64_t i = 0; i < m; i++ ){
         x->values[i] = b->values[i];
     }
 
-    if (m<1 || U->m != m || U->n != m || x->m != m){
-        fprintf(stderr, "Dimensions invalides pour la substitution arrière.\n");
-        exit(EXIT_FAILURE);
+    if (m<1 || U->m != m || U->n != m || x->m != m) {
+        handle_error(ERROR_SIZE_MISMATCH);
     }
 
     // Cas particulier : une seule inconnue
@@ -236,14 +250,14 @@ void back_sub(vector*b, matrix *U, vector*x){
                 // Infinité de solutions, on attribue une valeur arbitraire
                 x->values[0] = 1.0;
                 fprintf(stderr, "Infinité de solutions\n");
+                return SUCCESS;
             } else {
-                fprintf(stderr, "Aucune solution\n");
-                return;
+                handle_error(ERROR_NO_SOLUTION);
             }
         } else {
             x->values[0] = b->values[0] / U->values[0][0];
+            return SUCCESS;
         }
-        return;
     }
 
     // Résolution par substitution arrière pour m > 1
@@ -257,8 +271,7 @@ void back_sub(vector*b, matrix *U, vector*x){
                 infinite = true;
             }
             else {
-                fprintf(stderr, "Aucune solution\n");
-                return;
+                handle_error(ERROR_NO_SOLUTION); 
             }
         }
         x->values[i] /= U->values[i][i];
@@ -266,7 +279,9 @@ void back_sub(vector*b, matrix *U, vector*x){
     if (infinite == true){
         fprintf(stderr, "Infinité de solutions\n");
     }
+    return SUCCESS;
 }
+
 void free_qr(QR_Decomposition *qr) {
     if (qr != NULL) {
         if (qr->Q != NULL)
@@ -279,10 +294,7 @@ void free_qr(QR_Decomposition *qr) {
 
 
 vector *lstsq(matrix *A, vector *b){
-    if(A->m < A->n || b->m != A->m){
-        fprintf(stderr, "Erreur : dimensions invalides : A(%" PRIu64 " x %" PRIu64 "), b(%" PRIu64 ")", A->m, A->n, b->m);
-        exit(EXIT_FAILURE);
-    }
+    if(A->m < A->n || b->m != A->m) handle_error(ERROR_SIZE_MISMATCH);
     QR_Decomposition *QR = qr(A);
     matrix *Q_t = QR->Q;
     transp(Q_t);
@@ -295,26 +307,27 @@ vector *lstsq(matrix *A, vector *b){
     return x;
 }
 
+/* 
+ * Soustraction d'un vecteur src multiplié par un scalaire au vecteur dest.
+ */
+int vector_subtract(vector *dest, vector *src, double scalar) {
+    if (dest->m != src->m) handle_error(ERROR_SIZE_MISMATCH);
 
-void vector_subtract(vector *dest, vector *src, double scalar) {
-    if (dest->m != src->m) {
-        fprintf(stderr, "Les vecteurs ont des tailles différentes\n");
-        exit(EXIT_FAILURE);
-    }
     for (uint64_t i = 0; i < dest->m; i++) {
         dest->values[i] -= scalar * src->values[i];
     }
+    return SUCCESS;
 }
 
-
-void vector_divide(vector *v, double scalar) {
-    if (scalar == 0) {
-        fprintf(stderr, "Division par zéro dans vector_divide.\n");
-        exit(EXIT_FAILURE);
-    }
+/* 
+ * Division de chaque élément d'un vecteur par un scalaire.
+ */
+int vector_divide(vector *v, double scalar) {
+    if (scalar == 0) handle_error(ERROR_DIV_bY_0);
     for (uint64_t i = 0; i < v->m; i++) {
         v->values[i] /= scalar;
     }
+    return SUCCESS;
 }
 
 
@@ -344,13 +357,6 @@ QR_Decomposition *qr(matrix *A) {
     matrix *Q = init_matrix(m, n);
     matrix *R = init_matrix(n, n);
 
-    if (!Q || !R) {
-        fprintf(stderr, "Erreur d'allocation mémoire pour Q ou R.\n");
-        free_matrix(Q);
-        free_matrix(R);
-        return NULL;
-    }
-
     // Initialiser les valeurs de Q et R
     for (uint64_t i = 0; i < m; i++) {
         for (uint64_t j = 0; j < n; j++) {
@@ -368,6 +374,7 @@ QR_Decomposition *qr(matrix *A) {
     for (uint64_t i = 0; i < n; i++) {
         vector *q_i = Q_i(Q, i);
         if (!q_i) {
+            fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
             free_matrix(Q);
             free_matrix(R);
             return NULL;

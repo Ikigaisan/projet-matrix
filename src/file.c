@@ -3,18 +3,17 @@
 #include "../headers/vector.h"
 #include <inttypes.h>
 #include <stdio.h>
+#include "../headers/error.h"
 
 // Fonction pour écrire un double dans un fichier binaire
 void write_double(double value, FILE *file) {
     if(file == NULL){
-        fprintf(stderr,"Erreur : fichier non valide.\n");
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_FILE);
     }
 
     size_t result = fwrite(&value, sizeof(double), 1, file);
     if(result != 1){
         fprintf(stderr, "Erreur lors de l'écriture dans le fichier.\n");
-        fclose(file);
         exit(EXIT_FAILURE);
     }
 }
@@ -33,7 +32,6 @@ vector *read_vector(FILE *file){
     if(fread(result->values, sizeof(double), size, file) != size){
         fprintf(stderr,"Erreur lors de la lecture des valeurs du vecteur dans le fichier.\n");
         free_vector(result);
-        fclose(file);
         exit(EXIT_FAILURE);
     }
 
@@ -42,11 +40,10 @@ vector *read_vector(FILE *file){
 
 // Écriture d’un vecteur dans un fichier binaire
 void write_vector(vector *v, FILE *file){
-    if(!v || !file){
-        fprintf(stderr, "Erreur : Pointeur null passé en paramètre.");
-        if(v) free_vector(v);
-        if(file) fclose(file);
-        exit(EXIT_FAILURE);
+    if(!file) handle_error(ERROR_FILE);
+    if(!v ) {
+        free_vector(v);
+        handle_error(ERROR_NULL_VALUES);
     }
 
     // Écriture de la taille du vecteur (big endian)
@@ -54,7 +51,6 @@ void write_vector(vector *v, FILE *file){
     if(fwrite(&size, sizeof(uint64_t), 1, file) != 1){
         fprintf(stderr, "Erreur lors de l'écriture dans le fichier.\n");
         free_vector(v);
-        fclose(file);
         exit(EXIT_FAILURE);
     }
 
@@ -62,7 +58,6 @@ void write_vector(vector *v, FILE *file){
     if(fwrite(v->values, sizeof(double), v->m, file) != v->m){
         fprintf(stderr, "Erreur lors de l'écriture dans le fichier.\n");
         free_vector(v);
-        fclose(file);
         exit(EXIT_FAILURE);
     }
 }
@@ -70,8 +65,7 @@ void write_vector(vector *v, FILE *file){
 // Lecture d'une matrice depuis un fichier binaire
 matrix *read_matrix(FILE *file) {
     if(!file){
-        fprintf(stderr,"Erreur : Pointeur null passé en paramètre.\n");
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_FILE);
     }
 
     uint64_t rows, cols;
@@ -80,7 +74,6 @@ matrix *read_matrix(FILE *file) {
     if(fread(&rows, sizeof(uint64_t), 1, file) != 1 ||
        fread(&cols, sizeof(uint64_t), 1, file) != 1){
         fprintf(stderr, "Erreur lors de la lecture des dimensions de la matrice.\n");
-        fclose(file);
         exit(EXIT_FAILURE);
     }
 
@@ -90,6 +83,10 @@ matrix *read_matrix(FILE *file) {
     fprintf(stderr,"Lecture matrice de dimensions: %" PRIu64 " x %" PRIu64 "\n", rows, cols);
 
     matrix *result = init_matrix(rows, cols);
+    if (!result || !result->values) {
+        free_matrix(result);
+        handle_error(ERROR_ALLOC_STRUCT);
+    }
 
     // Lecture ligne par ligne de la matrice
     for(uint64_t i = 0; i < rows; i++){
@@ -97,20 +94,17 @@ matrix *read_matrix(FILE *file) {
         if(fread(&line_nbr, sizeof(uint64_t), 1, file) != 1){
             fprintf(stderr, "Erreur lors de la lecture du numéro de la ligne\n");
             free_matrix(result);
-            fclose(file);
             exit(EXIT_FAILURE);
         }
         line_nbr = be64toh(line_nbr);
         if(line_nbr != i){
             fprintf(stderr, "Mauvaise ligne\n");
             free_matrix(result);
-            fclose(file);
             exit(EXIT_FAILURE);
         }
         if(fread(result->values[i], sizeof(double), cols, file) != cols){
             fprintf(stderr, "Erreur lors de la lecture de la ligne.\n");
             free_matrix(result);
-            fclose(file);
             exit(EXIT_FAILURE);
         }
     }
@@ -120,11 +114,10 @@ matrix *read_matrix(FILE *file) {
 
 // Écriture d'une matrice dans un fichier binaire
 void write_matrix(matrix *A, FILE* file){
-    if(!file || !A){
-        fprintf(stderr,"Erreur : Pointeur null passé en paramètre.\n");
-        if(A) free_matrix(A);
-        if(file) fclose(file);
-        exit(EXIT_FAILURE);
+    if(!file) handle_error(ERROR_FILE);
+    if(!A ) {
+        free_matrix(A);
+        handle_error(ERROR_NULL_VALUES);
     }
 
     // Variables locales pour les dimensions
@@ -139,7 +132,6 @@ void write_matrix(matrix *A, FILE* file){
     if(fwrite(&m_A_be, sizeof(uint64_t), 1, file) != 1 ||
        fwrite(&n_A_be, sizeof(uint64_t), 1, file) != 1){
         fprintf(stderr, "Erreur lors de l'écriture des dimensions dans le fichier.");
-        fclose(file);
         exit(EXIT_FAILURE);
     }
 
@@ -149,14 +141,12 @@ void write_matrix(matrix *A, FILE* file){
         if(fwrite(&line_nbr, sizeof(uint64_t), 1, file) != 1){
             fprintf(stderr, "Erreur lors de l'écriture du numéro de la ligne.");
             free_matrix(A);
-            fclose(file);
             exit(EXIT_FAILURE);
         }
         for(uint64_t j = 0; j < n_A; j++){
             if(fwrite(&(A->values[i][j]), sizeof(double), 1, file) != 1){
                 fprintf(stderr, "Erreur lors de l'écriture d'une valeur.");
                 free_matrix(A);
-                fclose(file);
                 exit(EXIT_FAILURE);
             }
         }
@@ -166,14 +156,12 @@ void write_matrix(matrix *A, FILE* file){
 // Lecture d’une décomposition QR depuis un fichier binaire
 QR_Decomposition *read_QR(FILE *file) {
     if(!file){
-        fprintf(stderr, "Erreur : file est un pointeur null.\n");
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_FILE);
     }
 
     QR_Decomposition *qr = (QR_Decomposition *) malloc(sizeof(QR_Decomposition));
     if (!qr) {
-        fprintf(stderr, "Erreur d'allocation mémoire pour QR_Decomposition.\n");
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_ALLOC_STRUCT);
     }
 
     uint64_t m, n;
@@ -183,7 +171,6 @@ QR_Decomposition *read_QR(FILE *file) {
         fread(&n, sizeof(uint64_t), 1, file) != 1) {
         fprintf(stderr, "Erreur lors de la lecture des dimensions de Q.\n");
         free(qr);
-        fclose(file);
         exit(EXIT_FAILURE);
     }
 
@@ -197,7 +184,6 @@ QR_Decomposition *read_QR(FILE *file) {
             fprintf(stderr, "Erreur lors de la lecture des valeurs de la matrice Q.\n");
             free_matrix(qr->Q);
             free(qr);
-            fclose(file);
             exit(EXIT_FAILURE);
         }
     }
@@ -210,7 +196,6 @@ QR_Decomposition *read_QR(FILE *file) {
             free_matrix(qr->Q);
             free_matrix(qr->R);
             free(qr);
-            fclose(file);
             exit(EXIT_FAILURE);
         }
     }
@@ -220,10 +205,9 @@ QR_Decomposition *read_QR(FILE *file) {
 
 // Écriture d'une décomposition QR dans un fichier binaire
 void write_QR(matrix *Q, matrix *R, FILE *file){
-    if (!file || !Q || !R) {
-        fprintf(stderr, "Erreur : Pointeur null passé en paramètre.\n");
-        exit(EXIT_FAILURE);
-    }
+    if (!file ) handle_error(ERROR_FILE);
+
+    if ( !Q || !R) handle_error(ERROR_NULL_POINTER);
 
     uint64_t m = htobe64(Q->m);
     uint64_t n = htobe64(Q->n);
@@ -231,26 +215,20 @@ void write_QR(matrix *Q, matrix *R, FILE *file){
     // Écriture des dimensions
     if (fwrite(&m, sizeof(uint64_t), 1, file) != 1 || 
         fwrite(&n, sizeof(uint64_t), 1, file) != 1) {
-        fprintf(stderr, "Erreur lors de l'écriture des dimensions de Q.\n");
-        fclose(file);
-        exit(EXIT_FAILURE);
+            handle_error(ERROR_ALLOC_STRUCT);
     }
 
     // Écriture de la matrice Q
     for (uint64_t i = 0; i < Q->m; i++) {
         if (fwrite(Q->values[i], sizeof(double), Q->n, file) != Q->n) {
-            fprintf(stderr, "Erreur lors de l'écriture des valeurs de la matrice Q.\n");
-            fclose(file);
-            exit(EXIT_FAILURE);
+            handle_error(ERROR_ALLOC_VALUES);
         }
     }
 
     // Écriture de la matrice R
     for (uint64_t i = 0; i < R->m; i++) {
         if (fwrite(R->values[i], sizeof(double), R->n, file) != R->n) {
-            fprintf(stderr, "Erreur lors de l'écriture des valeurs de la matrice R.\n");
-            fclose(file);
-            exit(EXIT_FAILURE);
+            handle_error(ERROR_ALLOC_VALUES);
         }
     }
 }

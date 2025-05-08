@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include "../headers/file.h"
 #include "../headers/matrix.h"
@@ -11,7 +12,7 @@ void make_file_matrix(char* filename){
     uint64_t n = 3;
     matrix *A = init_matrix(m, n);
     for(uint64_t i = 0; i<m; i++){
-        for(u_int64_t j = 0; j<n; j++){
+        for(uint64_t j = 0; j<n; j++){
             A->values[i][j] = rand()/2;
         }
     }

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "vector.h"
+#include <pthread.h>
 
 #ifndef _VECTOR_H_T
 #define _VECTOR_H_T
