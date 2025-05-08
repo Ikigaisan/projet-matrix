@@ -10,9 +10,14 @@
 #include "../headers/file.h"
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
+#include "../headers/error.h"
 #include "../headers/vector_threads.h"
 #include "../headers/matrix_threads.h"
 #include <pthread.h>
+
+#define SUCCESS 0
+
+void* status;
 
 // Structure pour stocker les arguments de la ligne de commande
 typedef struct {
@@ -139,29 +144,74 @@ int main(int argc, char **argv) {
     // Allocation dynamique de la structure args
     args_t *args = (args_t *)malloc(sizeof(args_t));
     if (args == NULL) {
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_ALLOC_STRUCT);
     }
     // Analyse et stockage des arguments de la ligne de commande
     parse_args(args, argc, argv);
 
-    // VECTEURS //
+    bool error_occurred = false;
+
+    //////////////////////////////
+    //         VECTEURS         //
+    //////////////////////////////
 
     // Opération : Addition de deux vecteurs
     if (strcmp(args->op, "add_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
-        if (args->verbose) {
-            printf("vector x : \n");
-            print_vector(x);
-        }
         vector *y = read_vector(args->input_file_B);
-        if (args->verbose) {
-            printf("vector y : \n");
-            print_vector(y);
+
+        if (!x || !y || !x->values || !y->values) {
+            free_vector(x);
+            free_vector(y);
+            handle_error(ERROR_NULL_POINTER);
         }
+
+        if (args->verbose) { 
+            printf("vector x : \n");
+            print_vector(x); 
+            printf("vector y : \n");
+            print_vector(y); 
+        }
+        
+        if (x->m != y->m){
+            free_vector(x);
+            free_vector(y);
+            handle_error(ERROR_SIZE_MISMATCH);
+        } 
+        
         // Initialisation du vecteur résultat qui contiendra x + y
         vector *z = init_vector(x->m);
+        if (!z){
+            free_vector(x);
+            free_vector(y);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
 
-        add_v_v(x,y,z);
+        pthread_t threads[args->nb_threads];
+        thread_data_v_v thread_data[args->nb_threads];
+        size_t chunk_size = x->m / args->nb_threads;
+
+        // Création des threads pour l'addition en parallèle
+        for(uint64_t i = 0; i < args->nb_threads; i++){
+            thread_data[i].x = x;
+            thread_data[i].y = y;
+            thread_data[i].z = z;
+            thread_data[i].start_idx = i * chunk_size;
+            thread_data[i].end_idx = (i == args->nb_threads - 1) ? x->m : (i+1)*chunk_size;
+
+            int thread_create_error = pthread_create(&threads[i], NULL, add_v_v_thread, &thread_data[i]);
+            if (thread_create_error != 0) {
+                free_vector(x);
+                free_vector(y);
+                free_vector(z);
+                handle_error(ERROR_THREADS);
+            }
+        }
+
+        // Attente de la fin de tous les threads
+        for(uint64_t i = 0; i < args->nb_threads; i++){
+            pthread_join(threads[i], NULL);
+        }
 
         // Affichage et/ou écriture du résultat
         if (args->output_stream == stdout) {
@@ -177,30 +227,68 @@ int main(int argc, char **argv) {
         free_vector(x);
         free_vector(y);
         free_vector(z);
-    
     }
 
     // Opération : Soustraction de deux vecteurs
     else if (strcmp(args->op, "sub_v_v") == 0) {
         vector *x = read_vector(args->input_file_A);
+        vector *y = read_vector(args->input_file_B);
+
+        if (!x || !y || !x->values || !y->values){
+            free_vector(x);
+            free_vector(y);
+            handle_error(ERROR_NULL_POINTER);
+        }
+
         if (args->verbose) {
             printf("vector x : \n");
             print_vector(x);
-        }
-        vector *y = read_vector(args->input_file_B);
-        if (args->verbose) {
+
             printf("vector y : \n");
             print_vector(y);
         }
         vector *z = init_vector(x->m);
-
-        if(x->m != y->m){
-            fprintf(stderr, "Erreur : les vecteurs x et y doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
-            sub_v_v(x,y,z);
+        if (!z){
+            free_vector(x);
+            free_vector(y);
+            handle_error(ERROR_ALLOC_STRUCT);
         }
+        if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
 
+        if(x->m != y->m) {
+            free_vector(x);
+            free_vector(y);
+            free_vector(z);
+            handle_error(ERROR_SIZE_MISMATCH);
+        }
+        if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
+
+        pthread_t threads[args->nb_threads]; // tableau de threads en mode threadpool mais de nb_threads --> création de nb_threads
+        thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
+        size_t chunk_size = x->m / args->nb_threads; // défini la répartition dans les différents threads
+            
+        // sub_v_v(x, y, z); on le supprime parce que mtn on passe en multithreads et plus en monothread ? 
+        // Création des threads qui utilisent la fonction sub_v_v_thread
+    
+        for(uint64_t i = 0; i < args->nb_threads; i++) {
+            thread_data[i].x = x;
+            thread_data[i].y = y;
+            thread_data[i].z = z;
+            thread_data[i].start_idx = i*chunk_size;
+            thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
+            // Il faudrait aussi gérer les erreurs de thread
+            int thread_create_error = pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
+            if (thread_create_error != 0){
+                free_vector(x);
+                free_vector(y);
+                free_vector(z);
+                handle_error(ERROR_THREADS);
+            } 
+        }
+    
+        for(uint64_t i = 0; i < args->nb_threads; i++){
+            pthread_join(threads[i], NULL);
+        }
     
         if (args->output_stream == stdout) {
             printf("Résultat de la soustraction entre les deux vecteurs : \n");
@@ -229,13 +317,28 @@ int main(int argc, char **argv) {
             printf("matrix B : \n");
             print_matrix(B);
         }
+        if (!A || !B || !A->values || !B->values){
+            free_matrix(A);
+            free_matrix(B);
+            handle_error(ERROR_NULL_POINTER);
+        }
+
         matrix *C = init_matrix(A->m, A->n);
+
+        if (!C){
+            free_matrix(A);
+            free_matrix(B);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
         // add_m_m(A, B, C); idem 
 
         if (A->m != B->m || A->n != B->n) {
-            fprintf(stderr, "Erreur : les matrices A et B doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
+            free_matrix(A);
+            free_matrix(B);
+            free_matrix(C);
+            handle_error(ERROR_SIZE_MISMATCH);
+        }
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_m thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;
@@ -247,15 +350,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
-
+                int thread_create_error = pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+                if (thread_create_error != 0) {
+                    free_matrix(A);
+                    free_matrix(B);
+                    free_matrix(C);
+                    handle_error(ERROR_THREADS);
+                }
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_matrix(B);
+                free_matrix(C);
+                handle_error(ERROR_THREADS);
             }
         } 
-    
     
         if (args->output_stream == stdout) {
             printf("Résultat de l'addition entre les deux matrices : \n");
@@ -284,13 +402,29 @@ int main(int argc, char **argv) {
             printf("matrix B : \n");
             print_matrix(B);
         }
+
+        if (!A || !B || !A->values || !B->values){
+            free_matrix(A);
+            free_matrix(B);
+            handle_error(ERROR_NULL_POINTER);
+        }
+
         matrix *C = init_matrix(A->m, A->n);
         //sub_m_m(A, B, C);
 
-        if (A->m != B->m || A->n != B->n) {
-            fprintf(stderr, "Erreur : les matrices A et B doivent avoir la même taille.\n");
-            exit(EXIT_FAILURE);
-        }else{
+        if (!C){
+            free_matrix(A);
+            free_matrix(B);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
+
+        if (A->m != B->m || A->n != B->n){
+            free_matrix(A);
+            free_matrix(B);
+            free_matrix(C);
+            handle_error(ERROR_SIZE_MISMATCH);
+        } 
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_m thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;
@@ -302,12 +436,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, sub_m_m_thread, &thread_data[i]);
+                int thread_create_error = pthread_create(&threads[i], NULL, sub_m_m_thread, &thread_data[i]);
+                //Libération si le thread a echoué
+                if (thread_create_error != 0) {
+                    free_matrix(A);
+                    free_matrix(B);
+                    free_matrix(C);
+                    handle_error(ERROR_THREADS);
+                }
 
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_matrix(B);
+                free_matrix(C);
+                handle_error(ERROR_THREADS);
             }
         } 
     
@@ -338,6 +490,12 @@ int main(int argc, char **argv) {
             printf("vector y : \n");
             print_vector(y);
         }
+
+        if (!x || !y || !x->values || !y->values){
+            free_vector(y);
+            free_vector(x);
+            handle_error(ERROR_NULL_POINTER);
+        }
         double result;
         dot_prod(x, y, &result);
         if (args->output_stream == stdout) {   
@@ -355,6 +513,10 @@ int main(int argc, char **argv) {
     // Opération : Calcul de la norme 2 d'un vecteur
     else if (strcmp(args->op, "norm") == 0) {
         vector *a = read_vector(args->input_file_A);
+        if (!a || a->values){
+            free_vector(a);
+            handle_error(ERROR_NULL_POINTER);
+        }
         if (args->verbose) {
             printf("Vector a :\n");
             print_vector(a);
@@ -384,13 +546,26 @@ int main(int argc, char **argv) {
             printf("Matrix B : \n");
             print_matrix(B);
         }
+        if (!A || !A->values || !B || !B->values){ 
+            free_matrix(A);
+            free_matrix(B);
+            handle_error(ERROR_NULL_POINTER);
+        }
         matrix *C = init_matrix(A->m, B->n);
         // mult_m_m(A, B, Result);
+        if (!C ){ 
+            free_matrix(A);
+            free_matrix(B);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
 
-        if (A->n != B->m) {
-            fprintf(stderr, "Erreur : dimensions incompatibles.\n");
-            exit(EXIT_FAILURE);
-        }else{
+        if (A->n != B->m){ 
+            free_matrix(A);
+            free_matrix(B);
+            free_matrix(C);
+            handle_error(ERROR_SIZE_MISMATCH);
+        }
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_m thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;
@@ -402,12 +577,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, mult_m_m_thread, &thread_data[i]);
+                int thread_create_error = pthread_create(&threads[i], NULL, mult_m_m_thread, &thread_data[i]);
+                //Libération si le thread a echoué
+                if (thread_create_error != 0) {
+                    free_matrix(A);
+                    free_matrix(B);
+                    free_matrix(C);
+                    handle_error(ERROR_THREADS);
+                }
 
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_matrix(B);
+                free_matrix(C);
+                handle_error(ERROR_THREADS);
             }
         }
         
@@ -437,14 +630,28 @@ int main(int argc, char **argv) {
             printf("Vector b:\n");
             print_vector(b);
         }
+        if (!A || !A->values || !b || !b->values){ 
+            free_matrix(A);
+            free_vector(b);
+            handle_error(ERROR_NULL_POINTER);
+        }
 
         vector *c = init_vector(A->m);
+
+        if (!c){ 
+            free_matrix(A);
+            free_vector(b);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
         // mult_m_v(A, B, C);
 
         if (A->n != b->m) {
-            fprintf(stderr, "Erreur : dimensions incompatibles.\n");
-            exit(EXIT_FAILURE);
-        }else{
+            free_matrix(A);
+            free_vector(b);
+            free_vector(c);
+            handle_error(ERROR_SIZE_MISMATCH);
+        }
+        else{
             pthread_t threads[args->nb_threads];
             thread_data_m_v thread_data[args->nb_threads]; 
             size_t chunk_size = A->m / args->nb_threads;
@@ -456,12 +663,30 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                pthread_create(&threads[i], NULL, mult_m_v_thread, &thread_data[i]);
+                int thread_create_error = pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+                //Libération si le thread a echoué
+                if (thread_create_error != 0) {
+                    free_matrix(A);
+                    free_vector(b);
+                    free_vector(c);
+                    handle_error(ERROR_THREADS);
+                }
 
             }
 
-            for(uint64_t i = 0; i < args->nb_threads; i++){
-                pthread_join(threads[i], NULL);
+            for(uint64_t i = 0; i < args->nb_threads; i++) {
+                pthread_join(threads[i], &status);
+                if ((intptr_t)status != SUCCESS) {
+                    error_occurred = true;
+                }
+            }
+            
+            //Libération aprés la fin du thread
+            if (error_occurred) {
+                free_matrix(A);
+                free_vector(b);
+                free_vector(c);
+                handle_error(ERROR_THREADS);
             }
         }
 
@@ -483,13 +708,25 @@ int main(int argc, char **argv) {
     // Opération : Transposée d’une matrice (la fonction transp effectue la transposition sur place)
     else if (strcmp(args->op, "transp") == 0) {
         matrix *A = read_matrix(args->input_file_A);
+        
+        //Verif que read_matrix est fonctionné
+        if (!A || !A->values) {
+            free_matrix(A);
+            handle_error(ERROR_NULL_POINTER);
+        }
         if (args->verbose) {
             printf("Matrix A :\n");
             print_matrix(A);
         }
     
         matrix* T = init_matrix(A->n, A->m); // Matrice transposée 
-    
+        //Verif que init_matrix est fonctionné
+        if (!T ){
+            free_matrix(A);
+            free_matrix(T);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
+
         pthread_t threads[args->nb_threads];
         thread_data_transp thread_data[args->nb_threads];
         uint64_t chunk_size = A->m / args->nb_threads; // Division par ligne pour la transposition
@@ -501,7 +738,12 @@ int main(int argc, char **argv) {
             thread_data[i].start_row = i * chunk_size;
             thread_data[i].end_row = (i == args->nb_threads - 1) ? A->m : (i + 1) * chunk_size;
     
-            pthread_create(&threads[i], NULL, transp_thread, &thread_data[i]);
+            int thread_create_error = pthread_create(&threads[i], NULL, transp_thread, &thread_data[i]);
+            if (thread_create_error != 0) {
+                free_matrix(A);
+                free_matrix(T);
+                handle_error(ERROR_THREADS);
+            }
         }
     
         for (uint64_t i = 0; i < args->nb_threads; i++) {
@@ -520,7 +762,7 @@ int main(int argc, char **argv) {
         A->n = T->n;
         A->values = T->values;
     
-        free(T);
+        free_matrix(T);
     
         if (args->output_stream == stdout) {
             printf("Résultat de la transposée :\n");
@@ -540,8 +782,19 @@ int main(int argc, char **argv) {
         // Lecture de la matrice A et du vecteur b
         matrix *A = read_matrix(args->input_file_A);
         vector *b = read_vector(args->input_file_B);
+        if (!A || !A->values ||!b || !b->values) {
+            free_matrix(A);
+            free_vector(b);
+            handle_error(ERROR_NULL_POINTER);
+        }
         // Allocation du vecteur solution
         vector *result = init_vector(b->m);
+        if (!result || !result->values) {
+            free_matrix(A);
+            free_vector(b);
+            free_vector(result);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
         // Appel de la fonction de substitution arrière
         int success = back_sub(b, A, result);
         if(!success){
@@ -565,10 +818,20 @@ int main(int argc, char **argv) {
     else if (strcmp(args->op, "qr") == 0) {
         // Lecture de la matrice A
         matrix *A = read_matrix(args->input_file_A);
+        if (!A || !A->values) {
+            free_matrix(A);
+            handle_error(ERROR_NULL_POINTER);
+        }
         // Allocation des matrices Q et R
         // On suppose ici que Q est carrée de dimensions A->m x A->m et R est de dimensions A->m x A->n
         matrix *Q = init_matrix(A->m, A->m);
         matrix *R = init_matrix(A->m, A->n);
+        if (!Q || !R) {
+            free_matrix(A);
+            free_matrix(Q);
+            free_matrix(R);
+            handle_error(ERROR_ALLOC_STRUCT);
+        }
         // Calcul de la décomposition QR
    
         if (args->output_stream == stdout) {
@@ -605,8 +868,7 @@ int main(int argc, char **argv) {
     
     // Si l'opération demandée n'est pas implémentée
     else {
-        fprintf(stderr, "Cette opération n'est pas implémentée...\n");
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_IMPLEMENTATION);
     }
 
     // Fermeture des fichiers ouverts

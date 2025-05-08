@@ -13,15 +13,15 @@ TESTS = tests
 
 
 
-main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o
+main: $(OBJECTS)/main.o $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o $(OBJECTS)/error.o
 	$(CC) -o $@ $^ -pthread -lm 
 
 
-generator_matrix: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o
+generator_matrix: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/error.o
 	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_matrix.c $^ -lm
 	./$@
 
-generator_vector: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o
+generator_vector: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/file.o $(OBJECTS)/error.o
 	$(CC) $(CFLAGS) -o $@ $(HELP)/generator_vector.c $^ -lm
 	./$@
 
@@ -43,11 +43,13 @@ $(OBJECTS)/vector_threads.o: $(SRC)/vector_threads.c $(HEADERS)/vector_threads.h
 $(OBJECTS)/matrix_threads.o : $(SRC)/matrix_threads.c $(HEADERS)/matrix_threads.h | $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
+$(OBJECTS)/error.o : $(SRC)/error.c $(HEADERS)/error.h | $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJECTS):
 	mkdir -p $(OBJECTS)
 
-test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o $(OBJECTS)/error.o
 	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
 	./test
 	$(CC) $(CFLAGS) -o test_file $(TESTS)/tests_file.c $^ $(LCUNIT) -lm
@@ -57,7 +59,7 @@ test: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
 
 	
 
-compare: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o
+compare: $(OBJECTS)/matrix.o $(OBJECTS)/vector.o $(OBJECTS)/vector_threads.o $(OBJECTS)/matrix_threads.o $(OBJECTS)/error.o
 	$(CC) $(CFLAGS) -o compare $(TESTS)/compare.c $^ -pthread -lm
 
 clean:
@@ -69,7 +71,7 @@ clean:
 
 .PHONY: clean test debug
 
-valgrind: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+valgrind: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o $(OBJECTS)/error.o
 	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
 	valgrind --leak-check=full --track-origins=yes ./test
 
@@ -79,7 +81,7 @@ valgrind: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
 	$(CC) $(CFLAGS) -o test_adv $(TESTS)/tests_adv_op.c $^ $(LCUNIT) -lm
 	valgrind --leak-check=full --track-origins=yes ./test_adv
 
-valgrindtest: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o
+valgrindtest: $(OBJECTS)/vector.o $(OBJECTS)/matrix.o $(OBJECTS)/file.o $(OBJECTS)/error.o
 	$(CC) $(CFLAGS) -o test $(TESTS)/tests_basic_op.c $^ $(LCUNIT) -lm
 	valgrind --leak-check=full --track-origins=yes ./test
 

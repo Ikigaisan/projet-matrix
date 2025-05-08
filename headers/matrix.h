@@ -49,7 +49,7 @@ void print_matrix(matrix *);
  *
  * @result C = A + B
  */
-void add_m_m(matrix *, matrix *, matrix *);
+int add_m_m(matrix *, matrix *, matrix *);
 
 /**
  * Calcule la soustraction de deux matrices
@@ -61,7 +61,7 @@ void add_m_m(matrix *, matrix *, matrix *);
  *
  * @result C = A - B
  */
-void sub_m_m(matrix *A, matrix *B, matrix *C);
+int sub_m_m(matrix *A, matrix *B, matrix *C);
 
 /**
  * Free une structure matrice
@@ -87,14 +87,14 @@ void free_qr(QR_Decomposition *);
  * 
  * @result C = A * B
 */
-void mult_m_m(matrix *A, matrix *B, matrix *C);
+int mult_m_m(matrix *A, matrix *B, matrix *C);
 
 /**
  * Calcule la transposée d'une matrice
  * 
  * @param matrix* A la matrice à transposer
  */
-void transp(matrix*A);
+int transp(matrix*A);
 
 /**
  * Calcule la multiplication entre deux matrices.
@@ -104,7 +104,7 @@ void transp(matrix*A);
  * 
  * @returns A*B
  */
-void mult_m_v(matrix *A, vector *B, vector *C);
+int mult_m_v(matrix *A, vector *B, vector *C);
 
 /**
  * Décomposition QR d'une matrice.
