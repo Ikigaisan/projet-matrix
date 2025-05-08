@@ -186,31 +186,14 @@ int main(int argc, char **argv) {
             free_vector(y);
             handle_error(ERROR_ALLOC_STRUCT);
         }
-
-        pthread_t threads[args->nb_threads];
-        thread_data_v_v thread_data[args->nb_threads];
-        size_t chunk_size = x->m / args->nb_threads;
-
-        // Création des threads pour l'addition en parallèle
-        for(uint64_t i = 0; i < args->nb_threads; i++){
-            thread_data[i].x = x;
-            thread_data[i].y = y;
-            thread_data[i].z = z;
-            thread_data[i].start_idx = i * chunk_size;
-            thread_data[i].end_idx = (i == args->nb_threads - 1) ? x->m : (i+1)*chunk_size;
-
-            int thread_create_error = pthread_create(&threads[i], NULL, add_v_v_thread, &thread_data[i]);
-            if (thread_create_error != 0) {
-                free_vector(x);
-                free_vector(y);
-                free_vector(z);
-                handle_error(ERROR_THREADS);
-            }
-        }
-
-        // Attente de la fin de tous les threads
-        for(uint64_t i = 0; i < args->nb_threads; i++){
-            pthread_join(threads[i], NULL);
+        
+        int success = add_v_v(x,y,z);
+        if(!success){
+            free_vector(x);
+            free_vector(y);
+            free_vector(z);
+            fprintf(stderr,"Erreur lors de l'appel de la fonction add_v_v.");
+            exit(EXIT_FAILURE);
         }
 
         // Affichage et/ou écriture du résultat
@@ -267,27 +250,13 @@ int main(int argc, char **argv) {
         thread_data_v_v thread_data[args->nb_threads]; // permet de données aux threads les données qu'ils vont traîter
         size_t chunk_size = x->m / args->nb_threads; // défini la répartition dans les différents threads
             
-        // sub_v_v(x, y, z); on le supprime parce que mtn on passe en multithreads et plus en monothread ? 
-        // Création des threads qui utilisent la fonction sub_v_v_thread
-    
-        for(uint64_t i = 0; i < args->nb_threads; i++) {
-            thread_data[i].x = x;
-            thread_data[i].y = y;
-            thread_data[i].z = z;
-            thread_data[i].start_idx = i*chunk_size;
-            thread_data[i].end_idx = (i == args->nb_threads-1)? x->m : (i+1)*chunk_size; // x->m veut dire qu'on prend tous les éléments restant
-            // Il faudrait aussi gérer les erreurs de thread
-            int thread_create_error = pthread_create(&threads[i], NULL, sub_v_v_thread, &thread_data[i]);
-            if (thread_create_error != 0){
-                free_vector(x);
-                free_vector(y);
-                free_vector(z);
-                handle_error(ERROR_THREADS);
-            } 
-        }
-    
-        for(uint64_t i = 0; i < args->nb_threads; i++){
-            pthread_join(threads[i], NULL);
+        int success = sub_v_v(x,y,z);
+        if(!success){
+            free_vector(x);
+            free_vector(y);
+            free_vector(z);
+            fprintf(stderr,"Erreur lors de l'appel de la fonction add_v_v.");
+            exit(EXIT_FAILURE);
         }
     
         if (args->output_stream == stdout) {
