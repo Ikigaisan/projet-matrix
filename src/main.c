@@ -187,8 +187,9 @@ int main(int argc, char **argv) {
             handle_error(ERROR_ALLOC_STRUCT);
         }
         
+        // Appel de la fonction
         int success = add_v_v(x,y,z);
-        if(!success){
+        if(success != 0){
             free_vector(x);
             free_vector(y);
             free_vector(z);
@@ -245,13 +246,14 @@ int main(int argc, char **argv) {
             handle_error(ERROR_SIZE_MISMATCH);
         }
         if(x->m != y->m) handle_error(ERROR_SIZE_MISMATCH);
-            
+
+        // Appel de la fonction    
         int success = sub_v_v(x,y,z);
-        if(!success){
+        if(success != 0){
             free_vector(x);
             free_vector(y);
             free_vector(z);
-            fprintf(stderr,"Erreur lors de l'appel de la fonction add_v_v.");
+            fprintf(stderr,"Erreur lors de l'appel de la fonction add_v_v.\n");
             exit(EXIT_FAILURE);
         }
     
