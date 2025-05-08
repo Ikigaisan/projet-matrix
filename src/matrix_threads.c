@@ -1,6 +1,12 @@
 #include "../headers/matrix.h"
 #include "../headers/vector.h"
 #include "../headers/matrix_threads.h"
+#include "../headers/error.h"
+#include <math.h>
+#include <inttypes.h>
+
+#define SUCCESS 0
+#define FAILURE 1
 
 
 void* transp_thread(void* arg) {
@@ -12,7 +18,7 @@ void* transp_thread(void* arg) {
             data->T->values[j][i] = data->A->values[i][j];
         }
     }
-    return NULL;
+    pthread_exit((void*) SUCCESS);
 }
 
 
@@ -21,15 +27,10 @@ void* add_m_m_thread(void* arg){
     uint64_t n = data->A->n;
 
     // Vérifie que les matrices ont la même taille
-    if(data->A->m != data->B->m || data->A->m != data->C->m ||
-       data->A->n != data->B->n || data->A->n != data->C->n){
-        fprintf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
-        free_matrix(data->A);
-        free_matrix(data->B);
-        free_matrix(data->C);
-        free(data);
-        exit(EXIT_FAILURE);
-    }
+    if(data->A->m != data->B->m ||data->A->m != data->C->m ||
+        data->A->n != data->B->n || data->A->n != data->C->n){
+            pthread_exit((void*) FAILURE);
+        }
 
     // Parcours de la portion de lignes assignée
     for(uint64_t i = data->start_row; i < data->end_row; i++) {
@@ -37,7 +38,8 @@ void* add_m_m_thread(void* arg){
             data->C->values[i][j] = data->A->values[i][j] + data->B->values[i][j];
         }
     }
-    return NULL;
+    pthread_exit((void*) SUCCESS);
+
 }
 
 
@@ -45,16 +47,14 @@ void* sub_m_m_thread(void* arg){
     thread_data_m_m* data = (thread_data_m_m*)arg;
     uint64_t n = data->A->n;
 
-    // Vérifie que les matrices ont la même taille
-    if(data->A->m != data->B->m || data->A->m != data->C->m ||
-       data->A->n != data->B->n || data->A->n != data->C->n){
-        fprintf(stderr, "Erreur : les matrices doivent être de la même taille.\n");
-        free_matrix(data->A);
-        free_matrix(data->B);
-        free_matrix(data->C);
-        free(data);
-        exit(EXIT_FAILURE);
-    }
+    if(data->A->m != data->B->m ||data->A->m != data->C->m ||
+        data->A->n != data->B->n || data->A->n != data->C->n){
+            free_matrix(data->A);
+            free_matrix(data->B);
+            free_matrix(data->C);
+            free(data);
+            handle_error(ERROR_SIZE_MISMATCH);
+        }
 
     // Parcours de la portion de lignes assignée
     for(uint64_t i = data->start_row; i < data->end_row; i++) {
@@ -62,7 +62,8 @@ void* sub_m_m_thread(void* arg){
             data->C->values[i][j] = data->A->values[i][j] - data->B->values[i][j];
         }
     }
-    return NULL;
+    pthread_exit((void*) SUCCESS);
+
 }
 
 
@@ -74,9 +75,11 @@ void* mult_m_m_thread(void* arg){
     // Vérifie la compatibilité des dimensions
     if (data->A->n != data->B->m || 
         data->A->m != data->C->m || data->B->n != data->C->n) {
-        fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 " x %" PRIu64 ")\n",
-                data->A->m, data->A->n, data->B->m, data->B->n);
-        exit(EXIT_FAILURE);
+        free_matrix(data->A);
+        free_matrix(data->B);
+        free_matrix(data->C);
+        free(data);
+        handle_error(ERROR_SIZE_MISMATCH);
     }   
 
     // Taille des blocs pour améliorer les performances cache
@@ -99,8 +102,7 @@ void* mult_m_m_thread(void* arg){
             }
         }
     }
-
-    return NULL; 
+    pthread_exit((void*)(intptr_t)SUCCESS);
 }
 
 
@@ -110,13 +112,11 @@ void* mult_m_v_thread(void* arg){
 
     // Vérifie la compatibilité des dimensions
     if(data->A->n != data->B->m || data->A->m != data->C->m){
-        fprintf(stderr, "Erreur: Dimensions incompatibles A(%" PRIu64 " x %" PRIu64 ") et B(%" PRIu64 ") C(%" PRIu64 ")\n",
-                data->A->m, data->A->n, data->B->m, data->C->m);
         free_matrix(data->A);
         free_vector(data->B);
         free_vector(data->C);
         free(data);
-        exit(EXIT_FAILURE);
+        handle_error(ERROR_SIZE_MISMATCH);
     }
 
     // Calcul du produit pour la portion de lignes assignée
@@ -127,5 +127,6 @@ void* mult_m_v_thread(void* arg){
         }
         data->C->values[i] = res;
     }
-    return NULL;
+    pthread_exit((void*) SUCCESS);
+    
 }
