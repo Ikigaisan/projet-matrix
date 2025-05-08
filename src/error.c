@@ -34,6 +34,9 @@ void handle_error(int code) {
         case ERROR_FILE :            
             fprintf(stderr, "Erreur : Fichier non valide. \n");
             break;
+        case ERROR_IMPLEMENTATION : 
+            fprintf(stderr, "Cette opération n'est pas implémentée...\n");
+            break;
         default:
             fprintf(stderr, "Erreur inconnue (code %d).\n", code);
     }

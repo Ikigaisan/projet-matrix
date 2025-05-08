@@ -87,14 +87,29 @@ void print_matrix(matrix *A) {
  * Les dimensions de A, B et C doivent être compatibles.
  */
 int add_m_m(matrix *A, matrix *B, matrix *C) {
-    if (!A || !B ) handle_error(ERROR_NULL_POINTER);
-    if (!A->values || !B->values) handle_error(ERROR_NULL_VALUES);
+    if (!A || !B ){
+        free_matrix(A);
+        free_matrix(B);
+        free_matrix(C);
+        handle_error(ERROR_NULL_POINTER);
+    } 
+    if (!A->values || !B->values) {
+        free_matrix(A);
+        free_matrix(B);
+        free_matrix(C);
+        handle_error(ERROR_NULL_VALUES);
+    }
     uint64_t m = A->m;
     uint64_t n = A->n;
     if(m != B->m || n != B-> n) handle_error(ERROR_SIZE_MISMATCH);
     // Addition élément par élément
     for (uint64_t i = 0; i < m; i++) {
-        if (!A->values[i] || !B->values[i]) handle_error(ERROR_NULL_VALUES);
+        if (!A->values[i] || !B->values[i]){
+            free_matrix(A);
+            free_matrix(B);
+            free_matrix(C);
+            handle_error(ERROR_NULL_VALUES);
+        } 
         for (uint64_t j = 0; j < n; j++) {
             C->values[i][j] = A->values[i][j] + B->values[i][j];
         }
@@ -148,15 +163,13 @@ int mult_m_v(matrix *A, vector *b, vector *c) {
  */
 int mult_m_m(matrix *A, matrix *B, matrix *C){
     if (!A || !B ) handle_error(ERROR_NULL_POINTER);
-    if (!A->values || !B->values) handle_error(ERROR_NULL_VALUES);
+    if (!A->values || !B->values) {
+        handle_error(ERROR_NULL_VALUES);
+    }
     uint64_t m = A->m;
     uint64_t n = A->n;
     uint64_t o = B->n;
     if (A->n != B->m) handle_error(ERROR_SIZE_MISMATCH);
-    
-    for (uint64_t i = 0; i < m; i++) {
-        if (!A->values[i] || !B->values[i]) handle_error(ERROR_NULL_VALUES);
-    }
 
     // Initialisation de C à zéro
     for (uint64_t i = 0; i < m; i++) {

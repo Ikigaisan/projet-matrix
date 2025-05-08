@@ -83,6 +83,10 @@ matrix *read_matrix(FILE *file) {
     fprintf(stderr,"Lecture matrice de dimensions: %" PRIu64 " x %" PRIu64 "\n", rows, cols);
 
     matrix *result = init_matrix(rows, cols);
+    if (!result || !result->values) {
+        free_matrix(result);
+        handle_error(ERROR_ALLOC_STRUCT);
+    }
 
     // Lecture ligne par ligne de la matrice
     for(uint64_t i = 0; i < rows; i++){
