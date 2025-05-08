@@ -192,14 +192,15 @@ void test_back_sub_upper_triangular(void) {
     vector *expected_x = init_vector(m);
     for (int64_t i = m - 1; i >= 0; i--) {
         vector *b_copy = init_vector(m);
-        for (uint64_t i = 0; i < m; i++) {
-            b_copy->values[i] = b->values[i];
+        for (uint64_t k = 0; k < m; k++) {
+            b_copy->values[k] = b->values[k];
         }
         expected_x->values[i] = b_copy->values[i];
         for (uint64_t j = i + 1; j < m; j++) {
             expected_x->values[i] -= U->values[i][j] * expected_x->values[j];
         }
         expected_x->values[i] /= U->values[i][i];
+        free_vector(b_copy);  // 🟢 essentiel
     }
 
     for (uint64_t i = 0; i < m; i++) {
@@ -386,14 +387,16 @@ void test_back_sub_4x4_upper_triangular(void) {
     vector *expected_x = init_vector(m);
     for (int64_t i = m - 1; i >= 0; i--) {
         vector *b_copy = init_vector(m);
-        for (uint64_t i = 0; i < m; i++) {
-            b_copy->values[i] = b->values[i];
+        for (uint64_t k = 0; k < m; k++) { 
+            b_copy->values[k] = b->values[k];
         }
         expected_x->values[i] = b_copy->values[i];
         for (uint64_t j = i + 1; j < m; j++) {
             expected_x->values[i] -= U->values[i][j] * expected_x->values[j];
         }
         expected_x->values[i] /= U->values[i][i];
+
+        free_vector(b_copy); 
     }
 
     for (uint64_t i = 0; i < m; i++) {

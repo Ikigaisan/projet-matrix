@@ -789,7 +789,7 @@ int main(int argc, char **argv) {
         }
         // Allocation du vecteur solution
         vector *result = init_vector(b->m);
-        if (!result) {
+        if (!result || !result->values) {
             free_matrix(A);
             free_vector(b);
             free_vector(result);

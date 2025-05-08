@@ -243,7 +243,9 @@ int back_sub(vector*b, matrix *U, vector*x){
         x->values[i] = b->values[i];
     }
 
-    if (m<1 || U->m != m || U->n != m || x->m != m) handle_error(ERROR_SIZE_MISMATCH);
+    if (m<1 || U->m != m || U->n != m || x->m != m) {
+        handle_error(ERROR_SIZE_MISMATCH);
+    }
 
     // Cas particulier : une seule inconnue
     if (m == 1) {
