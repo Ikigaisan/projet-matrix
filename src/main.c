@@ -663,7 +663,7 @@ int main(int argc, char **argv) {
                 thread_data[i].start_row = i * chunk_size;
                 thread_data[i].end_row = (i == args->nb_threads-1)? A->m : (i+1)*chunk_size;
 
-                int thread_create_error = pthread_create(&threads[i], NULL, add_m_m_thread, &thread_data[i]);
+                int thread_create_error = pthread_create(&threads[i], NULL, mult_m_v_thread, &thread_data[i]);
                 //Libération si le thread a echoué
                 if (thread_create_error != 0) {
                     free_matrix(A);
