@@ -513,7 +513,7 @@ int main(int argc, char **argv) {
     // Opération : Calcul de la norme 2 d'un vecteur
     else if (strcmp(args->op, "norm") == 0) {
         vector *a = read_vector(args->input_file_A);
-        if (!a || a->values){
+        if (!a || !a->values){
             free_vector(a);
             handle_error(ERROR_NULL_POINTER);
         }
