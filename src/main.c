@@ -752,12 +752,12 @@ int main(int argc, char **argv) {
     
         if (args->output_stream == stdout) {
             printf("Résultat de la transposée :\n");
-            print_matrix(A);
+            print_matrix(T);
         } else {
-            write_matrix(A, args->output_stream);
+            write_matrix(T, args->output_stream);
             if (args->verbose) {
                 printf("Résultat de la transposée : \n");
-                print_matrix(A);
+                print_matrix(T);
             }
         }
         free_matrix(A);
